@@ -28,8 +28,7 @@ public class UserRepo implements IUserRepo{
     }
     @Override
     @Transactional
-    public void remove(int id) {
-        UserEntity user = entityManager.find(UserEntity.class, id);
+    public void remove(UserEntity user) {
         entityManager.remove(user);
     }
     @Override

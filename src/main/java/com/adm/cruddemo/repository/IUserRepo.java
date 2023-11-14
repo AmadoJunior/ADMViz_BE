@@ -10,7 +10,7 @@ public interface IUserRepo {
 
     void update(UserEntity user);
 
-    void remove(int id);
+    void remove(UserEntity user);
 
     UserEntity findById(int id);
 

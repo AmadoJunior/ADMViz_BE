@@ -31,17 +31,49 @@ public class UserRequestController {
         return users;
     }
 
-    @GetMapping("/user/{studentId}")
-    public UserEntity getUser(@PathVariable int studentId){
-        UserEntity foundUser = userRepo.findById(studentId);
+    @GetMapping("/users/{userId}")
+    public UserEntity getUser(@PathVariable int userId){
+        UserEntity foundUser = userRepo.findById(userId);
         if(foundUser == null) {
-            throw new UserNotFoundException("User Not Found: " + studentId);
+            throw new UserNotFoundException("User Not Found: " + userId);
         }
         return foundUser;
     }
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     public void createUser(@RequestBody UserEntity newUser){
         userRepo.save(newUser);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable int userId){
+        UserEntity foundUser = userRepo.findById(userId);
+        if(foundUser == null) {
+            throw new UserNotFoundException("User Not Found: " + userId);
+        }
+        userRepo.remove(foundUser);
+    }
+
+    @PutMapping("/users")
+    public void updateUser(@RequestBody UserEntity updatedUser){
+        UserEntity foundUser = userRepo.findById(updatedUser.getId());
+        if(foundUser == null) {
+            throw new UserNotFoundException("User Not Found: " + updatedUser.getId());
+        }
+        if(
+                updatedUser.getEmail() == null ||
+                updatedUser.getFirstName() == null ||
+                updatedUser.getLastName() == null ||
+                updatedUser.getHash() == null
+        ) {
+            throw new DataIntegrityViolationException("Invalid Inputs");
+        } else {
+            foundUser.setEmail(updatedUser.getEmail());
+            foundUser.setFirstName(updatedUser.getFirstName());
+            foundUser.setLastName(updatedUser.getLastName());
+            foundUser.setHash(updatedUser.getHash());
+        }
+
+        userRepo.update(updatedUser);
     }
 }
