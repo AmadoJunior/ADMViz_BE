@@ -1,38 +1,34 @@
-package com.adm.cruddemo.rest;
+package com.adm.cruddemo.service;
 
 import com.adm.cruddemo.entity.UserEntity;
 import com.adm.cruddemo.repository.UserRepo;
+import com.adm.cruddemo.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api")
-public class UserRequestController {
+@Service
+public class UserService implements IUserService {
     UserRepo userRepo;
-
     @Autowired
-    public UserRequestController(UserRepo userRepo){
+    public UserService(UserRepo userRepo){
         this.userRepo = userRepo;
     }
 
-    @GetMapping("/users")
-    public List<UserEntity> getUsers(){
-        List<UserEntity> users = userRepo.getAllUsers();
+    @Override
+    public List<UserEntity> findAll() {
+        List<UserEntity> users;
+        users = userRepo.getAllUsers();
         if(users.isEmpty()) {
             throw new UserNotFoundException("No Users Found");
         }
         return users;
     }
 
-    @GetMapping("/users/{userId}")
-    public UserEntity getUser(@PathVariable int userId){
+    @Override
+    public UserEntity findById(int userId) {
         UserEntity foundUser = userRepo.findById(userId);
         if(foundUser == null) {
             throw new UserNotFoundException("User Not Found: " + userId);
@@ -40,13 +36,13 @@ public class UserRequestController {
         return foundUser;
     }
 
-    @PostMapping("/users")
-    public void createUser(@RequestBody UserEntity newUser){
+    @Override
+    public void createUser(UserEntity newUser) {
         userRepo.save(newUser);
     }
 
-    @DeleteMapping("/users/{userId}")
-    public void deleteUser(@PathVariable int userId){
+    @Override
+    public void deleteUser(int userId) {
         UserEntity foundUser = userRepo.findById(userId);
         if(foundUser == null) {
             throw new UserNotFoundException("User Not Found: " + userId);
@@ -54,17 +50,17 @@ public class UserRequestController {
         userRepo.remove(foundUser);
     }
 
-    @PutMapping("/users")
-    public void updateUser(@RequestBody UserEntity updatedUser){
+    @Override
+    public void updateUser(UserEntity updatedUser) {
         UserEntity foundUser = userRepo.findById(updatedUser.getId());
         if(foundUser == null) {
             throw new UserNotFoundException("User Not Found: " + updatedUser.getId());
         }
         if(
                 updatedUser.getEmail() == null ||
-                updatedUser.getFirstName() == null ||
-                updatedUser.getLastName() == null ||
-                updatedUser.getHash() == null
+                        updatedUser.getFirstName() == null ||
+                        updatedUser.getLastName() == null ||
+                        updatedUser.getHash() == null
         ) {
             throw new DataIntegrityViolationException("Invalid Inputs");
         } else {

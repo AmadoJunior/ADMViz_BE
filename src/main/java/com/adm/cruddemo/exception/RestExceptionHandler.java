@@ -1,4 +1,4 @@
-package com.adm.cruddemo.rest;
+package com.adm.cruddemo.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

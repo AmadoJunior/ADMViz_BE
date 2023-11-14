@@ -1,4 +1,4 @@
-package com.adm.cruddemo.rest;
+package com.adm.cruddemo.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
