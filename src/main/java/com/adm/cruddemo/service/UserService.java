@@ -1,13 +1,14 @@
 package com.adm.cruddemo.service;
 
 import com.adm.cruddemo.entity.UserEntity;
-import com.adm.cruddemo.repository.UserRepo;
 import com.adm.cruddemo.exception.UserNotFoundException;
+import com.adm.cruddemo.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
@@ -20,7 +21,7 @@ public class UserService implements IUserService {
     @Override
     public List<UserEntity> findAll() {
         List<UserEntity> users;
-        users = userRepo.getAllUsers();
+        users = userRepo.findAll();
         if(users.isEmpty()) {
             throw new UserNotFoundException("No Users Found");
         }
@@ -29,47 +30,35 @@ public class UserService implements IUserService {
 
     @Override
     public UserEntity findById(int userId) {
-        UserEntity foundUser = userRepo.findById(userId);
-        if(foundUser == null) {
-            throw new UserNotFoundException("User Not Found: " + userId);
+        Optional<UserEntity> foundUser = userRepo.findById(userId);
+
+        if(foundUser.isPresent()) {
+            return foundUser.get();
         }
-        return foundUser;
+
+        throw new UserNotFoundException("User Not Found: " + userId);
     }
 
     @Override
+    @Transactional
     public void createUser(UserEntity newUser) {
         userRepo.save(newUser);
     }
 
     @Override
+    @Transactional
     public void deleteUser(int userId) {
-        UserEntity foundUser = userRepo.findById(userId);
-        if(foundUser == null) {
+        Optional<UserEntity> foundUser = userRepo.findById(userId);
+        if(foundUser.isPresent()) {
+            userRepo.delete(foundUser.get());
+        } else {
             throw new UserNotFoundException("User Not Found: " + userId);
         }
-        userRepo.remove(foundUser);
     }
 
     @Override
+    @Transactional
     public void updateUser(UserEntity updatedUser) {
-        UserEntity foundUser = userRepo.findById(updatedUser.getId());
-        if(foundUser == null) {
-            throw new UserNotFoundException("User Not Found: " + updatedUser.getId());
-        }
-        if(
-                updatedUser.getEmail() == null ||
-                        updatedUser.getFirstName() == null ||
-                        updatedUser.getLastName() == null ||
-                        updatedUser.getHash() == null
-        ) {
-            throw new DataIntegrityViolationException("Invalid Inputs");
-        } else {
-            foundUser.setEmail(updatedUser.getEmail());
-            foundUser.setFirstName(updatedUser.getFirstName());
-            foundUser.setLastName(updatedUser.getLastName());
-            foundUser.setHash(updatedUser.getHash());
-        }
-
-        userRepo.update(updatedUser);
+        userRepo.save(updatedUser);
     }
 }

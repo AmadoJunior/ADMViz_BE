@@ -1,7 +1,6 @@
 package com.adm.cruddemo.service;
 
 import com.adm.cruddemo.entity.UserEntity;
-import com.adm.cruddemo.repository.UserRepo;
 
 import java.util.List;
 
