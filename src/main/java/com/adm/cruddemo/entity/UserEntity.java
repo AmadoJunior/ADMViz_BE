@@ -1,5 +1,6 @@
 package com.adm.cruddemo.entity;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,13 +10,14 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private int id;
-    @Column(name="first_name")
+
+    @Column(name="first_name", nullable = false)
     private String firstName;
-    @Column(name="last_name")
+    @Column(name="last_name", nullable = false)
     private String lastName;
-    @Column(name="email", unique = true)
+    @Column(name="email", unique = true, nullable = false)
     private String email;
-    @Column(name="hash")
+    @Column(name="hash", nullable = false)
     private String hash;
 
     public UserEntity(){}
