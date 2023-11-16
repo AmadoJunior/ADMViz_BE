@@ -35,7 +35,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Dashboard> dashboards;
 
     //Methods
@@ -44,6 +44,7 @@ public class User {
     }
     public void addDashboard(Dashboard dashboard) {
         this.dashboards.add(dashboard);
+        dashboard.setUser(this);
     }
 
     //Constructors

@@ -7,29 +7,45 @@ import jakarta.persistence.*;
 public class Chart {
     @Id
     @GeneratedValue
-    int id;
+    private int id;
     @Column(name="name", nullable = false)
-    String name;
+    private String name;
     @Column(name="src_url")
-    String srcUrl;
+    private String srcUrl;
     @Column(name="data_key")
-    String dataKey;
+    private String dataKey;
     @Column(name="label_key")
-    String labelKey;
+    private String labelKey;
     @Column(name="chart_type")
-    String chartType;
+    private String chartType;
     @Column(name="method")
-    String method;
+    private String method;
     @Column(name="api_key")
-    String apiKey;
+    private String apiKey;
     @Column(name="from_date")
-    int fromDate;
+    private int fromDate;
     @Column(name="to_date")
-    int toDate;
-    @OneToOne(fetch = FetchType.EAGER)
-    ChartPosition position;
+    private int toDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    Dashboard dashboard;
+    @JoinColumn(name = "dashboard_id", referencedColumnName = "id")
+    private Dashboard dashboard;
+
+    @OneToOne(mappedBy = "chart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private ChartPosition position;
+
+    //Methods
+    public void addPosition(ChartPosition position){
+        this.position = position;
+        position.setChart(this);
+    }
+
+    public void removePosition(ChartPosition position){
+        if(position != null){
+            position.setChart(null);
+        }
+        this.position = null;
+    }
 
     //Constructors
     public Chart() {
@@ -45,7 +61,6 @@ public class Chart {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.position = position;
-        this.dashboard = dashboard;
     }
 
     //Getters & Setters

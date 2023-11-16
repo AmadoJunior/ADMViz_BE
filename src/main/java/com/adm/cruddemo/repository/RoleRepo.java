@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path="roles")
-public interface RoleRepo extends JpaRepository<Role, Long> {
+public interface RoleRepo extends JpaRepository<Role, Integer> {
     @Query("SELECT r FROM Role r WHERE r.name = :roleName")
     public Role findRoleByName(@Param("roleName") String roleName);
 }

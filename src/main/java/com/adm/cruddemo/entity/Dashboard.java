@@ -8,13 +8,20 @@ import java.util.List;
 public class Dashboard {
     @Id
     @GeneratedValue
-    int id;
+    private int id;
     @Column(name="name", nullable = false)
-    String name;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<Chart> charts;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private String name;
+    @OneToMany(mappedBy = "dashboard", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Chart> charts;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    //Methods
+    public void addChart(Chart chart) {
+        this.charts.add(chart);
+        chart.setDashboard(this);
+    }
 
     //Constructors
     public Dashboard() {

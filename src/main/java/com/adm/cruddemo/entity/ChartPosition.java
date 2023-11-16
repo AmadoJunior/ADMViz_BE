@@ -7,17 +7,17 @@ import jakarta.persistence.*;
 public class ChartPosition {
     @Id
     @GeneratedValue
-    int id;
+    private int id;
     @Column(name="x")
-    int x;
+    private int x;
     @Column(name="y")
-    int y;
+    private int y;
     @Column(name="w")
-    int w;
+    private int w;
     @Column(name="h")
-    int h;
+    private int h;
     @OneToOne(fetch = FetchType.LAZY)
-    Chart chart;
+    private Chart chart;
 
     //Constructors
     public ChartPosition() {
