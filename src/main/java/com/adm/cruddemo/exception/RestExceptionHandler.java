@@ -1,6 +1,7 @@
 package com.adm.cruddemo.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,25 +10,25 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @ControllerAdvice
 public class RestExceptionHandler {
+    //ResourceNotFoundException
     @ExceptionHandler({
-            UserNotFoundException.class,
+            ResourceNotFoundException.class
     })
-    public ResponseEntity<ErrorResponse> handleNotFoundException(UserNotFoundException exception){
+    public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException exception){
         ErrorResponse error = new ErrorResponse();
-        error.setStatus(404);
-        error.setMessage(exception.getMessage());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(HttpStatus.NOT_FOUND.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
     }
-
     @ExceptionHandler({
             DataIntegrityViolationException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<ErrorResponse> handleDuplicateException(RuntimeException exception){
+    public ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException exception){
         ErrorResponse error = new ErrorResponse();
-        error.setStatus(400);
-        error.setMessage("Bad Request");
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
@@ -35,8 +36,8 @@ public class RestExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(Exception exception){
         ErrorResponse error = new ErrorResponse();
-        error.setStatus(500);
-        error.setMessage("Internal Server Error");
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

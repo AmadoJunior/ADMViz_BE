@@ -1,0 +1,23 @@
+CREATE TABLE `restapi`.`users` (
+    `username` varchar(50) NOT NULL,
+    `password` varchar(50) NOT NULL,
+    `enabled` tinyint(1) NOT NULL,
+
+    PRIMARY KEY (`username`)
+)
+
+INSERT INTO `restapi`.`users`
+VALUES
+('amado', '{noop}pass', 1),
+('leydi', '{noop}pass', 1);
+
+CREATE TABLE `restapi`.`authorities` (
+  `username` VARCHAR(50) NOT NULL,
+  `authority` VARCHAR(50) NOT NULL,
+
+  UNIQUE KEY `authorities_idx_1` (`username`, `authority`),
+
+  CONSTRAINT `authorities_ibfk_1`
+  FOREIGN KEY (`username`)
+  REFERENCES `users` (`username`)
+);
