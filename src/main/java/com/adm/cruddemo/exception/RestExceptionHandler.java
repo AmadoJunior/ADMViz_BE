@@ -32,13 +32,4 @@ public class RestExceptionHandler {
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleException(Exception exception){
-        ErrorResponse error = new ErrorResponse();
-        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        error.setTimeStamp(System.currentTimeMillis());
-        return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 }
