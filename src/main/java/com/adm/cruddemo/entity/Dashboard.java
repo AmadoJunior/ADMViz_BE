@@ -1,13 +1,12 @@
 package com.adm.cruddemo.entity;
 
 import jakarta.persistence.*;
-
 import java.util.List;
 @Entity
 @Table(name = "dashboards")
 public class Dashboard {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="name", nullable = false)
     private String name;
@@ -21,6 +20,7 @@ public class Dashboard {
     public void addChart(Chart chart) {
         this.charts.add(chart);
         chart.setDashboard(this);
+        chart.setUser(this.user);
     }
 
     public void removeChart(Chart chart) {

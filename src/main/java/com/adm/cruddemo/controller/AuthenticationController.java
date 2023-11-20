@@ -6,6 +6,7 @@ import com.adm.cruddemo.entity.Role;
 import com.adm.cruddemo.entity.User;
 import com.adm.cruddemo.repository.RoleRepo;
 import com.adm.cruddemo.repository.UserRepo;
+import com.adm.cruddemo.service.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +48,12 @@ public class AuthenticationController {
 //        return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
 //    }
     @GetMapping("/self")
-    public ResponseEntity<?> getUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> getUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         if(userDetails == null){
             logger.debug("User Details Not Found");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
+        userDetails.eraseCredentials();
         return new ResponseEntity<UserDetails>(
                 userDetails, HttpStatus.OK
         );

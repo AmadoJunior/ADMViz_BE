@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "charts_positions")
 public class ChartPosition {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="x")
     private int x;

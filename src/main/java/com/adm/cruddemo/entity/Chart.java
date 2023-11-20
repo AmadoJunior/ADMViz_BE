@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "charts")
 public class Chart {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="name", nullable = false)
     private String name;
@@ -31,6 +31,10 @@ public class Chart {
     @JoinColumn(name = "dashboard_id", referencedColumnName = "id")
     private Dashboard dashboard;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     @OneToOne(mappedBy = "chart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private ChartPosition position;
 
@@ -50,7 +54,7 @@ public class Chart {
     //Constructors
     public Chart() {
     }
-    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String apiKey, int fromDate, int toDate, ChartPosition position, Dashboard dashboard) {
+    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String apiKey, int fromDate, int toDate, ChartPosition position, Dashboard dashboard, User user) {
         this.name = name;
         this.srcUrl = srcUrl;
         this.dataKey = dataKey;
@@ -62,6 +66,7 @@ public class Chart {
         this.toDate = toDate;
         this.position = position;
         this.dashboard = dashboard;
+        this.user = user;
     }
 
     //Getters & Setters
@@ -136,5 +141,11 @@ public class Chart {
     }
     public void setDashboard(Dashboard dashboard) {
         this.dashboard = dashboard;
+    }
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
     }
 }
