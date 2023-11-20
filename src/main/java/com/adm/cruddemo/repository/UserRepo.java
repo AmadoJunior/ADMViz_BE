@@ -12,19 +12,19 @@ import java.util.Optional;
 
 @RepositoryRestResource(path="users")
 public interface UserRepo extends CrudRepository<User, Integer> {
+    @PreAuthorize("hasRole('ROLE_ADMIN') || #userId == authentication.principal.getId()")
+    @Override
+    Optional<User> findById(Integer userId);
     @RestResource(exported = false)
     @Query("SELECT u FROM User u WHERE u.userName = :userName")
     public Optional<User> findByUserName(@Param("userName") String userName);
     @RestResource(exported = false)
     @Query("SELECT u FROM User u WHERE u.email = :email")
     public Optional<User> findByUserEmail(@Param("email") String email);
-    @PreAuthorize("hasRole('ROLE_ADMIN') || #userId == authentication.principal.getId()")
-    @Override
-    Optional<User> findById(Integer userId);
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     <S extends User> S save(S entity);
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     <S extends User> Iterable<S> saveAll(Iterable<S> entities);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -39,19 +39,19 @@ public interface UserRepo extends CrudRepository<User, Integer> {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     long count();
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     void deleteById(Integer integer);
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     void delete(User entity);
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     void deleteAllById(Iterable<? extends Integer> integers);
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     void deleteAll(Iterable<? extends User> entities);
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RestResource(exported = false)
     @Override
     void deleteAll();
 }
