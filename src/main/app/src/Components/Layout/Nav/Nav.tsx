@@ -140,40 +140,22 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               }}
             >
               {pages?.map((item, index) => {
-                const isCurrentPath = location.pathname === item.path;
                 return (
                   <Box key={item.path}>
                     <Link
                       to={item.path}
-                      style={{
-                        color: isCurrentPath
-                          ? theme.palette.primary.main
-                          : "black",
-                      }}
-                      reloadDocument
                     >
                       <MenuItem
                         onClick={handleCloseNavMenu}
-                        sx={[
-                          {},
-                          () => ({
-                            "&:hover *": {
-                              color: "secondary.main",
-                            },
-                          }),
-                        ]}
+                        disabled={!userDetailsContext?.isAuthenticated}
                       >
                         <ListItemIcon>
-                          <item.icon
-                            sx={{
-                              color: isCurrentPath
-                                ? theme.palette.primary.main
-                                : "black",
-                            }}
-                          />
+                          <item.icon/>
                         </ListItemIcon>
                         <ListItemText disableTypography>
-                          <Typography>{item.title}</Typography>
+                          <Typography sx={{
+                            color: "white"
+                          }}>{item.title}</Typography>
                         </ListItemText>
                       </MenuItem>
                     </Link>
@@ -183,25 +165,12 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               })}
             </Menu>
           </Box>
-
-          <Box
-            sx={{
-              marginRight: 6,
-              flexGrow: 1,
-              display: {
-                xs: "block",
-                md: "none",
-              },
-            }}
-          >
-            <Typography>OpenViz</Typography>
-          </Box>
-
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => {
               return (
-                <Link key={page.path} to={`${page?.path}`} reloadDocument>
+                <Link key={page.path} to={`${page?.path}`}>
                   <Button
+                    disabled={!userDetailsContext?.isAuthenticated}
                     variant="contained"
                     key={page?.path}
                     onClick={handleCloseNavMenu}
@@ -223,10 +192,14 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               );
             })}
           </Box>
-            <Button onClick={handleLogout} sx={{
-              backgroundColor: "error.main",
-              color: "white"
-            }}>Log Out</Button>
+            {userDetailsContext.isAuthenticated && <Button 
+              onClick={handleLogout} 
+              sx={{
+                backgroundColor: "error.main",
+                color: "white"
+              }}>
+                Log Out
+            </Button>}
         </Toolbar>
       </Container>
     </AppBar>

@@ -16,10 +16,10 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         ErrorResponse error = new ErrorResponse();
-        error.setStatus(HttpStatus.UNAUTHORIZED.value());
-        error.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        error.setStatus(HttpStatus.FORBIDDEN.value());
+        error.setMessage(HttpStatus.FORBIDDEN.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         OutputStream out = response.getOutputStream();
         com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();

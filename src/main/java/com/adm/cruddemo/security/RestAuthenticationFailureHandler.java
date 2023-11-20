@@ -20,10 +20,10 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException ex) throws IOException, ServletException
     {
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         ErrorResponse error = new ErrorResponse();
-        error.setStatus(HttpStatus.FORBIDDEN.value());
-        error.setMessage(HttpStatus.FORBIDDEN.getReasonPhrase());
+        error.setStatus(HttpStatus.UNAUTHORIZED.value());
+        error.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         OutputStream out = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();

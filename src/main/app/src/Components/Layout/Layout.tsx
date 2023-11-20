@@ -30,29 +30,16 @@ const Layout: React.FC<ILayoutProps> = (): JSX.Element => {
   //User
   const userDetailsContext = React.useContext(UserDetailsContext);
 
-  //Params
-  const [searchParams, setSearchParams] = useSearchParams();
-
   //Errors
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const errorStateParam = searchParams.get("error");
-    console.log("PARAM", errorStateParam);
-    if(errorStateParam) {
-      userDetailsContext.clearAuthentication();
+    if(userDetailsContext?.errored) {
       setOpen(true);
     } else {
-      userDetailsContext.handleIsAuthenticated()
-      .then(() => {
-        setOpen(false);
-      })
-      .catch(() => {
-        console.error("Unsuccessful Self Fetch");
-        userDetailsContext.clearAuthentication();
-      })
+      setOpen(false);
     }
-  }, [searchParams])
+  }, [userDetailsContext?.errored])
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {

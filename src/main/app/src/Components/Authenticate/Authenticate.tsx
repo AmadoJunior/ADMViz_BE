@@ -1,5 +1,6 @@
 //Deps
 import React from "react";
+import useSearchParam from "../useQueryState";
 
 //MUI
 import {Box, Avatar, Typography, TextField, FormControlLabel, Button, Checkbox, Grid} from "@mui/material";
@@ -14,7 +15,7 @@ interface IAuthenticateProps {
 }
 
 const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): JSX.Element => {
-  const [currentForm, setCurrentForm] = React.useState(0);
+  const [currentForm, setCurrentForm] = useSearchParam("authForm", "0");
 
   return (
     <Box
@@ -29,7 +30,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): 
       <Box sx={{
         maxWidth: "500px"
       }}>
-        {children?.length && children[currentForm]}
+        {children?.length && children[parseInt(currentForm)]}
       </Box>
       
       <Box sx={{
@@ -39,7 +40,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): 
       }}>
         {childrenProps?.map((item) => {
         return (
-          (currentForm === item.index ? null : <Button variant="outlined" onClick={() => {setCurrentForm(item.index)}}>{item.label}</Button>)
+          (parseInt(currentForm) === item.index ? null : <Button variant="outlined" onClick={() => {setCurrentForm(String(item.index))}}>{item.label}</Button>)
         )
       })}
       </Box>

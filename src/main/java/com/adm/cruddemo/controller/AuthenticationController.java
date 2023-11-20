@@ -35,17 +35,17 @@ public class AuthenticationController {
     private PasswordEncoder passwordEncoder;
     private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
-    @PostMapping("/perform_login")
-    public ResponseEntity<String> authenticateUser(@RequestBody Login loginDTO) {
-        System.out.println("RAN LOGIN");
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword());
-        Authentication authentication = authenticationManager.authenticate(authToken);
-        if(authentication.isAuthenticated()) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            return new ResponseEntity<>(HttpStatus.OK.getReasonPhrase(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
-    }
+//    @PostMapping("/perform_login")
+//    public ResponseEntity<String> authenticateUser(@RequestBody Login loginDTO) {
+//        System.out.println("RAN LOGIN");
+//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword());
+//        Authentication authentication = authenticationManager.authenticate(authToken);
+//        if(authentication.isAuthenticated()) {
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            return new ResponseEntity<>(HttpStatus.OK.getReasonPhrase(), HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
+//    }
     @GetMapping("/self")
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserDetails userDetails) {
         if(userDetails == null){

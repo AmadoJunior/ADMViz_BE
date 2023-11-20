@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-@RepositoryRestResource(path="charts_positions")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@RepositoryRestResource(path="chart_positions")
+@PreAuthorize("hasRole('ROLE_USER')")
 public interface ChartPositionRepo extends CrudRepository<ChartPosition, Integer> {
 }

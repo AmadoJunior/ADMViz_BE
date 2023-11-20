@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-
 	private UserRepo userRepo;
 
 	private RoleRepo roleRepo;
@@ -38,7 +37,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 		Optional<User> userResult = userRepo.findByUserName(userName);
-		System.out.println(userResult);
 		if (userResult.isEmpty()) {
 			throw new UsernameNotFoundException("User Not Found");
 		}
@@ -49,5 +47,13 @@ public class UserServiceImpl implements UserService {
 
 	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
 		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+	}
+
+	public User loadUserById(Integer userId) throws UsernameNotFoundException {
+		Optional<User> userResult = userRepo.findById(userId);
+		if (userResult.isEmpty()) {
+			throw new UsernameNotFoundException("User Not Found");
+		}
+		return userResult.get();
 	}
 }

@@ -1,6 +1,10 @@
 package com.adm.cruddemo.security;
 
+import com.adm.cruddemo.entity.User;
+import com.adm.cruddemo.repository.RoleRepo;
+import com.adm.cruddemo.repository.UserRepo;
 import com.adm.cruddemo.service.UserService;
+import com.adm.cruddemo.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +30,10 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    @Bean
+    public UserService userService(UserRepo userRepo, RoleRepo roleRepo){
+        return new UserServiceImpl(userRepo, roleRepo);
+    }
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler()
     {
@@ -91,8 +99,6 @@ public class SecurityConfig {
                 );
 
         //Authentication
-
-
         http.formLogin(formLogin ->
                 formLogin
                         .loginPage("/")

@@ -1,12 +1,13 @@
 //Deps
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import useSearchParam from "./../useQueryState";
 
 //MUI
 import {Box, Avatar, Typography, TextField, FormControlLabel, Button, Checkbox, Grid} from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-//Components
+//Context
+import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDetailsContext";
 
 //Props
 interface IRegisterProps {
@@ -14,32 +15,37 @@ interface IRegisterProps {
 }
 
 const Register: React.FC<IRegisterProps> = (props): JSX.Element => {
-  const navigate = useNavigate();
+  const userDetailsContext = React.useContext(UserDetailsContext);
+  const [currentForm, setCurrentForm] = useSearchParam("authForm", "0");
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    userDetailsContext.handleErrored(false);
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const requestData = ({
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      userName: data.get("userName"),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    console.log(requestData)
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
+      userName: formData.get("userName"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    }
+    console.log(data);
     const basePath = "http://localhost:8080";
     fetch(`${basePath}/api/perform_register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestData),
+      body: JSON.stringify(data),
     })
     .then(response => {
       console.log(response);
-      if(response?.redirected) navigate(response?.url?.split(basePath)?.[1] || "/");
+      if(response?.status !== 201) throw new Error("Error: " + response);
+      userDetailsContext.handleErrored(false);
+      setCurrentForm();
     })
     .catch(e => {
+      userDetailsContext.handleErrored(true);
       console.error(e);
     })
   };
