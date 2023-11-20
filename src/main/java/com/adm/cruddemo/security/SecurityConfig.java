@@ -1,25 +1,16 @@
 package com.adm.cruddemo.security;
 
-import com.adm.cruddemo.entity.User;
-import com.adm.cruddemo.repository.RoleRepo;
-import com.adm.cruddemo.repository.UserRepo;
-import com.adm.cruddemo.service.UserService;
-import com.adm.cruddemo.service.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.*;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -30,10 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean
-    public UserService userService(UserRepo userRepo, RoleRepo roleRepo){
-        return new UserServiceImpl(userRepo, roleRepo);
-    }
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler()
     {
@@ -55,18 +42,18 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
     //Auth Provider
     @Bean
-    public AuthenticationProvider authenticationProvider(UserService userService) {
+    public AuthenticationProvider authenticationProvider(UserDetailsService userService) {
         RestAuthenticationProvider authProvider = new RestAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
     }
 
     //Security Chain
@@ -95,7 +82,7 @@ public class SecurityConfig {
 
         //Sessions
         http.sessionManagement(session -> session
-                        .maximumSessions(1)
+                        .maximumSessions(10)
                 );
 
         //Authentication

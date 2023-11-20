@@ -14,7 +14,7 @@ import java.util.Optional;
 @PreAuthorize("hasRole('ROLE_USER')")
 public interface DashboardRepo extends CrudRepository<Dashboard, Integer> {
     @Override
-    @PreAuthorize("hasRole('ROLE_USER')")
+//    @PreAuthorize("hasRole('ROLE_USER')")
     Optional<Dashboard> findById(Integer id);
 
 //    @PreAuthorize("hasRole('ROLE_USER')")
