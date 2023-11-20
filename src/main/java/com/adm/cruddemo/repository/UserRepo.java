@@ -15,7 +15,7 @@ public interface UserRepo extends CrudRepository<User, Integer> {
     public Optional<User> findByUserName(@Param("userName") String userName);
     @Query("SELECT u FROM User u WHERE u.email = :email")
     public Optional<User> findByUserEmail(@Param("email") String email);
-    @PreAuthorize("#userId == @userDetailsServiceImpl.findByUserName(authentication.name).getId()")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userId == @userDetailsServiceImpl.findByUserName(authentication.name).getId()")
     @Override
     Optional<User> findById(Integer userId);
 }

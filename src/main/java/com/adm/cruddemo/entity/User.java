@@ -25,7 +25,7 @@ public class User {
     private String password;
     @Column(name="enabled", nullable = false)
     private boolean enabled;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(
