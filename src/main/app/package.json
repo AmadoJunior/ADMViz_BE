@@ -1,0 +1,71 @@
+{
+  "name": "server-benchmark",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.3",
+    "@mui/material": "^5.14.5",
+    "@mui/styled-engine-sc": "^5.12.0",
+    "@mui/x-date-pickers": "^6.11.2",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.41",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "chart.js": "^4.3.3",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "colormap": "^2.3.2",
+    "luxon": "^3.4.0",
+    "re-resizable": "^6.9.11",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.1.2",
+    "react-router-dom": "^6.19.0",
+    "react-scripts": "5.0.1",
+    "react-use": "^17.4.0",
+    "socket.io-client": "^4.7.2",
+    "styled-components": "^5.3.11",
+    "typescript": "^4.9.5",
+    "uuid": "^9.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "move": "xcopy \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\app\\build\\\" \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\resources\\static\\\" /s /y",
+    "bundle": "react-scripts build && xcopy \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\app\\build\\\" \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\resources\\static\\\" /s /y",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/colormap": "^2.3.2",
+    "@types/luxon": "^3.3.1",
+    "@types/uuid": "^9.0.2"
+  }
+}

@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import javax.naming.AuthenticationException;
+import java.nio.file.AccessDeniedException;
+
 @ControllerAdvice
 public class RestExceptionHandler {
     //ResourceNotFoundException
@@ -31,5 +34,16 @@ public class RestExceptionHandler {
         error.setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({
+            AuthenticationException.class,
+            AccessDeniedException.class
+    })
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception exception){
+        ErrorResponse error = new ErrorResponse();
+        error.setStatus(HttpStatus.UNAUTHORIZED.value());
+        error.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        error.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
     }
 }

@@ -23,6 +23,11 @@ public class Dashboard {
         chart.setDashboard(this);
     }
 
+    public void removeChart(Chart chart) {
+        this.charts.remove(chart);
+        chart.setDashboard(null);
+    }
+
     //Constructors
     public Dashboard() {
     }

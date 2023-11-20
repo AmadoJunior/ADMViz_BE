@@ -19,15 +19,13 @@ target/
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
 ### VS Code ###
 .vscode/
+
+### React ###
+src/main/app/build/
+src/main/app/node_modules/
+src/main/app/.env
+
+### Static ###
+src/main/resources/static

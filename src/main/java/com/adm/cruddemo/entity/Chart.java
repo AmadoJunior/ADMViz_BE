@@ -61,6 +61,7 @@ public class Chart {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.position = position;
+        this.dashboard = dashboard;
     }
 
     //Getters & Setters
