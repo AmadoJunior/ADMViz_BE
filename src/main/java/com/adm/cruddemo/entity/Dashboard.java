@@ -26,6 +26,7 @@ public class Dashboard {
     public void removeChart(Chart chart) {
         this.charts.remove(chart);
         chart.setDashboard(null);
+        chart.setUser(null);
     }
 
     //Constructors
