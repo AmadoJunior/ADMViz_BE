@@ -1,5 +1,7 @@
 package com.adm.cruddemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -26,11 +28,9 @@ public class Chart {
     private int fromDate;
     @Column(name="to_date")
     private int toDate;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dashboard_id", referencedColumnName = "id")
     private Dashboard dashboard;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

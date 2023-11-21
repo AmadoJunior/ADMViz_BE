@@ -8,12 +8,13 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @RequestMapping(path = "/api")
 public class DashboardsController {
     @Autowired
@@ -29,22 +30,23 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PostMapping("/dashboards")
+    @PostMapping(path = "/dashboards")
     public ResponseEntity<?> createDashboard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody DashboardRecord newDashboard
     ) {
         try {
+            System.out.println(userDetails);
             Dashboard savedDashboard = dashboardService.createDashboard(userDetails.getId(), newDashboard);
             logger.debug("Created Dashboard");
-            return new ResponseEntity<Dashboard>(savedDashboard, HttpStatus.OK);
+            return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
             logger.debug("Failed To Create Dashboard");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
     }
     @Transactional
-    @PatchMapping("/dashboards/{dashboardId}")
+    @PutMapping(path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> updateDashboard(
             @PathVariable(value="dashboardId") int dashboardId,
             @RequestBody DashboardRecord updatedDashboard
@@ -52,7 +54,7 @@ public class DashboardsController {
         try {
             Dashboard savedDashboard = dashboardService.updateDashboard(dashboardId, updatedDashboard);
             logger.debug("Updated Dashboard");
-            return new ResponseEntity<Dashboard>(savedDashboard, HttpStatus.OK);
+            return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
             logger.debug("Failed To Update Dashboard");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
@@ -60,7 +62,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @DeleteMapping("/dashboards/{dashboardId}")
+    @DeleteMapping(path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> deleteDashboard(
             @PathVariable(value="dashboardId") int dashboardId
     ) {
@@ -75,7 +77,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PostMapping("/dashboards/{dashboardId}/charts")
+    @PostMapping(path = "/dashboards/{dashboardId}/charts")
     public ResponseEntity<?> insertChart(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
@@ -84,7 +86,7 @@ public class DashboardsController {
         try {
             Dashboard savedDashboard = dashboardService.insertChart(userDetails.getId(), dashboardId, newChart);
             logger.debug("Chart Inserted");
-            return new ResponseEntity<Dashboard>(savedDashboard, HttpStatus.OK);
+            return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
             logger.debug("Failed To Insert Chart");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
@@ -92,7 +94,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PatchMapping("/dashboards/{dashboardId}/charts/{chartId}")
+    @PutMapping(path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> updateChartInDashboard(
             @PathVariable(value="dashboardId") int dashboardId,
             @PathVariable(value="chartId") int chartId,
@@ -101,7 +103,7 @@ public class DashboardsController {
         try {
             Dashboard savedDashboard = dashboardService.updateChartInDashboard(dashboardId, chartId, updatedChart);
             logger.debug("Chart Updated");
-            return new ResponseEntity<Dashboard>(savedDashboard, HttpStatus.OK);
+            return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
             logger.debug("Failed To Update Chart");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
@@ -109,7 +111,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @DeleteMapping("/dashboards/{dashboardId}/charts/{chartId}")
+    @DeleteMapping(path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> deleteChart(
             @PathVariable(value="dashboardId") int dashboardId,
             @PathVariable(value="chartId") int chartId
@@ -117,7 +119,7 @@ public class DashboardsController {
         try {
             Dashboard savedDashboard = dashboardService.removeChartFromDashboard(dashboardId, chartId);
             logger.debug("Chart Deleted");
-            return new ResponseEntity<Dashboard>(savedDashboard, HttpStatus.OK);
+            return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
             logger.debug("Failed To Delete Chart");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
@@ -125,7 +127,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PatchMapping("/dashboards/{dashboardId}/charts/{chartId}/position")
+    @PutMapping(path = "/dashboards/{dashboardId}/charts/{chartId}/position")
     public ResponseEntity<?> updateChartPosition(
             @PathVariable(value="dashboardId") int dashboardId,
             @PathVariable(value="chartId") int chartId,
@@ -134,7 +136,7 @@ public class DashboardsController {
         try {
             Dashboard savedDashboard = dashboardService.updateChartPosition(dashboardId, chartId, chartPosition);
             logger.debug("Chart Position Updated");
-            return new ResponseEntity<Dashboard>(savedDashboard, HttpStatus.OK);
+            return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
             logger.debug("Failed To Update Chart Pos");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);

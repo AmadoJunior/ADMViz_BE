@@ -1,5 +1,6 @@
 package com.adm.cruddemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity

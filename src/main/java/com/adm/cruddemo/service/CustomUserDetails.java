@@ -17,15 +17,15 @@ public class CustomUserDetails implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private Boolean enabled;
+    private boolean enabled;
 
-    private Boolean accountNonExpired;
+    private boolean accountNonExpired;
 
-    private Boolean accountNonLocked;
+    private boolean accountNonLocked;
 
     private boolean credentialsNonExpired;
 
-    public CustomUserDetails(int id, String username, String email, String password, Boolean enabled, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(int id, String username, String email, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.enabled=enabled;
@@ -37,7 +37,7 @@ public class CustomUserDetails implements UserDetails {
         this.authorities=authorities;
     }
 
-    public CustomUserDetails(int id, String username, String email, String password, Boolean enabled, Boolean accountNonExpired, Boolean accountNonLocked, boolean credentialsNonExpired, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(int id, String username, String email, String password, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.authorities = authorities;
         this.email = email;

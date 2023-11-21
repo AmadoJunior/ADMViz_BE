@@ -28,6 +28,15 @@ public class DashboardService {
     @Autowired
     private ChartPositionRepo chartPositionRepo;
 
+    public DashboardService(){}
+
+    public DashboardService(UserRepo userRepository, DashboardRepo dashboardRepo, ChartRepo chartRepo, ChartPositionRepo chartPositionRepo) {
+        this.userRepository = userRepository;
+        this.dashboardRepo = dashboardRepo;
+        this.chartRepo = chartRepo;
+        this.chartPositionRepo = chartPositionRepo;
+    }
+
     public Dashboard createDashboard(int userId, DashboardRecord dashboardRecord) throws Exception {
         Optional<User> foundUser = userRepository.findById(userId);
         if(foundUser.isEmpty()){
