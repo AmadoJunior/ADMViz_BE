@@ -48,11 +48,12 @@ public class DashboardsController {
     @Transactional
     @PutMapping(path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> updateDashboard(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
             @RequestBody DashboardRecord updatedDashboard
     ) {
         try {
-            Dashboard savedDashboard = dashboardService.updateDashboard(dashboardId, updatedDashboard);
+            Dashboard savedDashboard = dashboardService.updateDashboard(userDetails.getId(), dashboardId, updatedDashboard);
             logger.debug("Updated Dashboard");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
@@ -64,10 +65,11 @@ public class DashboardsController {
     @Transactional
     @DeleteMapping(path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> deleteDashboard(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId
     ) {
         try {
-            dashboardService.deleteDashboard(dashboardId);
+            dashboardService.deleteDashboard(userDetails.getId(), dashboardId);
             logger.debug("Deleted Dashboard");
             return new ResponseEntity<>(HttpStatus.OK.getReasonPhrase(), HttpStatus.OK);
         } catch(Exception e) {
@@ -96,12 +98,13 @@ public class DashboardsController {
     @Transactional
     @PutMapping(path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> updateChartInDashboard(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
             @PathVariable(value="chartId") int chartId,
             @RequestBody ChartRecord updatedChart
     ) {
         try {
-            Dashboard savedDashboard = dashboardService.updateChartInDashboard(dashboardId, chartId, updatedChart);
+            Dashboard savedDashboard = dashboardService.updateChartInDashboard(userDetails.getId(), dashboardId, chartId, updatedChart);
             logger.debug("Chart Updated");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
@@ -113,11 +116,12 @@ public class DashboardsController {
     @Transactional
     @DeleteMapping(path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> deleteChart(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
             @PathVariable(value="chartId") int chartId
     ) {
         try {
-            Dashboard savedDashboard = dashboardService.removeChartFromDashboard(dashboardId, chartId);
+            Dashboard savedDashboard = dashboardService.removeChartFromDashboard(userDetails.getId(), dashboardId, chartId);
             logger.debug("Chart Deleted");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {
@@ -129,12 +133,13 @@ public class DashboardsController {
     @Transactional
     @PutMapping(path = "/dashboards/{dashboardId}/charts/{chartId}/position")
     public ResponseEntity<?> updateChartPosition(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
             @PathVariable(value="chartId") int chartId,
             @RequestBody ChartPositionRecord chartPosition
     ) {
         try {
-            Dashboard savedDashboard = dashboardService.updateChartPosition(dashboardId, chartId, chartPosition);
+            Dashboard savedDashboard = dashboardService.updateChartPosition(userDetails.getId(), dashboardId, chartId, chartPosition);
             logger.debug("Chart Position Updated");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
         } catch(Exception e) {

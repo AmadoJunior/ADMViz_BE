@@ -15,7 +15,8 @@ import java.nio.file.AccessDeniedException;
 public class RestExceptionHandler {
     //ResourceNotFoundException
     @ExceptionHandler({
-            ResourceNotFoundException.class
+            ResourceNotFoundException.class,
+            com.adm.cruddemo.exception.ResourceNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException exception){
         ErrorResponse error = new ErrorResponse();
@@ -37,7 +38,8 @@ public class RestExceptionHandler {
     }
     @ExceptionHandler({
             AuthenticationException.class,
-            AccessDeniedException.class
+            AccessDeniedException.class,
+            com.adm.cruddemo.exception.AccessDeniedException.class
     })
     public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception exception){
         ErrorResponse error = new ErrorResponse();

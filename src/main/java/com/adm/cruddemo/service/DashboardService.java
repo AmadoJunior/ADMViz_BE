@@ -7,6 +7,8 @@ import com.adm.cruddemo.entity.Chart;
 import com.adm.cruddemo.entity.ChartPosition;
 import com.adm.cruddemo.entity.Dashboard;
 import com.adm.cruddemo.entity.User;
+import com.adm.cruddemo.exception.AccessDeniedException;
+import com.adm.cruddemo.exception.ResourceNotFoundException;
 import com.adm.cruddemo.repository.ChartPositionRepo;
 import com.adm.cruddemo.repository.ChartRepo;
 import com.adm.cruddemo.repository.DashboardRepo;
@@ -37,10 +39,16 @@ public class DashboardService {
         this.chartPositionRepo = chartPositionRepo;
     }
 
-    public Dashboard createDashboard(int userId, DashboardRecord dashboardRecord) throws Exception {
+    public void handleAuthorization(int userId, Dashboard dashboard) throws RuntimeException {
+        if(dashboard.getUser().getId() != userId) {
+            throw new AccessDeniedException("Forbidden");
+        }
+    }
+
+    public Dashboard createDashboard(int userId, DashboardRecord dashboardRecord) throws RuntimeException {
         Optional<User> foundUser = userRepository.findById(userId);
         if(foundUser.isEmpty()){
-            throw new Exception("User Not Found");
+            throw new ResourceNotFoundException("User Not Found");
         }
 
         Dashboard newDashboard = new Dashboard();
@@ -51,20 +59,24 @@ public class DashboardService {
         return dashboardRepo.save(newDashboard);
     }
 
-    public void deleteDashboard(int dashboardId) throws Exception {
+    public void deleteDashboard(int userId, int dashboardId) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if(foundDashboard.isEmpty()){
-            throw new Exception("Dashboard Not Found");
+            throw new ResourceNotFoundException("Dashboard Not Found");
         }
+
+        handleAuthorization(userId, foundDashboard.get());
 
         dashboardRepo.delete(foundDashboard.get());
     }
 
-    public Dashboard updateDashboard(int dashboardId,  DashboardRecord dashboardRecord) throws Exception {
+    public Dashboard updateDashboard(int userId, int dashboardId,  DashboardRecord dashboardRecord) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if(foundDashboard.isEmpty()){
-            throw new Exception("Dashboard Not Found");
+            throw new ResourceNotFoundException("Dashboard Not Found");
         }
+
+        handleAuthorization(userId, foundDashboard.get());
 
         Dashboard dashboardToUpdate = foundDashboard.get();
         dashboardToUpdate.setName(dashboardRecord.name());
@@ -76,16 +88,18 @@ public class DashboardService {
         return new ChartPosition(0, 0, 50, 565, parentChart);
     }
 
-    public Dashboard insertChart(int userId, int dashboardId, ChartRecord chartRecord) throws Exception {
+    public Dashboard insertChart(int userId, int dashboardId, ChartRecord chartRecord) throws RuntimeException {
         Optional<User> foundUser = userRepository.findById(userId);
         if(foundUser.isEmpty()){
-            throw new Exception("User Not Found");
+            throw new ResourceNotFoundException("User Not Found");
         }
 
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if(foundDashboard.isEmpty()){
-            throw new Exception("Dashboard Not Found");
+            throw new ResourceNotFoundException("Dashboard Not Found");
         }
+
+        handleAuthorization(userId, foundDashboard.get());
 
         Chart newChart = new Chart();
         newChart.setUser(foundUser.get());
@@ -109,11 +123,13 @@ public class DashboardService {
 
         return dashboardRepo.save(foundDashboard.get());
     }
-    public Dashboard removeChartFromDashboard(int dashboardId, int chartId) throws Exception {
+    public Dashboard removeChartFromDashboard(int userId, int dashboardId, int chartId) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if (foundDashboard.isEmpty()) {
-            throw new Exception("Dashboard Not Found");
+            throw new ResourceNotFoundException("Dashboard Not Found");
         }
+
+        handleAuthorization(userId, foundDashboard.get());
 
         Dashboard dashboard = foundDashboard.get();
         dashboard.getCharts().removeIf(chart -> chart.getId() == chartId);
@@ -121,17 +137,19 @@ public class DashboardService {
         return dashboardRepo.save(dashboard);
     }
 
-    public Dashboard updateChartInDashboard(int dashboardId, int chartId, ChartRecord updatedChartRecord) throws Exception {
+    public Dashboard updateChartInDashboard(int userId, int dashboardId, int chartId, ChartRecord updatedChartRecord) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if (foundDashboard.isEmpty()) {
-            throw new Exception("Dashboard Not Found");
+            throw new ResourceNotFoundException("Dashboard Not Found");
         }
+
+        handleAuthorization(userId, foundDashboard.get());
 
         Dashboard dashboard = foundDashboard.get();
         Chart chartToUpdate = dashboard.getCharts().stream()
                 .filter(chart -> chart.getId() == chartId)
                 .findFirst()
-                .orElseThrow(() -> new Exception("Chart Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Chart Not Found"));
 
         // Update Chart Properties
         chartToUpdate.setName(updatedChartRecord.name());
@@ -147,19 +165,21 @@ public class DashboardService {
         return dashboardRepo.save(dashboard);
     }
 
-    public Dashboard updateChartPosition(int dashboardId, int chartId, ChartPositionRecord chartPositionRecord) throws Exception {
+    public Dashboard updateChartPosition(int userId, int dashboardId, int chartId, ChartPositionRecord chartPositionRecord) throws RuntimeException {
         // Find the Dashboard
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if (foundDashboard.isEmpty()) {
-            throw new Exception("Dashboard Not Found");
+            throw new ResourceNotFoundException("Dashboard Not Found");
         }
+
+        handleAuthorization(userId, foundDashboard.get());
 
         // Retrieve the Chart from the Dashboard
         Dashboard dashboard = foundDashboard.get();
         Chart chartToUpdate = dashboard.getCharts().stream()
                 .filter(chart -> chart.getId() == chartId)
                 .findFirst()
-                .orElseThrow(() -> new Exception("Chart Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Chart Not Found"));
 
         // Update ChartPosition
         ChartPosition chartPosition = chartToUpdate.getPosition();
