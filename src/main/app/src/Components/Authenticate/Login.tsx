@@ -32,7 +32,7 @@ const Login: React.FC<ILoginProps> = (props): JSX.Element => {
     console.log(data);
 
     const basePath = "http://localhost:8080";
-    fetch(`${basePath}/api/perform_login`, {
+    fetch(`/api/perform_login`, {
       method: "POST",
       body: formData,
     })

@@ -23,11 +23,10 @@ export const useUserDetailsContext = (): IUserDetailsContext => {
   const [errored, setErrored] = useState(false);
 
   //Methods
-  const handleIsAuthenticated = (): Promise<void> => {
-    return new Promise((resolve, reject) => {
+  const handleIsAuthenticated = (): Promise<any> => {
       //Fetch User Details
       const basePath = "http://localhost:8080";
-      fetch(`${basePath}/api/self`, {
+      return fetch(`/api/self`, {
         method: "GET"
       })
       .then(res => {
@@ -42,16 +41,13 @@ export const useUserDetailsContext = (): IUserDetailsContext => {
         //Set Is Auth
         setIsAuthenticated(true);
         setErrored(false);
-        resolve();
       })
       .catch(e => {
         console.error(e);
         //Set State
         setUserDetails(undefined);
         setIsAuthenticated(false);
-        reject(e);
       })
-    })
   }
 
   const clearAuthentication = (): void => {

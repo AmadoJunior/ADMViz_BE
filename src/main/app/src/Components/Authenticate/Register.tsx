@@ -31,7 +31,7 @@ const Register: React.FC<IRegisterProps> = (props): JSX.Element => {
     }
     console.log(data);
     const basePath = "http://localhost:8080";
-    fetch(`${basePath}/api/perform_register`, {
+    fetch(`/api/perform_register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

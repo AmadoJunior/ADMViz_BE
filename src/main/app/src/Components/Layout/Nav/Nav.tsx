@@ -69,7 +69,7 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
   const handleLogout = () => {
     console.log("logging out");
     const basePath = "http://localhost:8080"
-    fetch(`${basePath}/api/perform_logout`)
+    fetch(`/api/perform_logout`)
     .then(response => {
       console.log(response);
       userDetailsContext.clearAuthentication();
