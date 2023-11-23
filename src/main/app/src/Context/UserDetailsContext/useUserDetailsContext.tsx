@@ -3,7 +3,6 @@ import {createContext, useState, useEffect} from "react";
 
 //Interfaces
 import { IUserDetailsContext, IAuthority, IUserDetails } from "./interfaces";
-import { isErrored } from "stream";
 
 //Context
 export const UserDetailsContext = createContext<IUserDetailsContext>({

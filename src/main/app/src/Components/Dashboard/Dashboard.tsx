@@ -14,7 +14,7 @@ import WebSocket from "./WebSocket/WebSocket";
 //Context
 import useWebsocketContext, {WebSocketContext} from "../../Context/WebsocketContext/useWebsocketContext";
 import useModuleContext, {ModuleContext} from "../../Context/ModuleContext/useModuleContext";
-import { Module } from "module";
+
 //Props
 interface IDashboardProps {
   title: string,

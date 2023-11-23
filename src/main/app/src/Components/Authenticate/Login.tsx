@@ -1,9 +1,8 @@
 //Deps
 import React from "react";
-import { Formik, Field, Form, FormikHelpers } from 'formik';
 
 //MUI
-import {Box, Avatar, Typography, TextField, FormControlLabel, Button, Checkbox, Grid} from "@mui/material";
+import {Box, Avatar, Typography, TextField, Button} from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 //Context
