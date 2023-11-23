@@ -86,6 +86,15 @@ function App() {
                   <Route path="/" element={<Layout />}>
                   <Route index element={<ProtectedRoute><Dashboard title="My First Dashboard"/></ProtectedRoute>}/>
                   <Route path="/about" element={<ProtectedRoute><About/></ProtectedRoute>}/>
+                  <Route path="/authenticate" element={
+                    <Authenticate childrenProps={[
+                      {label: "Sign In", index: 0},
+                      {label: "Register", index: 1}
+                    ]}>
+                      <Login/>
+                      <Register/>
+                    </Authenticate>
+                  }/>
                 </Route>
               </Routes>
             </Box>

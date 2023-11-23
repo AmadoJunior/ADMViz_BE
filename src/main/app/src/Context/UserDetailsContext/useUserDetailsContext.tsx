@@ -1,5 +1,6 @@
 //Deps
 import {createContext, useState, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 //Interfaces
 import { IUserDetailsContext, IAuthority, IUserDetails } from "./interfaces";
@@ -16,6 +17,9 @@ export const UserDetailsContext = createContext<IUserDetailsContext>({
 });
 
 export const useUserDetailsContext = (): IUserDetailsContext => {
+  //Nav
+  const navigate = useNavigate();
+
   //State
   const [userDetails, setUserDetails] = useState<IUserDetails | undefined>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,6 +44,7 @@ export const useUserDetailsContext = (): IUserDetailsContext => {
         //Set Is Auth
         setIsAuthenticated(true);
         setErrored(false);
+        navigate("/");
       })
       .catch(e => {
         console.error(e);
