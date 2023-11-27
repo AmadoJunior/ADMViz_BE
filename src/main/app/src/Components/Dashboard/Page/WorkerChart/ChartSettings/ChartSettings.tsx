@@ -11,7 +11,7 @@ import DatasetForm from "./DatasetForm/DatasetForm";
 import CustomInput from "../../../../Utility/CustomInput/CustomInput";
 
 //Context
-import { ChartFormContext } from "../../../../../Context/ChartFormContext/useChartFormContext";
+import { ChartContext } from "../../../../../Context/ChartContext/useChartContext";
 
 //Props
 import DatasetManager from "./DatasetManager/DatasetManager";
@@ -21,11 +21,11 @@ interface IChartSettingsProps {
 }
 
 const ChartSettings: React.FC<IChartSettingsProps> = (): JSX.Element => {
-  const formContext = useContext(ChartFormContext);
+  const chartContext = useContext(ChartContext);
 
   return (
     <Box sx={{
-      display: formContext.isActive ? "flex" : "none",
+      display: chartContext.isActive ? "flex" : "none",
       justifyContent: "center",
       width: "100%",
       height: "100%",
@@ -56,13 +56,13 @@ const ChartSettings: React.FC<IChartSettingsProps> = (): JSX.Element => {
         </DatasetManager>
         <CustomInput 
             title="API Key"
-            value={formContext.apiKey}
-            handler={formContext.handleApiKey}
+            value={chartContext.apiKey}
+            handler={chartContext.handleApiKey}
         ></CustomInput>
         <CustomInput 
             title="Label Key"
-            value={formContext.labelKey}
-            handler={formContext.handleLabelKey}
+            value={chartContext.labelKey}
+            handler={chartContext.handleLabelKey}
         ></CustomInput>
         <Box sx={{
           display: "flex",
@@ -73,22 +73,22 @@ const ChartSettings: React.FC<IChartSettingsProps> = (): JSX.Element => {
         }}>
           <CustomSelect
             title="ChartType"
-            value={formContext.type}
-            handler={formContext.handleType}
+            value={chartContext.type}
+            handler={chartContext.handleType}
             options={["line", "bar", "radar", "pie", "doughnut", "polarArea"]}
           ></CustomSelect>
           <CustomSelect
             title="Method"
-            value={formContext.method}
-            handler={formContext.handleMethod}
+            value={chartContext.method}
+            handler={chartContext.handleMethod}
             options={["GET"]}
           ></CustomSelect>
         </Box>
         
-        <DatePicker filter={formContext.filter} setTo={formContext.handleTo} setFrom={formContext.handleFrom}></DatePicker>
+        <DatePicker filter={chartContext.filter} setTo={chartContext.setTo} setFrom={chartContext.setFrom}></DatePicker>
         </Box>
         
-        <Button variant="contained" onClick={formContext.onSubmit} sx={{
+        <Button variant="contained" onClick={chartContext.onSubmit} sx={{
 
         }}>Apply</Button>
       </Box>

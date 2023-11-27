@@ -40,7 +40,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): 
       }}>
         {childrenProps?.map((item) => {
         return (
-          (parseInt(currentForm) === item.index ? null : <Button variant="outlined" onClick={() => {setCurrentForm(String(item.index))}}>{item.label}</Button>)
+          (parseInt(currentForm) === item.index ? null : <Button key={`${item.label}${String(item.index)}`} variant="outlined" onClick={() => {setCurrentForm(String(item.index))}}>{item.label}</Button>)
         )
       })}
       </Box>

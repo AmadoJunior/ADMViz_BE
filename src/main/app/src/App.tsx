@@ -25,6 +25,7 @@ import Login from './Components/Authenticate/Login';
 import Register from './Components/Authenticate/Register';
 import About from './Components/About/About';
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
+import DashboardGrid from "./Components/DashboardGrid/DashboardGrid";
 
 //Darkest #08090a
 //Gray #111214
@@ -84,7 +85,7 @@ function App() {
               
               <Routes>
                   <Route path="/" element={<Layout />}>
-                  <Route index element={<ProtectedRoute><Dashboard title="My First Dashboard"/></ProtectedRoute>}/>
+                  <Route index element={<ProtectedRoute><DashboardGrid></DashboardGrid></ProtectedRoute>}/>
                   <Route path="/about" element={<ProtectedRoute><About/></ProtectedRoute>}/>
                   <Route path="/authenticate" element={
                     <Authenticate childrenProps={[

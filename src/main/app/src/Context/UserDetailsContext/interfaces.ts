@@ -8,6 +8,8 @@ export interface IAuthority {
 }
 
 export interface IUserDetails {
+  id: number,
+  email: string,
   username: string,
   enabled: boolean,
   authorities: IAuthority[],

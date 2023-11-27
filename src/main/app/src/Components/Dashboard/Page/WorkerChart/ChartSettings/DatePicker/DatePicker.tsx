@@ -9,7 +9,7 @@ import {Box} from "@mui/material";
 //Components
 
 //Props
-import { IDateFilter } from "../../../../../../Context/ChartFormContext/interfaces";
+import { IDateFilter } from "../../../../../../Context/ChartContext/interfaces";
 interface IDatePickerProps {
   filter: IDateFilter,
   setFrom: (n: number) => void,

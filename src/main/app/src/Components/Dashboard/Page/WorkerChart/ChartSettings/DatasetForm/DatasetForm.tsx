@@ -7,7 +7,7 @@ import { Box, Button } from "@mui/material";
 //Interfaces
 
 //Context
-import { ChartFormContext } from "../../../../../../Context/ChartFormContext/useChartFormContext";
+import { ChartContext } from "../../../../../../Context/ChartContext/useChartContext";
 
 //Components
 import CustonInput from "../../../../../Utility/CustomInput/CustomInput";

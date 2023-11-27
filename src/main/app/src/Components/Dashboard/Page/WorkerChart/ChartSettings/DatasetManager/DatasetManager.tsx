@@ -1,5 +1,5 @@
 //Deps
-import { useContext } from "react";
+import React, { useContext } from "react";
 
 //MUI
 import { Box, Button, Typography, IconButton } from "@mui/material";
@@ -7,7 +7,7 @@ import DatasetLinkedIcon from "@mui/icons-material/DatasetLinked";
 import ClearIcon from "@mui/icons-material/Clear";
 
 //Context
-import { ChartFormContext } from "../../../../../../Context/ChartFormContext/useChartFormContext";
+import { ChartContext } from "../../../../../../Context/ChartContext/useChartContext";
 
 //Components
 
@@ -19,7 +19,10 @@ interface IDatasetManagerProps {
 const DatasetManager: React.FC<IDatasetManagerProps> = ({
   children,
 }): JSX.Element => {
-  const formContext = useContext(ChartFormContext);
+  const formContext = useContext(ChartContext);
+
+  //State
+  const [expanded, setExpanded] = React.useState(false);
 
   return (
     <Box
@@ -122,11 +125,11 @@ const DatasetManager: React.FC<IDatasetManagerProps> = ({
             <Typography>No Datasets</Typography>
           )}
         </Box>
-        {formContext?.expanded ? (
+        {expanded ? (
           <Button
             variant="contained"
             color="error"
-            onClick={() => formContext.setExpanded(false)}
+            onClick={() => setExpanded(false)}
           >
             Close
           </Button>
@@ -134,13 +137,13 @@ const DatasetManager: React.FC<IDatasetManagerProps> = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={() => formContext.setExpanded(true)}
+            onClick={() => setExpanded(true)}
           >
             Add
           </Button>
         )}
       </Box>
-      {formContext?.expanded ? children : null}
+      {expanded ? children : null}
     </Box>
   );
 };

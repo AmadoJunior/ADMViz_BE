@@ -1,7 +1,9 @@
 //Deps
 
 export interface IModuleInterface {
-  id: string;
+  id: number;
+  dashboardId: number,
+  chartId: number;
   title: string;
   coord: {
     x: number;

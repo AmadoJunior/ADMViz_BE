@@ -1,5 +1,8 @@
 package com.adm.cruddemo.security;
 
+import com.adm.cruddemo.entity.Chart;
+import com.adm.cruddemo.entity.ChartPosition;
+import com.adm.cruddemo.entity.Dashboard;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.hateoas.MediaTypes;
@@ -12,6 +15,9 @@ import java.util.concurrent.TimeUnit;
 public class SpringDataRestCustomization implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
+        config.exposeIdsFor(Dashboard.class);
+        config.exposeIdsFor(ChartPosition.class);
+        config.exposeIdsFor(Chart.class);
         config.setReturnBodyOnCreate(true);
         config.setReturnBodyForPutAndPost(true);
         config.setReturnBodyOnUpdate(true);

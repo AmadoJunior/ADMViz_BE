@@ -14,17 +14,20 @@ import WebSocket from "./WebSocket/WebSocket";
 //Context
 import useWebsocketContext, {WebSocketContext} from "../../Context/WebsocketContext/useWebsocketContext";
 import useModuleContext, {ModuleContext} from "../../Context/ModuleContext/useModuleContext";
+import useChartContext, {ChartContext} from "../../Context/ChartContext/useChartContext";
 
 //Props
 interface IDashboardProps {
   title: string,
+  id: number,
   children?: React.ReactNode;
 }
 
-const Dashboard: React.FC<IDashboardProps> = ({title}): JSX.Element => {
+const Dashboard: React.FC<IDashboardProps> = ({title, id}): JSX.Element => {
   //Context Hooks
   const websocketContext = useWebsocketContext();
   const moduleContext = useModuleContext();
+  const chartContext = useChartContext(id);
 
   //Effect
   useEffect(() => {
@@ -44,31 +47,33 @@ const Dashboard: React.FC<IDashboardProps> = ({title}): JSX.Element => {
       width: "100%",
       overflowX: "hidden",
     }}>
-      <WebSocketContext.Provider value={websocketContext}>
-        <ModuleContext.Provider value={moduleContext}>
-          <Box sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: "20px",
-            padding: "10px",
-            width: "100%",
-            
-            backgroundColor: "background.paper",
-            borderBottom: "1px solid",
-            borderColor: "secondary.main"
-          }}>
-            <Typography variant="h6" padding="0px 20px 0px 20px" color="primary.main">{title}</Typography>
-            <WebSocket></WebSocket>
-            <ChartFactory></ChartFactory>
-          </Box>
-          <DndProvider backend={HTML5Backend}>
-            
-              <Page />
-            
-          </DndProvider>
-        </ModuleContext.Provider>
-      </WebSocketContext.Provider>
+      <ChartContext.Provider value={chartContext}>
+        <WebSocketContext.Provider value={websocketContext}>
+          <ModuleContext.Provider value={moduleContext}>
+            <Box sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "20px",
+              padding: "10px",
+              width: "100%",
+              
+              backgroundColor: "background.paper",
+              borderBottom: "1px solid",
+              borderColor: "secondary.main"
+            }}>
+              <Typography variant="h6" padding="0px 20px 0px 20px" color="primary.main">{title}</Typography>
+              <WebSocket></WebSocket>
+              <ChartFactory></ChartFactory>
+            </Box>
+            <DndProvider backend={HTML5Backend}>
+              
+                <Page />
+              
+            </DndProvider>
+          </ModuleContext.Provider>
+        </WebSocketContext.Provider>
+      </ChartContext.Provider>
     </Box>
   );
 }

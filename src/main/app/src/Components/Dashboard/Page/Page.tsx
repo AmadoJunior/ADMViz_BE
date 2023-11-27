@@ -53,7 +53,7 @@ const Page = () => {
     >
       {moduleContext.modules.map((module) => (
         <Module key={module.id} data={module}>
-          <WorkerChart moduleId={module.id} title={module.title}></WorkerChart>
+          <WorkerChart chartId={module.chartId} title={module.title}></WorkerChart> 
         </Module>
       ))}
     </Box>

@@ -13,26 +13,25 @@ import ChartSettings from "./ChartSettings/ChartSettings";
 import CustomIconButton from "../../../Utility/IconButton/IconButton";
 
 //Context
-import { ChartFormContext } from "../../../../Context/ChartFormContext/useChartFormContext";
-import useChartFormContext from "../../../../Context/ChartFormContext/useChartFormContext";
+import { ChartContext } from "../../../../Context/ChartContext/useChartContext";
+import useChartContext from "../../../../Context/ChartContext/useChartContext";
 
 //Interfaces
 import {
   ChartType,
-  IChartParams,
-} from "../../../../Context/ChartFormContext/interfaces";
+} from "../../../../Context/ChartContext/interfaces";
 import { IChartData } from "./AbstractChart/AbstractChart";
 
 //Props
 interface IWorkerChartProps {
   title: string;
   children?: React.ReactNode;
-  moduleId: string;
+  chartId: number;
 }
 
 const WorkerChart: React.FC<IWorkerChartProps> = ({
   title,
-  moduleId,
+  chartId,
 }): JSX.Element => {
   //Web Socket
   const webSocketContext = useContext(WebSocketContext);
@@ -40,9 +39,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
   const [workerError, setWorkerError] = useState(false);
 
   //Chart Form Context
-  const chartFromContext = useChartFormContext(moduleId);
-  const chartParamsRef = useRef<IChartParams | null>(null);
-  chartParamsRef.current = chartFromContext?.chartParams;
+  const chartContext = useContext(ChartContext);
 
   //Chart Worker
   const worker = useMemo(
@@ -82,7 +79,17 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
     if (webSocketContext?.isConnected) {
       const onUpdate = () => {
         worker.postMessage({
-          ...chartParamsRef?.current,
+          datasets: chartContext.datasets,
+          labelKey: chartContext.labelKey,
+          method: chartContext.method,
+          filter: chartContext.filter,
+          type: chartContext.type,
+          styles: {
+            backgroundColor: "#1976d2",
+            borderColor: "#1976d2",
+            borderWidth: 1,
+          },
+          auth: chartContext.apiKey,
         });
       };
 
@@ -101,22 +108,29 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
   }, [webSocketContext?.isConnected]);
 
   useEffect(() => {
-    const chartParams = localStorage.getItem(`chartParams:${moduleId}`);
-    if (chartFromContext.chartParams?.datasets?.length) {
+    if (chartContext.datasets?.length) {
       worker.postMessage({
-        ...chartFromContext.chartParams,
+        datasets: chartContext.datasets,
+        labelKey: chartContext.labelKey,
+        method: chartContext.method,
+        filter: chartContext.filter,
+        type: chartContext.type,
+        styles: {
+          backgroundColor: "#1976d2",
+          borderColor: "#1976d2",
+          borderWidth: 1,
+        },
+        auth: chartContext.apiKey,
       });
-    } else if (chartParams) {
-      chartFromContext.handleCachedChartParams(JSON.parse(chartParams));
     }
-  }, [chartFromContext?.chartParams?.datasets, worker]);
+  }, [chartContext?.datasets, worker]);
 
   return (
-    <ChartFormContext.Provider value={chartFromContext}>
+    <ChartContext.Provider value={chartContext}>
       <Box
         sx={{
           display: "flex",
-          flexDirection: chartFromContext.isActive ? "column" : "row",
+          flexDirection: chartContext.isActive ? "column" : "row",
           width: "100%",
           height: "100% !important",
           padding: "20px 20px 20px 20px",
@@ -152,7 +166,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
           <CustomIconButton
             title="Settings"
             handler={() =>
-              chartFromContext.handleIsActive(!chartFromContext.isActive)
+              chartContext.handleIsActive(!chartContext.isActive)
             }
           >
             <SettingsIcon />
@@ -165,7 +179,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
             width: "100%",
           }}
         >
-          {!chartFromContext.isActive ? (
+          {!chartContext.isActive ? (
             workerError ? (
               <Box
                 sx={{
@@ -189,14 +203,14 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
               </Box>
             ) : (
               <AbstractChart
-                type={chartFromContext.chartParams?.type as ChartType}
+                type={chartContext.type as ChartType}
                 data={chartData}
               />
             )
           ) : null}
         </Box>
       </Box>
-    </ChartFormContext.Provider>
+    </ChartContext.Provider>
   );
 };
 

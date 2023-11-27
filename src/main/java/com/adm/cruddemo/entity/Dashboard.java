@@ -3,6 +3,7 @@ package com.adm.cruddemo.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.List;
 @Entity
@@ -10,6 +11,7 @@ import java.util.List;
 public class Dashboard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty( "id" )
     private int id;
     @Column(name="name", nullable = false)
     private String name;

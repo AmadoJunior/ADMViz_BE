@@ -2,6 +2,7 @@ package com.adm.cruddemo.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 public class Chart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty( "id" )
     private int id;
     @Column(name="name", nullable = false)
     private String name;

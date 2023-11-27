@@ -38,8 +38,11 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
     for(let curModule of moduleContext.modules){
       if(curModule.title === inputTitle) return;
     }
+
+    fetch("/api/dashboards/")
     moduleContext.addModule({
-      id: v4(),
+      id: 0,
+      chartId: 0,
       title: inputTitle,
       coord: {
         x: 0,
