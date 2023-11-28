@@ -11,13 +11,18 @@ import WorkerChart from "./WorkerChart/WorkerChart";
 import { GUTTER_SIZE } from "../../../constants";
 
 //Context
+import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
 import { ScreenContext } from "../../../Context/ScreenContext/useScreenContext";
-import { ModuleContext } from "../../../Context/ModuleContext/useModuleContext";
 
-const Page = () => {
+//Props
+interface IPageProps {
+
+}
+
+const Page: React.FC<IPageProps> = ({}) => {
   //State
   const screenContext = useContext(ScreenContext);
-  const moduleContext = useContext(ModuleContext);
+  const dashboardContext = useContext(DashboardContext);
 
   // Wire the Module to DnD Drag System
   const [, drop] = useDrop(() => ({
@@ -32,12 +37,12 @@ const Page = () => {
   const containerHeight = React.useMemo(() => {
     return (
       Math.max(
-        ...moduleContext.modules.map(({ coord: { y, h } }) => y + h),
+        ...dashboardContext?.charts?.map(({ position: { y, h } }) => y + h),
         screenContext.height
       ) +
       GUTTER_SIZE * 2
     );
-  }, [moduleContext.modules]);
+  }, [dashboardContext?.charts]);
 
   //Render
   return (
@@ -51,9 +56,9 @@ const Page = () => {
         transition: "height 0.2s",
       }}
     >
-      {moduleContext.modules.map((module) => (
-        <Module key={module.id} data={module}>
-          <WorkerChart chartId={module.chartId} title={module.title}></WorkerChart> 
+      {dashboardContext?.charts && dashboardContext?.charts?.map((chart) => (
+        <Module key={`Module${chart?.position?.id}`} chartId={chart?.chartId} position={chart?.position}>
+          <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
         </Module>
       ))}
     </Box>

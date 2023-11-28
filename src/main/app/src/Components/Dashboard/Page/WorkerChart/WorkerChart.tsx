@@ -1,8 +1,6 @@
 //Deps
 import { useMemo, useEffect, useState, useContext, useRef } from "react";
 
-import { WebSocketContext } from "../../../../Context/WebsocketContext/useWebsocketContext";
-
 //MUI
 import { Box, Typography } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -13,39 +11,39 @@ import ChartSettings from "./ChartSettings/ChartSettings";
 import CustomIconButton from "../../../Utility/IconButton/IconButton";
 
 //Context
-import { ChartContext } from "../../../../Context/ChartContext/useChartContext";
-import useChartContext from "../../../../Context/ChartContext/useChartContext";
+import { DashboardContext } from "../../../../Context/DashboardContext/useDashboardContext";
 
 //Interfaces
 import {
-  ChartType,
-} from "../../../../Context/ChartContext/interfaces";
+  ChartType, IChartDetails,
+} from "../../../../Context/DashboardContext/interfaces";
 import { IChartData } from "./AbstractChart/AbstractChart";
 
 //Props
 interface IWorkerChartProps {
-  title: string;
+  name: string;
   children?: React.ReactNode;
   chartId: number;
+  chartDetails: IChartDetails;
 }
 
 const WorkerChart: React.FC<IWorkerChartProps> = ({
-  title,
+  name,
   chartId,
+  chartDetails
 }): JSX.Element => {
-  //Web Socket
-  const webSocketContext = useContext(WebSocketContext);
+  //Worker Status
   const [workerStatus, setWorkerStatus] = useState(200);
   const [workerError, setWorkerError] = useState(false);
-
-  //Chart Form Context
-  const chartContext = useContext(ChartContext);
 
   //Chart Worker
   const worker = useMemo(
     () => new Worker(new URL("./WorkerScript/worker.ts", import.meta.url)),
     []
   );
+
+  //Data
+  const [isActive, setIsActive] = useState<boolean>(false);
   const [chartData, setChartData] = useState<IChartData>({
     labels: [],
     datasets: [],
@@ -76,61 +74,24 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
   }, [worker]);
 
   useEffect(() => {
-    if (webSocketContext?.isConnected) {
-      const onUpdate = () => {
-        worker.postMessage({
-          datasets: chartContext.datasets,
-          labelKey: chartContext.labelKey,
-          method: chartContext.method,
-          filter: chartContext.filter,
-          type: chartContext.type,
-          styles: {
-            backgroundColor: "#1976d2",
-            borderColor: "#1976d2",
-            borderWidth: 1,
-          },
-          auth: chartContext.apiKey,
-        });
-      };
-
-      webSocketContext?.socket?.on(
-        webSocketContext?.webSocketUpdateEvent,
-        onUpdate
-      );
-
-      return () => {
-        webSocketContext?.socket?.off(
-          webSocketContext?.webSocketUpdateEvent,
-          onUpdate
-        );
-      };
-    }
-  }, [webSocketContext?.isConnected]);
-
-  useEffect(() => {
-    if (chartContext.datasets?.length) {
+    if (chartDetails) {
       worker.postMessage({
-        datasets: chartContext.datasets,
-        labelKey: chartContext.labelKey,
-        method: chartContext.method,
-        filter: chartContext.filter,
-        type: chartContext.type,
-        styles: {
-          backgroundColor: "#1976d2",
-          borderColor: "#1976d2",
-          borderWidth: 1,
-        },
-        auth: chartContext.apiKey,
+        srcUrl: chartDetails.srcUrl,
+        dataKey: chartDetails.dataKey,
+        labelKey: chartDetails.labelKey,
+        method: chartDetails.method,
+        filter: chartDetails.filter,
+        type: chartDetails.type,
+        apiKey: chartDetails.apiKey,
       });
     }
-  }, [chartContext?.datasets, worker]);
+  }, [chartDetails, worker]);
 
   return (
-    <ChartContext.Provider value={chartContext}>
       <Box
         sx={{
           display: "flex",
-          flexDirection: chartContext.isActive ? "column" : "row",
+          flexDirection: isActive ? "column" : "row",
           width: "100%",
           height: "100% !important",
           padding: "20px 20px 20px 20px",
@@ -151,7 +112,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
             transform: "translate(-50%, -50%)",
           }}
         >
-          <Typography variant="overline">{title}</Typography>
+          <Typography variant="overline">{name}</Typography>
         </Box>
 
         <Box
@@ -166,20 +127,20 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
           <CustomIconButton
             title="Settings"
             handler={() =>
-              chartContext.handleIsActive(!chartContext.isActive)
+              setIsActive(prev => !prev)
             }
           >
             <SettingsIcon />
           </CustomIconButton>
         </Box>
-        <ChartSettings />
+        <ChartSettings chartId={chartId} isActive={isActive} setIsActive={setIsActive}/>
         <Box
           sx={{
             position: "relative",
             width: "100%",
           }}
         >
-          {!chartContext.isActive ? (
+          {!isActive ? (
             workerError ? (
               <Box
                 sx={{
@@ -203,14 +164,13 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
               </Box>
             ) : (
               <AbstractChart
-                type={chartContext.type as ChartType}
+                type={chartDetails.type as ChartType}
                 data={chartData}
               />
             )
           ) : null}
         </Box>
       </Box>
-    </ChartContext.Provider>
   );
 };
 

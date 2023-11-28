@@ -30,7 +30,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PostMapping(path = "/dashboards")
+    @RequestMapping(method=RequestMethod.POST, path = "/dashboards")
     public ResponseEntity<?> createDashboard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody DashboardRecord newDashboard
@@ -46,7 +46,7 @@ public class DashboardsController {
         }
     }
     @Transactional
-    @PutMapping(path = "/dashboards/{dashboardId}")
+    @RequestMapping(method=RequestMethod.PUT, path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> updateDashboard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
@@ -63,7 +63,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @DeleteMapping(path = "/dashboards/{dashboardId}")
+    @RequestMapping(method=RequestMethod.DELETE, path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> deleteDashboard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId
@@ -79,7 +79,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PostMapping(path = "/dashboards/{dashboardId}/charts")
+    @RequestMapping(method=RequestMethod.POST, path = "/dashboards/{dashboardId}/charts")
     public ResponseEntity<?> insertChart(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
@@ -96,7 +96,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PutMapping(path = "/dashboards/{dashboardId}/charts/{chartId}")
+    @RequestMapping(method=RequestMethod.PUT, path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> updateChartInDashboard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
@@ -114,7 +114,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @DeleteMapping(path = "/dashboards/{dashboardId}/charts/{chartId}")
+    @RequestMapping(method=RequestMethod.DELETE, path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> deleteChart(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,
@@ -131,7 +131,7 @@ public class DashboardsController {
     }
 
     @Transactional
-    @PutMapping(path = "/dashboards/{dashboardId}/charts/{chartId}/position")
+    @RequestMapping(method=RequestMethod.PUT, path = "/dashboards/{dashboardId}/charts/{chartId}/position")
     public ResponseEntity<?> updateChartPosition(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(value="dashboardId") int dashboardId,

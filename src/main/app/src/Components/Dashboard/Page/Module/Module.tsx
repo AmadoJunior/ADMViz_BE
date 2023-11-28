@@ -9,13 +9,11 @@ import { Direction } from "re-resizable/lib/resizer";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 //Context
-import { ModuleContext } from '../../../../Context/ModuleContext/useModuleContext';
-
-//State
 import { ScreenContext } from '../../../../Context/ScreenContext/useScreenContext';
+import { DashboardContext } from '../../../../Context/DashboardContext/useDashboardContext';
 
 //Interfaces && Types
-import { IModuleInterface } from '../../../../Context/ModuleContext/interfaces';
+import { IChartPosition } from '../../../../Context/DashboardContext/interfaces';
 
 //Constants && Helpers
 import { COLUMN_WIDTH, GUTTER_SIZE, MIN_HEIGHT, MIN_WIDTH, moduleW2LocalWidth, moduleX2LocalX, moduleY2LocalY } from '../../../../constants';
@@ -23,22 +21,22 @@ import {isColliding, findNearestFreePosition} from "./CollisionHelpers";
 
 //Props
 type ModuleProps = {
-  data: IModuleInterface;
+  chartId: number,
+  position: IChartPosition;
   children?: React.ReactNode
 };
 
-const Module: React.FC<ModuleProps> = ({data, children}) => {
+const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   //Window Context
   const screenContext = React.useContext(ScreenContext);
-  //Module Context
-  const moduleContext = useContext(ModuleContext);
+  const dashboardContext = React.useContext(DashboardContext);
 
   //Props Destruct
-  const { id, title, coord: { w, h } } = data;
+  const { id, w, h } = position;
 
   //State
-  const [x, setX] = useState(data.coord.x);
-  const [y, setY] = useState(data.coord.y);
+  const [x, setX] = useState(position.x);
+  const [y, setY] = useState(position.y);
   const initialPosition = React.useRef<{ top: number; left: number }>();
 
   //DnD Manager
@@ -66,17 +64,17 @@ const Module: React.FC<ModuleProps> = ({data, children}) => {
       ),
     );
   
-    const collidingModule = isColliding(moduleContext.modules, data, newLeft, newTop);
+    const collidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, newLeft, newTop);
     if (!collidingModule) {
       updatePosition(newLeft, newTop);
     } else {
       
-      const { updatedLeft, updatedTop } = findNearestFreePosition(data, collidingModule, newLeft, newTop);
+      const { updatedLeft, updatedTop } = findNearestFreePosition(position, collidingModule, newLeft, newTop);
   
       const clampedTop = Math.max(0, updatedTop);
       const clampedLeft = Math.max(GUTTER_SIZE, Math.min(updatedLeft, screenContext.width - w * COLUMN_WIDTH));
       
-      const updatedCollidingModule = isColliding(moduleContext.modules, data, clampedLeft, clampedTop);
+      const updatedCollidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, clampedLeft, clampedTop);
       
       if (!updatedCollidingModule) {
         
@@ -101,15 +99,12 @@ const Module: React.FC<ModuleProps> = ({data, children}) => {
 
   const onDragStop = () => {
     stop();
-    moduleContext.updateModule({
+    dashboardContext?.updateChartPosition(chartId, {
       id,
-      title,
-      coord: {
-        x,
-        y,
-        w,
-        h,
-      }
+      x,
+      y,
+      w,
+      h,
     });
   }
 
@@ -128,15 +123,12 @@ const Module: React.FC<ModuleProps> = ({data, children}) => {
   ) => {
     stop();
     console.log("stop")
-    moduleContext.updateModule({
+    dashboardContext?.updateChartPosition(chartId, {
       id,
-      title,
-      coord: {
-        w: ((moduleW2LocalWidth(w) + GUTTER_SIZE + d.width))/(COLUMN_WIDTH),
-        h: h + d.height,
-        y: y,
-        x: x,
-      },
+      w: ((moduleW2LocalWidth(w) + GUTTER_SIZE + d.width))/(COLUMN_WIDTH),
+      h: h + d.height,
+      y: y,
+      x: x,
     });
   }
 
@@ -193,7 +185,7 @@ const Module: React.FC<ModuleProps> = ({data, children}) => {
             left: "10px",
             zIndex: 5,
           }}
-            onClick={() => moduleContext.removeModule(data)}
+            onClick={() => dashboardContext.removeChart(chartId)}
           >
             <DeleteIcon/>
           </Button>

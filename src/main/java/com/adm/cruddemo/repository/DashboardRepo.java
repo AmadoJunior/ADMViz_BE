@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Optional;
 
 @RepositoryRestResource(path="dashboards")
-
 public interface DashboardRepo extends CrudRepository<Dashboard, Integer> {
     @PostAuthorize("hasRole('ROLE_ADMIN') || returnObject.get().user.getId() == authentication.principal.getId()")
     @Override

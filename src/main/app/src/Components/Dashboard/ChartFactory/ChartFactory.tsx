@@ -1,6 +1,5 @@
 //Deps
 import {useState, useContext} from "react";
-import { v4 } from 'uuid';
 
 //MUI
 import { Box, InputLabel, Input } from "@mui/material";
@@ -13,8 +12,9 @@ import CustomeIconButton from "../../Utility/IconButton/IconButton";
 import { COLUMN_WIDTH, MIN_HEIGHT, MIN_WIDTH } from '../../../constants';
 
 //Context
-import { ScreenContext } from "../../../Context/ScreenContext/useScreenContext";
-import { ModuleContext } from "../../../Context/ModuleContext/useModuleContext";
+import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
+import { ChartType } from "../../../Context/DashboardContext/interfaces";
+import { DateTime } from "luxon";
 
 //Props
 interface IChartFactoryProps {
@@ -23,33 +23,30 @@ interface IChartFactoryProps {
 
 const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
   //Context
-  const screenContext = useContext(ScreenContext);
-  
-  const moduleContext = useContext(ModuleContext);
+  const dashboardContext = useContext(DashboardContext);
+
   //State
   const [inputTitle, setInputTitle] = useState<string>("");
 
+  //Form Handler
   const handleInputTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setInputTitle(e.target.value);
   }
 
   const handleNew = () => {
-    for(let curModule of moduleContext.modules){
-      if(curModule.title === inputTitle) return;
-    }
-
-    fetch("/api/dashboards/")
-    moduleContext.addModule({
-      id: 0,
-      chartId: 0,
-      title: inputTitle,
-      coord: {
-        x: 0,
-        y: 0,
-        w: Math.floor(MIN_WIDTH/COLUMN_WIDTH),
-        h: MIN_HEIGHT
-      }
+    dashboardContext.insertChart({
+      name: inputTitle,
+      srcUrl: "",
+      dataKey: "",
+      labelKey: "",
+      type: ChartType.BAR,
+      method: "GET",
+      apiKey: "",
+      filter: {
+        from: 0,
+        to: DateTime.now().toMillis(),
+      },
     });
   }
 
@@ -71,7 +68,7 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
       paddingRight: "20px"
     }}>
     <InputLabel htmlFor="chartname" sx={{
-      width: "100%"
+      width: "160px"
     }}>New Chart</InputLabel>
     <Input
       id="chartname"
@@ -83,7 +80,7 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
       }}
     />
     </Box>
-    <CustomeIconButton title={`NEW`} handler={handleNew}>
+    <CustomeIconButton title={`Insert Chart`} handler={handleNew}>
       <AddCircleOutlineIcon/>
     </CustomeIconButton>
     </Box>

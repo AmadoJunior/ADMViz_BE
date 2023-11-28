@@ -85,7 +85,7 @@ public class DashboardService {
     }
 
     public ChartPosition createDefaultChartPosition(Chart parentChart) {
-        return new ChartPosition(0, 0, 50, 565, parentChart);
+        return new ChartPosition(0, 0, 50, 565);
     }
 
     public Dashboard insertChart(int userId, int dashboardId, ChartRecord chartRecord) throws RuntimeException {

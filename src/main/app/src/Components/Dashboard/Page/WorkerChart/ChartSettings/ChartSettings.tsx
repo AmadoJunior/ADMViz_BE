@@ -1,31 +1,103 @@
 //Deps
 import React, {useContext} from "react";
+import { ChartType } from "../../../../../Context/DashboardContext/interfaces";
+import { DateTime } from "luxon";
 
 //MUI
 import {Box, Button} from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
 
 //Components
 import DatePicker from "./DatePicker/DatePicker";
 import CustomSelect from "../../../../Utility/CustomSelect/CustomSelect";
-import DatasetForm from "./DatasetForm/DatasetForm";
 import CustomInput from "../../../../Utility/CustomInput/CustomInput";
 
 //Context
-import { ChartContext } from "../../../../../Context/ChartContext/useChartContext";
+import { DashboardContext } from "../../../../../Context/DashboardContext/useDashboardContext";
 
 //Props
-import DatasetManager from "./DatasetManager/DatasetManager";
-
 interface IChartSettingsProps {
   children?: React.ReactNode;
+  chartId: number,
+  isActive: boolean,
+  setIsActive: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-const ChartSettings: React.FC<IChartSettingsProps> = (): JSX.Element => {
-  const chartContext = useContext(ChartContext);
+const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsActive}): JSX.Element => {
+  //Context
+  const dashboardContext = useContext(DashboardContext);
+
+  //State
+  const [name, setName] = React.useState<string>("");
+  const [srcUrl, setSrcUrl] = React.useState<string>("");
+  const [dataKey, setDataKey] = React.useState<string>("");
+  const [apiKey, setApiKey] = React.useState("");
+  const [labelKey, setLabelKey] = React.useState<string>("");
+  const [method, setMethod] = React.useState<string>("GET");
+  const [type, setType] = React.useState<string>(ChartType.LINE);
+  const [from, setFrom] = React.useState<number>(
+    DateTime.now().minus({ months: 1 }).toMillis()
+  );
+  const [to, setTo] = React.useState<number>(
+    DateTime.now().plus({ days: 1 }).toMillis()
+  );
+
+  //Form Handlers
+  const handleName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setName(e?.currentTarget?.value);
+  }
+
+  const handleSrcUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setSrcUrl(e?.currentTarget?.value);
+  }
+  
+  const handleDataKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setDataKey(e?.currentTarget?.value);
+  }
+
+  const handleLabelKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setLabelKey(e?.currentTarget?.value);
+  };
+
+  const handleApiKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setApiKey(e?.currentTarget?.value);
+  };
+
+  const handleMethod = (e: SelectChangeEvent<string>) => {
+    e.preventDefault();
+    setMethod(e.target.value);
+  };
+
+  const handleType = (e: SelectChangeEvent<string>) => {
+    e.preventDefault();
+    setType(e.target.value);
+  };
+
+  const onSubmit = () => {
+    setIsActive(false);
+    dashboardContext.updateChartDetails(chartId, {
+      name,
+      srcUrl,
+      dataKey,
+      labelKey,
+      type,
+      method,
+      apiKey,
+      filter: {
+        from,
+        to
+      }
+    })
+  };
 
   return (
     <Box sx={{
-      display: chartContext.isActive ? "flex" : "none",
+      display: isActive ? "flex" : "none",
       justifyContent: "center",
       width: "100%",
       height: "100%",
@@ -51,18 +123,30 @@ const ChartSettings: React.FC<IChartSettingsProps> = (): JSX.Element => {
           display: "flex",
           flexDirection: "column"
         }}>
-        <DatasetManager>
-          <DatasetForm></DatasetForm>
-        </DatasetManager>
+        <CustomInput 
+            title="Chart Name"
+            value={name}
+            handler={handleName}
+        ></CustomInput>
+        <CustomInput 
+            title="Src Url"
+            value={srcUrl}
+            handler={handleSrcUrl}
+        ></CustomInput>
+        <CustomInput 
+            title="Data Key"
+            value={dataKey}
+            handler={handleDataKey}
+        ></CustomInput>
         <CustomInput 
             title="API Key"
-            value={chartContext.apiKey}
-            handler={chartContext.handleApiKey}
+            value={apiKey}
+            handler={handleApiKey}
         ></CustomInput>
         <CustomInput 
             title="Label Key"
-            value={chartContext.labelKey}
-            handler={chartContext.handleLabelKey}
+            value={labelKey}
+            handler={handleLabelKey}
         ></CustomInput>
         <Box sx={{
           display: "flex",
@@ -73,22 +157,25 @@ const ChartSettings: React.FC<IChartSettingsProps> = (): JSX.Element => {
         }}>
           <CustomSelect
             title="ChartType"
-            value={chartContext.type}
-            handler={chartContext.handleType}
+            value={type}
+            handler={handleType}
             options={["line", "bar", "radar", "pie", "doughnut", "polarArea"]}
           ></CustomSelect>
           <CustomSelect
             title="Method"
-            value={chartContext.method}
-            handler={chartContext.handleMethod}
+            value={method}
+            handler={handleMethod}
             options={["GET"]}
           ></CustomSelect>
         </Box>
         
-        <DatePicker filter={chartContext.filter} setTo={chartContext.setTo} setFrom={chartContext.setFrom}></DatePicker>
+        <DatePicker filter={{
+          from,
+          to,
+        }} setTo={setTo} setFrom={setFrom}></DatePicker>
         </Box>
         
-        <Button variant="contained" onClick={chartContext.onSubmit} sx={{
+        <Button variant="contained" onClick={onSubmit} sx={{
 
         }}>Apply</Button>
       </Box>

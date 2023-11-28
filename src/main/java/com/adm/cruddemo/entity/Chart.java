@@ -2,6 +2,7 @@ package com.adm.cruddemo.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -36,20 +37,17 @@ public class Chart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
-    @OneToOne(mappedBy = "chart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "position_id", referencedColumnName = "id")
+    @JsonManagedReference
     private ChartPosition position;
 
     //Methods
     public void addPosition(ChartPosition position){
         this.position = position;
-        position.setChart(this);
     }
 
     public void removePosition(ChartPosition position){
-        if(position != null){
-            position.setChart(null);
-        }
         this.position = null;
     }
 

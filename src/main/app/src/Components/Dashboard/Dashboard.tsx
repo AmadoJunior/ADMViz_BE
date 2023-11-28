@@ -1,55 +1,38 @@
 //Deps
-import React, {useEffect} from "react";
+import React from "react";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 //MUI
-import {Box, Typography} from "@mui/material";
+import {Box, Typography, Button} from "@mui/material";
 
 //Components
 import ChartFactory from "./ChartFactory/ChartFactory";
 import Page from "./Page/Page";
-import WebSocket from "./WebSocket/WebSocket";
 
 //Context
-import useWebsocketContext, {WebSocketContext} from "../../Context/WebsocketContext/useWebsocketContext";
-import useModuleContext, {ModuleContext} from "../../Context/ModuleContext/useModuleContext";
-import useChartContext, {ChartContext} from "../../Context/ChartContext/useChartContext";
+import useDashboardContext, {DashboardContext} from "../../Context/DashboardContext/useDashboardContext";
 
 //Props
 interface IDashboardProps {
-  title: string,
-  id: number,
+  dashboardName: string,
+  dashboardId: number,
+  userId: number,
   children?: React.ReactNode;
 }
 
-const Dashboard: React.FC<IDashboardProps> = ({title, id}): JSX.Element => {
-  //Context Hooks
-  const websocketContext = useWebsocketContext();
-  const moduleContext = useModuleContext();
-  const chartContext = useChartContext(id);
-
-  //Effect
-  useEffect(() => {
-    if(websocketContext?.socket){
-      websocketContext?.socket.on('connect',websocketContext?. onConnect);
-      websocketContext?.socket.on('disconnect', websocketContext?.onDisconnect);
-      return () => {
-        websocketContext?.socket?.off('connect', websocketContext?.onConnect);
-        websocketContext?.socket?.off('disconnect', websocketContext?.onDisconnect);
-      }
-    }
-  }, [websocketContext?.socket])
-
+const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userId}): JSX.Element => {
+  //Context
+  const dashboardContext = useDashboardContext({userId, dashboardId, dashboardName});
+  
+  
   return (
     <Box sx={{
       height: "100%",
       width: "100%",
       overflowX: "hidden",
     }}>
-      <ChartContext.Provider value={chartContext}>
-        <WebSocketContext.Provider value={websocketContext}>
-          <ModuleContext.Provider value={moduleContext}>
+      <DashboardContext.Provider value={dashboardContext}>
             <Box sx={{
               display: "flex",
               alignItems: "center",
@@ -62,8 +45,7 @@ const Dashboard: React.FC<IDashboardProps> = ({title, id}): JSX.Element => {
               borderBottom: "1px solid",
               borderColor: "secondary.main"
             }}>
-              <Typography variant="h6" padding="0px 20px 0px 20px" color="primary.main">{title}</Typography>
-              <WebSocket></WebSocket>
+              <Typography variant="h6" padding="0px 20px 0px 20px" color="primary.main">{dashboardName}</Typography>
               <ChartFactory></ChartFactory>
             </Box>
             <DndProvider backend={HTML5Backend}>
@@ -71,9 +53,7 @@ const Dashboard: React.FC<IDashboardProps> = ({title, id}): JSX.Element => {
                 <Page />
               
             </DndProvider>
-          </ModuleContext.Provider>
-        </WebSocketContext.Provider>
-      </ChartContext.Provider>
+      </DashboardContext.Provider>
     </Box>
   );
 }

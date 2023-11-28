@@ -4,47 +4,47 @@ import {
   moduleW2LocalWidth,
   moduleX2LocalX,
 } from "../../../../constants";
-import { IModuleInterface } from "../../../../Context/ModuleContext/interfaces";
+import { IChartPosition } from "../../../../Context/DashboardContext/interfaces";
 
 export const isColliding = (
-  modules: IModuleInterface[],
-  currentModule: IModuleInterface,
+  chartPositions: IChartPosition[],
+  currentModule: IChartPosition,
   newLeft: number,
   newTop: number
-): IModuleInterface | undefined => {
-  return modules.find((module) => {
+): IChartPosition | undefined => {
+  return chartPositions.find((module) => {
     if (module.id === currentModule.id) return false;
 
     const verticalOverlap =
-      newTop + currentModule.coord.h + GUTTER_SIZE > module.coord.y &&
-      newTop < module.coord.y + module.coord.h + GUTTER_SIZE;
+      newTop + currentModule.h + GUTTER_SIZE > module.y &&
+      newTop < module.y + module.h + GUTTER_SIZE;
 
     const horizontalOverlap =
-      Math.floor(newLeft / COLUMN_WIDTH) + currentModule.coord.w >
-        module.coord.x &&
-      Math.floor(newLeft / COLUMN_WIDTH) < module.coord.x + module.coord.w;
+      Math.floor(newLeft / COLUMN_WIDTH) + currentModule.w >
+        module.x &&
+      Math.floor(newLeft / COLUMN_WIDTH) < module.x + module.w;
 
     return verticalOverlap && horizontalOverlap;
   });
 };
 
 export const findNearestFreePosition = (
-  currentModule: IModuleInterface,
-  collidingModule: IModuleInterface,
+  currentModule: IChartPosition,
+  collidingModule: IChartPosition,
   newLeft: number,
   newTop: number
 ) => {
   const upCorrection =
-    newTop + currentModule.coord.h - collidingModule.coord.y + GUTTER_SIZE;
+    newTop + currentModule.h - collidingModule.y + GUTTER_SIZE;
   const downCorrection =
-    collidingModule.coord.y + collidingModule.coord.h - newTop + GUTTER_SIZE;
+    collidingModule.y + collidingModule.h - newTop + GUTTER_SIZE;
   const leftCorrection =
     newLeft +
-    moduleW2LocalWidth(currentModule.coord.w) -
-    moduleX2LocalX(collidingModule.coord.x);
+    moduleW2LocalWidth(currentModule.w) -
+    moduleX2LocalX(collidingModule.x);
   const rightCorrection =
-    moduleX2LocalX(collidingModule.coord.x) +
-    moduleW2LocalWidth(collidingModule.coord.w) -
+    moduleX2LocalX(collidingModule.x) +
+    moduleW2LocalWidth(collidingModule.w) -
     newLeft;
   const isUpOrDown =
     Math.min(upCorrection, downCorrection) <

@@ -1,6 +1,8 @@
 package com.adm.cruddemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -19,18 +21,15 @@ public class ChartPosition {
     private int w;
     @Column(name="h")
     private int h;
-    @OneToOne(fetch = FetchType.LAZY)
-    private Chart chart;
 
     //Constructors
     public ChartPosition() {
     }
-    public ChartPosition(int x, int y, int w, int h, Chart chart) {
+    public ChartPosition(int x, int y, int w, int h) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
-        this.chart = chart;
     }
 
     //Getters & Setters
@@ -64,11 +63,5 @@ public class ChartPosition {
     }
     public void setH(int h) {
         this.h = h;
-    }
-    public Chart getChart() {
-        return chart;
-    }
-    public void setChart(Chart chart) {
-        this.chart = chart;
     }
 }

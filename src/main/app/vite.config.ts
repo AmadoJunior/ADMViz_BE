@@ -12,9 +12,14 @@ export default defineConfig({
         // this sets a default port to 3000  
         port: 3000, 
         proxy: {
-          '/api': {
-            target: 'http://localhost:8080',
-            changeOrigin: true
+            '/api': {
+                target: 'http://localhost:8080',
+                changeOrigin: true
+            },
+            '/sdr': {
+                target: 'http://localhost:8080',
+                changeOrigin: true
+            },
         }
-    }}
+    }
 })

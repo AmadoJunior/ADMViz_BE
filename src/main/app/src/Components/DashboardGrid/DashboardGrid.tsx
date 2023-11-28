@@ -2,14 +2,45 @@
 import React from "react";
 
 //MUI
-import {Box, Typography, Tab, Button, Input} from "@mui/material";
+import {Box, IconButton, Button, Tab, Input} from "@mui/material";
+import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 //Context
 import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDetailsContext";
 import Dashboard from "../Dashboard/Dashboard";
+
+//Custom
+interface ICustomTabInput {
+  label: string,
+  dashboardId: number,
+  onDelete: (dashboardId: number) => void,
+}
+function CustomTab({ label, dashboardId, onDelete }: ICustomTabInput) {
+  return (
+    <Box display="flex" alignItems="center">
+      <span>{label}</span>
+      <Box onClick={() => onDelete(dashboardId)} sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginLeft: "20px",
+        color: "white",
+        borderStyle: "solid",
+        borderWidth: "1px",
+        borderColor: "white",
+        borderRadius: "100%",
+        height: "35px",
+        width: "35px"
+      }}>
+        <DeleteIcon/>
+      </Box>
+    </Box>
+  );
+}
 
 //Props
 interface IDashboard {
@@ -38,7 +69,9 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
   React.useEffect(() => {
     if(userDetailsContext?.isAuthenticated && userDetailsContext?.userDetails){
       const { id } = userDetailsContext?.userDetails;
-      fetch(`/api/users/${id}/dashboards`)
+      fetch(`/sdr/users/${id}/dashboards`, {
+        method: "GET",
+      })
       .then(res => {
         console.log(res);
         return res.json();
@@ -95,6 +128,24 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
     }
   }
 
+  const handleRemove = (dashboardId: number) => {
+    if(userDetailsContext?.userDetails){
+      fetch(`/api/dashboards/${dashboardId}`, {
+        method: "DELETE",
+      })
+        .then(res => {
+          console.log(res);
+          if(res?.status === 200) {
+            setDashboards(prev => prev.filter((value) => value?.id !== dashboardId));
+            setCurTab("0");
+          }
+        })
+        .catch(e => {
+          console.error(e);
+        })
+    }
+  }
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setNewChartName(e.target.value)
@@ -112,11 +163,25 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
             justifyContent: "space-between",
             alignItems: "center"
           }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <TabList 
+              onChange={handleChange} 
+              variant="scrollable"
+              scrollButtons
+              allowScrollButtonsMobile
+              sx={{
+                [`& .${tabsClasses.scrollButtons}`]: {
+                  '&.Mui-disabled': { opacity: 0.3 },
+                },
+              }}
+            >
               {
                 dashboards?.map((dashboard, index) => {
                   return (
-                    <Tab label={dashboard?.name} value={String(index)} />
+                    <Tab
+                      key={`TabList:${dashboard.name}${index}`}
+                      label={<CustomTab label={dashboard.name} dashboardId={dashboard.id} onDelete={() => handleRemove(dashboard.id)} />}
+                      value={String(index)}
+                    />
                   )
                 })
               }
@@ -126,14 +191,16 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
               }}>
                 {
                   isOpen ? (
-                    <>
+                    <Box sx={{
+                      display: "flex"
+                    }}>
                     <Input sx={{
                       width: "300px"
                     }} value={newChartName} onChange={handleInput}></Input>
                     <Button variant="outlined" sx={{
                       marginX: "10px"
                     }} onClick={() => handleNew(newChartName)}>Apply</Button>
-                    </>
+                    </Box>
                   ) : (
                   <Button variant="outlined" onClick={() => setIsOpen(prev => !prev)}>Add</Button>
                   )
@@ -141,11 +208,19 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
               </Box>
           </Box>
           {
-            dashboards?.map((dashboard, index) => {
+            userDetailsContext?.isAuthenticated && dashboards?.map((dashboard, index) => {
               return (
-                <TabPanel sx={{
-                  padding: "0px"
-                }} value={String(index)}><Dashboard title={dashboard.name} id={dashboard.id}></Dashboard></TabPanel>
+                <TabPanel 
+                  key={`TabPanels:${dashboard.name}${index}`} 
+                  sx={{
+                    padding: "0px"
+                  }} 
+                  value={String(index)}>
+                    <Dashboard 
+                      userId={userDetailsContext?.userDetails ? userDetailsContext.userDetails.id : 0} 
+                      dashboardName={dashboard.name} 
+                      dashboardId={dashboard.id}/>
+                </TabPanel>
               )
             })
           }

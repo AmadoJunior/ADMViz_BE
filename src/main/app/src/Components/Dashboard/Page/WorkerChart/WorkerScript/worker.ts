@@ -1,10 +1,8 @@
 import colormap from "colormap";
 
 async function fetchDataset(
-  dataSrc: {
-    endpoint: string;
-    dataKey: string;
-  },
+  srcUrl: string,
+  dataKey: string,
   labelKey: string,
   filter: string,
   auth: string,
@@ -15,7 +13,7 @@ async function fetchDataset(
   let status;
   try {
     const res = await fetch(
-      `${dataSrc?.endpoint}?${new URLSearchParams(filter)}`,
+      `${srcUrl}?${new URLSearchParams(filter)}`,
       {
         method: method,
         headers: {
@@ -31,7 +29,7 @@ async function fetchDataset(
     const json = await res.json();
     for (let point of json) {
       labels.push(point?._id?.[labelKey]);
-      data.push(point[dataSrc.dataKey]);
+      data.push(point[dataKey]);
     }
   } catch (err: any) {
     console.log("FROM WORKER: ", err?.message);
@@ -39,7 +37,7 @@ async function fetchDataset(
       status: err.message,
       labels,
       data,
-      label: dataSrc.dataKey,
+      label: dataKey,
     };
   }
 
@@ -47,24 +45,24 @@ async function fetchDataset(
     status,
     labels,
     data,
-    label: dataSrc.dataKey,
+    label: dataKey,
   };
 }
 
 onmessage = async ({
-  data: { datasets, labelKey, method, filter, type, styles, auth },
+  data: { srcUrl, dataKey, labelKey, method, filter, type, apiKey },
 }) => {
   const datasetsArr = [];
   const labelsSet = new Set<string>();
   let resStatus;
   let labelsArr: string[] = [];
 
-  for (const dataSrc of datasets) {
     const { status, labels, data, label } = await fetchDataset(
-      dataSrc,
+      srcUrl,
+      dataKey,
       labelKey,
       filter,
-      auth,
+      apiKey,
       method
     );
     //Status
@@ -76,6 +74,11 @@ onmessage = async ({
     labelsArr = Array.from(labelsSet);
 
     //Styles
+    const styles = {
+      backgroundColor: [] as string[],
+      borderColor: [] as string[],
+      borderWidth: 1,
+    }
     styles.backgroundColor = [];
     styles.borderColor = [];
     if (type !== "line" && type !== "bar" && type !== "radar") {
@@ -93,14 +96,12 @@ onmessage = async ({
     } else {
       let colors = colormap({
         colormap: "salinity",
-        nshades: Math.max(9, datasets?.length),
+        nshades: Math.max(9),
         format: "hex",
         alpha: 1,
       });
-      for (let i = 0; i < datasets.length; i++) {
-        styles.backgroundColor.push(colors[i]);
-        styles.borderColor.push(colors[i]);
-      }
+      styles.backgroundColor.push(colors[0]);
+      styles.borderColor.push(colors[0]);
     }
 
     //Dataset
@@ -109,7 +110,6 @@ onmessage = async ({
       data,
       ...styles,
     });
-  }
 
   //Send to Master
   postMessage({

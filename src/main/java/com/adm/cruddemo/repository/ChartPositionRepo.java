@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.Optional;
 
-@RepositoryRestResource(path="chart_positions")
+@RepositoryRestResource(exported = false)
 public interface ChartPositionRepo extends CrudRepository<ChartPosition, Integer> {
     @RestResource(exported = false)
     @Override
