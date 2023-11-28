@@ -4,47 +4,49 @@ import {
   moduleW2LocalWidth,
   moduleX2LocalX,
 } from "../../../../constants";
-import { IChartPosition } from "../../../../Context/DashboardContext/interfaces";
+import { IChart } from "../../../../Context/DashboardContext/interfaces";
+
+type ChartPosition = Pick<IChart, "chartId" | "position">;
 
 export const isColliding = (
-  chartPositions: IChartPosition[],
-  currentModule: IChartPosition,
+  chartPositions: ChartPosition[],
+  currentModule: ChartPosition,
   newLeft: number,
   newTop: number
-): IChartPosition | undefined => {
+): ChartPosition | undefined => {
   return chartPositions.find((module) => {
-    if (module.id === currentModule.id) return false;
+    if (module.chartId === currentModule.chartId) return false;
 
     const verticalOverlap =
-      newTop + currentModule.h + GUTTER_SIZE > module.y &&
-      newTop < module.y + module.h + GUTTER_SIZE;
+      newTop + currentModule.position.h + GUTTER_SIZE > module.position.y &&
+      newTop < module.position.y + module.position.h + GUTTER_SIZE;
 
     const horizontalOverlap =
-      Math.floor(newLeft / COLUMN_WIDTH) + currentModule.w >
-        module.x &&
-      Math.floor(newLeft / COLUMN_WIDTH) < module.x + module.w;
+      Math.floor(newLeft / COLUMN_WIDTH) + currentModule.position.w >
+        module.position.x &&
+      Math.floor(newLeft / COLUMN_WIDTH) < module.position.x + module.position.w;
 
     return verticalOverlap && horizontalOverlap;
   });
 };
 
 export const findNearestFreePosition = (
-  currentModule: IChartPosition,
-  collidingModule: IChartPosition,
+  currentModule: ChartPosition,
+  collidingModule: ChartPosition,
   newLeft: number,
   newTop: number
 ) => {
   const upCorrection =
-    newTop + currentModule.h - collidingModule.y + GUTTER_SIZE;
+    newTop + currentModule.position.h - collidingModule.position.y + GUTTER_SIZE;
   const downCorrection =
-    collidingModule.y + collidingModule.h - newTop + GUTTER_SIZE;
+    collidingModule.position.y + collidingModule.position.h - newTop + GUTTER_SIZE;
   const leftCorrection =
     newLeft +
-    moduleW2LocalWidth(currentModule.w) -
-    moduleX2LocalX(collidingModule.x);
+    moduleW2LocalWidth(currentModule.position.w) -
+    moduleX2LocalX(collidingModule.position.x);
   const rightCorrection =
-    moduleX2LocalX(collidingModule.x) +
-    moduleW2LocalWidth(collidingModule.w) -
+    moduleX2LocalX(collidingModule.position.x) +
+    moduleW2LocalWidth(collidingModule.position.w) -
     newLeft;
   const isUpOrDown =
     Math.min(upCorrection, downCorrection) <

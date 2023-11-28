@@ -57,7 +57,7 @@ const Page: React.FC<IPageProps> = ({}) => {
       }}
     >
       {dashboardContext?.charts && dashboardContext?.charts?.map((chart) => (
-        <Module key={`Module${chart?.position?.id}`} chartId={chart?.chartId} position={chart?.position}>
+        <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
           <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
         </Module>
       ))}

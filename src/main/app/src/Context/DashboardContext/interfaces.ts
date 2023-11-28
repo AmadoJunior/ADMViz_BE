@@ -8,7 +8,6 @@ export enum ChartType {
 }
 
 export interface IChartPosition {
-  id: number;
   x: number;
   y: number;
   w: number;
@@ -50,8 +49,9 @@ export interface IDashboardContext {
   setCharts: React.Dispatch<React.SetStateAction<IChart[]>>,
 
   //Helpers
-  insertChart: (chartDetails: IChartDetails) => void,
+  insertChart: (chartDetails: IChartDetails, chartPosition?: IChartPosition) => void,
   removeChart: (chartId: number) => void,
   updateChartDetails: (chartId: number, chartDetails: IChartDetails) => void,
   updateChartPosition: (chartId: number, chartPosition: IChartPosition) => void,
+  getCharts: () => void,
 }

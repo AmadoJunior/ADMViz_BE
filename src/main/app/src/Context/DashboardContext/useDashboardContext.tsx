@@ -20,8 +20,9 @@ export const DashboardContext = createContext<IDashboardContext>({
   //Helpers
   updateChartDetails: (chartId: number, chartDetails: IChartDetails) => {},
   updateChartPosition: (chartId: number, chartPosition: IChartPosition) => {},
-  insertChart(chartDetails: IChartDetails) {},
+  insertChart(chartDetails: IChartDetails, chartPosition?: IChartPosition) {},
   removeChart(chartId: number) {},
+  getCharts() {},
 });
 
 interface IDashboardContextHookProps {
@@ -48,10 +49,17 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     })
     .then((res) => {
       console.log(res);
-      return res.json();
-    })
-    .then(data => {
-      console.log(data);
+      if(res.status === 200) {
+        setCharts(prev => {
+          const updatedCharts = prev.map(chart => {
+            if (chart.chartId === chartId) {
+              return { ...chart, details: chartDetails };
+            }
+            return chart;
+          });
+          return updatedCharts;
+        })
+      }
     })
     .catch(e => {
       console.error(e);
@@ -68,23 +76,33 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     })
     .then((res) => {
       console.log(res);
-      return res.json();
-    })
-    .then(data => {
-      console.log(data);
+      if(res.status === 200) {
+        setCharts(prev => {
+          const updatedCharts = prev.map(chart => {
+            if (chart.chartId === chartId) {
+              return { ...chart, position: chartPosition };
+            }
+            return chart;
+          });
+          return updatedCharts;
+        })
+      }
     })
     .catch(e => {
       console.error(e);
     })
   }
 
-  const insertChart = (chartDetails: IChartDetails) => {
+  const insertChart = (chartDetails: IChartDetails, chartPosition?: IChartPosition) => {
     fetch(`/api/dashboards/${dashboardId}/charts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(chartDetails)
+      body: JSON.stringify({
+        ...chartDetails,
+        position: chartPosition
+      })
     })
     .then((res) => {
       console.log(res);
@@ -92,6 +110,7 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     })
     .then(data => {
       console.log(data);
+      getCharts();
     })
     .catch(e => {
       console.error(e);
@@ -104,10 +123,11 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     })
     .then((res) => {
       console.log(res);
-      return res.json();
-    })
-    .then(data => {
-      console.log(data);
+      if(res.status === 200) {
+        setCharts(prev => {
+          return prev.filter((chart) => chart.chartId !== chartId)
+        })
+      }
     })
     .catch(e => {
       console.error(e);
@@ -184,6 +204,7 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     updateChartPosition,
     insertChart,
     removeChart,
+    getCharts,
   };
 }
 
