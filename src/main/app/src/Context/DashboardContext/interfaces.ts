@@ -8,6 +8,7 @@ export enum ChartType {
 }
 
 export interface IChartPosition {
+  id: number,
   x: number;
   y: number;
   w: number;

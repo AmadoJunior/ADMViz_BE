@@ -32,7 +32,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   const dashboardContext = React.useContext(DashboardContext);
 
   //Props Destruct
-  const { w, h } = position;
+  const { id, w, h } = position;
 
   //State
   const [x, setX] = useState(position.x);
@@ -64,22 +64,20 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       ),
     );
   
-    const collidingModule = isColliding(dashboardContext?.charts?.map((chart) => ({position: {...chart?.position}, chartId: chart.chartId})), {position: {...position}, chartId}, newLeft, newTop);
+    const collidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, newLeft, newTop);
     if (!collidingModule) {
-      console.log(
-        "NOT COLLIDING"
-      )
       updatePosition(newLeft, newTop);
     } else {
       
-      const { updatedLeft, updatedTop } = findNearestFreePosition({position: {...position}, chartId}, collidingModule, newLeft, newTop);
+      const { updatedLeft, updatedTop } = findNearestFreePosition(position, collidingModule, newLeft, newTop);
   
       const clampedTop = Math.max(0, updatedTop);
       const clampedLeft = Math.max(GUTTER_SIZE, Math.min(updatedLeft, screenContext.width - w * COLUMN_WIDTH));
       
-      const updatedCollidingModule = isColliding(dashboardContext?.charts?.map((chart) => ({position: {...chart?.position}, chartId: chart.chartId})), {position: {...position}, chartId}, clampedLeft, clampedTop);
+      const updatedCollidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, clampedLeft, clampedTop);
       
-      if (!updatedCollidingModule) { 
+      if (!updatedCollidingModule) {
+        
         updatePosition(clampedLeft, clampedTop);
       } else {
         
@@ -96,12 +94,13 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
 
     // Start RAF
     start();
-    return { chartId };
+    return { id };
   }
 
   const onDragStop = () => {
     stop();
     dashboardContext?.updateChartPosition(chartId, {
+      id,
       x,
       y,
       w,
@@ -125,6 +124,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     stop();
     console.log("stop")
     dashboardContext?.updateChartPosition(chartId, {
+      id,
       w: ((moduleW2LocalWidth(w) + GUTTER_SIZE + d.width))/(COLUMN_WIDTH),
       h: h + d.height,
       y: y,
