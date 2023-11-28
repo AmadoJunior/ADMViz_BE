@@ -145,7 +145,7 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
               srcUrl: chart?.srcUrl,
               dataKey: chart?.dataKey,
               labelKey: chart?.labelKey,
-              type: chart?.chartType,
+              chartType: chart?.chartType,
               method: chart?.method,
               apiKey: chart?.apiKey,
               filter: {

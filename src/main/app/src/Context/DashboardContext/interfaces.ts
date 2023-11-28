@@ -25,7 +25,7 @@ export interface IChartDetails {
   srcUrl: string;
   dataKey: string;
   labelKey: string;
-  type: string;
+  chartType: string;
   method: string;
   apiKey: string;
   filter: IDateFilter;

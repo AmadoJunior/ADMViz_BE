@@ -34,7 +34,7 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
   const [apiKey, setApiKey] = React.useState("");
   const [labelKey, setLabelKey] = React.useState<string>("");
   const [method, setMethod] = React.useState<string>("GET");
-  const [type, setType] = React.useState<string>(ChartType.LINE);
+  const [chartType, setChartType] = React.useState<string>(ChartType.LINE);
   const [from, setFrom] = React.useState<number>(
     DateTime.now().minus({ months: 1 }).toMillis()
   );
@@ -75,7 +75,7 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
 
   const handleType = (e: SelectChangeEvent<string>) => {
     e.preventDefault();
-    setType(e.target.value);
+    setChartType(e.target.value);
   };
 
   const onSubmit = () => {
@@ -85,7 +85,7 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
       srcUrl,
       dataKey,
       labelKey,
-      type,
+      chartType,
       method,
       apiKey,
       filter: {
@@ -157,7 +157,7 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
         }}>
           <CustomSelect
             title="ChartType"
-            value={type}
+            value={chartType}
             handler={handleType}
             options={["line", "bar", "radar", "pie", "doughnut", "polarArea"]}
           ></CustomSelect>

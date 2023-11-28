@@ -81,7 +81,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
         labelKey: chartDetails.labelKey,
         method: chartDetails.method,
         filter: chartDetails.filter,
-        type: chartDetails.type,
+        type: chartDetails.chartType,
         apiKey: chartDetails.apiKey,
       });
     }
@@ -164,7 +164,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
               </Box>
             ) : (
               <AbstractChart
-                type={chartDetails.type as ChartType}
+                type={chartDetails.chartType as ChartType}
                 data={chartData}
               />
             )

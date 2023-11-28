@@ -40,7 +40,7 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
       srcUrl: "",
       dataKey: "",
       labelKey: "",
-      type: ChartType.BAR,
+      chartType: ChartType.BAR,
       method: "GET",
       apiKey: "",
       filter: {
