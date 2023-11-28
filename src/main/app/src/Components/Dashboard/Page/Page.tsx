@@ -56,7 +56,7 @@ const Page: React.FC<IPageProps> = ({}) => {
         transition: "height 0.2s",
       }}
     >
-      {dashboardContext?.charts && dashboardContext?.charts?.map((chart) => (
+      {dashboardContext?.charts?.length && dashboardContext?.charts?.map((chart) => (
         <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
           <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
         </Module>

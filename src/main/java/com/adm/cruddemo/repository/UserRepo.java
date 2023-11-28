@@ -11,10 +11,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Optional;
 
 @RepositoryRestResource(path="users")
-public interface UserRepo extends CrudRepository<User, Integer> {
+public interface UserRepo extends CrudRepository<User, Long> {
     @PreAuthorize("hasRole('ROLE_ADMIN') || #userId == authentication.principal.getId()")
     @Override
-    Optional<User> findById(Integer userId);
+    Optional<User> findById(Long userId);
     @RestResource(exported = false)
     @Query("SELECT u FROM User u WHERE u.userName = :userName")
     public Optional<User> findByUserName(@Param("userName") String userName);
@@ -29,25 +29,25 @@ public interface UserRepo extends CrudRepository<User, Integer> {
     <S extends User> Iterable<S> saveAll(Iterable<S> entities);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    boolean existsById(Integer integer);
+    boolean existsById(Long userId);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     Iterable<User> findAll();
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    Iterable<User> findAllById(Iterable<Integer> integers);
+    Iterable<User> findAllById(Iterable<Long> userIds);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     long count();
     @RestResource(exported = false)
     @Override
-    void deleteById(Integer integer);
+    void deleteById(Long userId);
     @RestResource(exported = false)
     @Override
     void delete(User entity);
     @RestResource(exported = false)
     @Override
-    void deleteAllById(Iterable<? extends Integer> integers);
+    void deleteAllById(Iterable<? extends Long> userIds);
     @RestResource(exported = false)
     @Override
     void deleteAll(Iterable<? extends User> entities);

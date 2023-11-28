@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 public class ChartPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name="x")
     private int x;
     @Column(name="y")
@@ -33,10 +33,10 @@ public class ChartPosition {
 
     //Getters & Setters
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public int getX() {

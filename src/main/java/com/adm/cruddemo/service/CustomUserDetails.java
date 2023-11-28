@@ -9,7 +9,7 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
-    private int id;
+    private long id;
 
     private String email;
 
@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
 
     private boolean credentialsNonExpired;
 
-    public CustomUserDetails(int id, String username, String email, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(long id, String username, String email, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.enabled=enabled;
@@ -37,7 +37,7 @@ public class CustomUserDetails implements UserDetails {
         this.authorities=authorities;
     }
 
-    public CustomUserDetails(int id, String username, String email, String password, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(long id, String username, String email, String password, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.authorities = authorities;
         this.email = email;
@@ -96,11 +96,11 @@ public class CustomUserDetails implements UserDetails {
         this.password=null;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 }

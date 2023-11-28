@@ -15,11 +15,6 @@ export interface IChartPosition {
   h: number;
 }
 
-export interface IDateFilter {
-  from: number;
-  to: number;
-}
-
 export interface IChartDetails {
   name: string;
   srcUrl: string;
@@ -28,7 +23,8 @@ export interface IChartDetails {
   chartType: string;
   method: string;
   apiKey: string;
-  filter: IDateFilter;
+  fromDate: number;
+  toDate: number;
 }
 
 export interface IChart {
@@ -55,4 +51,5 @@ export interface IDashboardContext {
   updateChartDetails: (chartId: number, chartDetails: IChartDetails) => void,
   updateChartPosition: (chartId: number, chartPosition: IChartPosition) => void,
   getCharts: () => void,
+  getChartById: (chartId: number) => IChart | undefined ,
 }

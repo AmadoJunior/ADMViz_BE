@@ -39,13 +39,13 @@ public class DashboardService {
         this.chartPositionRepo = chartPositionRepo;
     }
 
-    public void handleAuthorization(int userId, Dashboard dashboard) throws RuntimeException {
+    public void handleAuthorization(long userId, Dashboard dashboard) throws RuntimeException {
         if(dashboard.getUser().getId() != userId) {
             throw new AccessDeniedException("Forbidden");
         }
     }
 
-    public Dashboard createDashboard(int userId, DashboardRecord dashboardRecord) throws RuntimeException {
+    public Dashboard createDashboard(long userId, DashboardRecord dashboardRecord) throws RuntimeException {
         Optional<User> foundUser = userRepository.findById(userId);
         if(foundUser.isEmpty()){
             throw new ResourceNotFoundException("User Not Found");
@@ -59,7 +59,7 @@ public class DashboardService {
         return dashboardRepo.save(newDashboard);
     }
 
-    public void deleteDashboard(int userId, int dashboardId) throws RuntimeException {
+    public void deleteDashboard(long userId, long dashboardId) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if(foundDashboard.isEmpty()){
             throw new ResourceNotFoundException("Dashboard Not Found");
@@ -70,7 +70,7 @@ public class DashboardService {
         dashboardRepo.delete(foundDashboard.get());
     }
 
-    public Dashboard updateDashboard(int userId, int dashboardId,  DashboardRecord dashboardRecord) throws RuntimeException {
+    public Dashboard updateDashboard(long userId, long dashboardId,  DashboardRecord dashboardRecord) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if(foundDashboard.isEmpty()){
             throw new ResourceNotFoundException("Dashboard Not Found");
@@ -88,7 +88,7 @@ public class DashboardService {
         return new ChartPosition(0, 0, 50, 565);
     }
 
-    public Dashboard insertChart(int userId, int dashboardId, ChartRecord chartRecord) throws RuntimeException {
+    public Dashboard insertChart(long userId, long dashboardId, ChartRecord chartRecord) throws RuntimeException {
         Optional<User> foundUser = userRepository.findById(userId);
         if(foundUser.isEmpty()){
             throw new ResourceNotFoundException("User Not Found");
@@ -123,7 +123,7 @@ public class DashboardService {
 
         return dashboardRepo.save(foundDashboard.get());
     }
-    public Dashboard removeChartFromDashboard(int userId, int dashboardId, int chartId) throws RuntimeException {
+    public Dashboard removeChartFromDashboard(long userId, long dashboardId, long chartId) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if (foundDashboard.isEmpty()) {
             throw new ResourceNotFoundException("Dashboard Not Found");
@@ -137,7 +137,7 @@ public class DashboardService {
         return dashboardRepo.save(dashboard);
     }
 
-    public Dashboard updateChartInDashboard(int userId, int dashboardId, int chartId, ChartRecord updatedChartRecord) throws RuntimeException {
+    public Dashboard updateChartInDashboard(long userId, long dashboardId, long chartId, ChartRecord updatedChartRecord) throws RuntimeException {
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if (foundDashboard.isEmpty()) {
             throw new ResourceNotFoundException("Dashboard Not Found");
@@ -165,7 +165,7 @@ public class DashboardService {
         return dashboardRepo.save(dashboard);
     }
 
-    public Dashboard updateChartPosition(int userId, int dashboardId, int chartId, ChartPositionRecord chartPositionRecord) throws RuntimeException {
+    public Dashboard updateChartPosition(long userId, long dashboardId, long chartId, ChartPositionRecord chartPositionRecord) throws RuntimeException {
         // Find the Dashboard
         Optional<Dashboard> foundDashboard = dashboardRepo.findById(dashboardId);
         if (foundDashboard.isEmpty()) {

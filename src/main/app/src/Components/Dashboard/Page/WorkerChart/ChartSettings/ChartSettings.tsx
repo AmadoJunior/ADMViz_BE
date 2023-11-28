@@ -1,5 +1,5 @@
 //Deps
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import { ChartType } from "../../../../../Context/DashboardContext/interfaces";
 import { DateTime } from "luxon";
 
@@ -35,12 +35,30 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
   const [labelKey, setLabelKey] = React.useState<string>("");
   const [method, setMethod] = React.useState<string>("GET");
   const [chartType, setChartType] = React.useState<string>(ChartType.LINE);
-  const [from, setFrom] = React.useState<number>(
+  const [fromDate, setFromDate] = React.useState<number>(
     DateTime.now().minus({ months: 1 }).toMillis()
   );
-  const [to, setTo] = React.useState<number>(
+  const [toDate, setToDate] = React.useState<number>(
     DateTime.now().plus({ days: 1 }).toMillis()
   );
+
+  //Effects
+  useEffect(() => {
+    if(chartId){
+      const curChart = dashboardContext.getChartById(chartId);
+      if(curChart) {
+        setName(curChart?.details?.name);
+        setSrcUrl(curChart?.details?.srcUrl);
+        setDataKey(curChart?.details?.dataKey);
+        setApiKey(curChart?.details?.apiKey);
+        setLabelKey(curChart?.details?.labelKey);
+        setMethod(curChart?.details?.method);
+        setChartType(curChart?.details?.chartType);
+        setFromDate(curChart?.details?.fromDate);
+        setToDate(curChart?.details?.toDate);
+      }
+    }
+  }, [chartId])
 
   //Form Handlers
   const handleName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,10 +106,8 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
       chartType,
       method,
       apiKey,
-      filter: {
-        from,
-        to
-      }
+      fromDate,
+      toDate
     })
   };
 
@@ -169,10 +185,7 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
           ></CustomSelect>
         </Box>
         
-        <DatePicker filter={{
-          from,
-          to,
-        }} setTo={setTo} setFrom={setFrom}></DatePicker>
+        <DatePicker fromDate={fromDate} toDate={toDate} setTo={setToDate} setFrom={setFromDate}></DatePicker>
         </Box>
         
         <Button variant="contained" onClick={onSubmit} sx={{

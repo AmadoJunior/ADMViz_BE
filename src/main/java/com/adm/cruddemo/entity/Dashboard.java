@@ -12,7 +12,7 @@ public class Dashboard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty( "id" )
-    private int id;
+    private Long id;
     @Column(name="name", nullable = false)
     private String name;
     @OneToMany(mappedBy = "dashboard", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
@@ -44,10 +44,10 @@ public class Dashboard {
     }
 
     //Getters & Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getName() {

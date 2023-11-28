@@ -1,5 +1,6 @@
 //Deps
 import React, {useEffect, useRef} from "react";
+import { Colors } from 'chart.js';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -24,6 +25,9 @@ export const options = {
   maintainAspectRatio: false,
   responsive: true,
   plugins: {
+    colors: {
+      forceOverride: true
+    },
     legend: {
       position: 'top' as const,
 
@@ -58,11 +62,11 @@ export const options = {
 
 //Props
 interface IChartDatasets {
-  label: string,
-  labels: string[],
+  label?: string,
+  labels?: string[],
   data: number[],
-  borderColor?: string,
-  backgroundColor?: string,
+  borderColor?: string | string[],
+  backgroundColor?: string | string[],
 }
 
 export interface IChartData {
@@ -86,7 +90,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  RadialLinearScale
+  RadialLinearScale,
+  Colors
 );
 
 const AbstractChart: React.FC<IAbstractChartProps> = (({type, data}): JSX.Element => {

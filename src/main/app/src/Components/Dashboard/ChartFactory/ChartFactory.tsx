@@ -43,10 +43,8 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
       chartType: ChartType.BAR,
       method: "GET",
       apiKey: "",
-      filter: {
-        from: 0,
-        to: DateTime.now().toMillis(),
-      },
+      fromDate: 0,
+      toDate: DateTime.now().toMillis(),
     });
   }
 

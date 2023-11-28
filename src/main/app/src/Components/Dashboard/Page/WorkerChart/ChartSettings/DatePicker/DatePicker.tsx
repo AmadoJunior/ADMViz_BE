@@ -9,15 +9,15 @@ import {Box} from "@mui/material";
 //Components
 
 //Props
-import { IDateFilter } from "../../../../../../Context/ChartContext/interfaces";
 interface IDatePickerProps {
-  filter: IDateFilter,
+  fromDate: number,
+  toDate: number,
   setFrom: (n: number) => void,
   setTo: (n: number) => void,
   children?: React.ReactNode;
 }
 
-const DatePicker: React.FC<IDatePickerProps> = ({filter, setFrom, setTo}): JSX.Element => {
+const DatePicker: React.FC<IDatePickerProps> = ({fromDate, toDate, setFrom, setTo}): JSX.Element => {
   const handleFrom = (dt: DateTime) => {
     setFrom(dt.toMillis());
   }
@@ -33,10 +33,10 @@ const DatePicker: React.FC<IDatePickerProps> = ({filter, setFrom, setTo}): JSX.E
       width: "100%",
       marginBottom: "20px",
     }}>
-      <XDatePicker label="From" onChange={(newValue) => handleFrom(newValue as DateTime)} defaultValue={DateTime.fromMillis(filter.from)} sx={{
+      <XDatePicker label="From" onChange={(newValue) => handleFrom(newValue as DateTime)} defaultValue={DateTime.fromMillis(fromDate)} sx={{
         paddingRight: "20px"
       }}/>
-      <XDatePicker label="To" onChange={(newValue) => handleTo(newValue as DateTime)} defaultValue={DateTime.fromMillis(filter.to)}/>
+      <XDatePicker label="To" onChange={(newValue) => handleTo(newValue as DateTime)} defaultValue={DateTime.fromMillis(toDate)}/>
     </Box>
   );
 }

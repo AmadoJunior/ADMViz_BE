@@ -1,10 +1,17 @@
-import colormap from "colormap";
+/// <reference lib="webworker" />
+declare const self: DedicatedWorkerGlobalScope;
+
+//Int
+import {FetchDataDTO, WorkerResponse} from "./interfaces";
 
 async function fetchDataset(
   srcUrl: string,
   dataKey: string,
   labelKey: string,
-  filter: string,
+  filter: {
+    from: number,
+    to: number,
+  },
   auth: string,
   method: string
 ) {
@@ -13,7 +20,7 @@ async function fetchDataset(
   let status;
   try {
     const res = await fetch(
-      `${srcUrl}?${new URLSearchParams(filter)}`,
+      `${srcUrl}?${new URLSearchParams({ from: String(filter.from), to: String(filter.to) })}`,
       {
         method: method,
         headers: {
@@ -21,6 +28,7 @@ async function fetchDataset(
         },
       }
     );
+    console.log(res);
     status = res.status;
     if (status !== 200) {
       throw new Error(String(status));
@@ -49,9 +57,7 @@ async function fetchDataset(
   };
 }
 
-onmessage = async ({
-  data: { srcUrl, dataKey, labelKey, method, filter, type, apiKey },
-}) => {
+export const fetchData = async ({ srcUrl, dataKey, labelKey, method, filter, type, apiKey }: FetchDataDTO): Promise<WorkerResponse> => {
   const datasetsArr = [];
   const labelsSet = new Set<string>();
   let resStatus;
@@ -65,60 +71,27 @@ onmessage = async ({
       apiKey,
       method
     );
+    
     //Status
     resStatus = status;
+
     //Labels
     for (const label of labels) {
       labelsSet.add(label);
     }
     labelsArr = Array.from(labelsSet);
 
-    //Styles
-    const styles = {
-      backgroundColor: [] as string[],
-      borderColor: [] as string[],
-      borderWidth: 1,
-    }
-    styles.backgroundColor = [];
-    styles.borderColor = [];
-    if (type !== "line" && type !== "bar" && type !== "radar") {
-      let colors = colormap({
-        colormap: "salinity",
-        nshades: Math.max(9, labelsArr?.length),
-        format: "hex",
-        alpha: 1,
-      });
-      for (let i = 0; i < labelsArr.length; i++) {
-        styles.backgroundColor.push(colors[i]);
-        styles.borderColor.push(colors[i]);
-      }
-      console.log(styles);
-    } else {
-      let colors = colormap({
-        colormap: "salinity",
-        nshades: Math.max(9),
-        format: "hex",
-        alpha: 1,
-      });
-      styles.backgroundColor.push(colors[0]);
-      styles.borderColor.push(colors[0]);
-    }
-
     //Dataset
     datasetsArr.push({
       label,
       data,
-      ...styles,
     });
 
-  //Send to Master
-  postMessage({
+  return {
     status: resStatus,
     chartData: {
       labels: labelsArr,
       datasets: datasetsArr,
     },
-  });
+  }
 };
-
-export {};

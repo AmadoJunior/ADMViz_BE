@@ -1,5 +1,6 @@
 //Deps
 import { useMemo, useEffect, useState, useContext, useRef } from "react";
+import * as Comlink from "comlink";
 
 //MUI
 import { Box, Typography } from "@mui/material";
@@ -20,6 +21,8 @@ import {
 import { IChartData } from "./AbstractChart/AbstractChart";
 
 //Props
+type WorkerModule = typeof import('./WorkerScript/fetcherWorker.worker');
+
 interface IWorkerChartProps {
   name: string;
   children?: React.ReactNode;
@@ -38,7 +41,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
 
   //Chart Worker
   const worker = useMemo(
-    () => new Worker(new URL("./WorkerScript/worker.ts", import.meta.url)),
+    () => new ComlinkWorker<WorkerModule>(new URL('./WorkerScript/fetcherWorker.worker.ts', import.meta.url)),
     []
   );
 
@@ -51,39 +54,42 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
 
   //Effects
   useEffect(() => {
-    worker.onmessage = ({ data }) => {
-      const { status, chartData } = data;
-      console.log(status);
-      setWorkerStatus(status);
-      if (status === 200) {
-        setWorkerError(false);
-        setChartData(chartData);
-      } else {
-        setWorkerError(true);
-        setChartData({
-          labels: [],
-          datasets: [],
-        });
-      }
-      return () => worker.terminate();
-    };
-
-    return () => {
-      worker.onmessage = null;
-    };
-  }, [worker]);
-
-  useEffect(() => {
+    console.log(chartDetails);
     if (chartDetails) {
-      worker.postMessage({
+      console.log("Called Worker Method...")
+      worker.fetchData({
         srcUrl: chartDetails.srcUrl,
         dataKey: chartDetails.dataKey,
         labelKey: chartDetails.labelKey,
         method: chartDetails.method,
-        filter: chartDetails.filter,
+        filter: {
+          from: chartDetails.fromDate,
+          to: chartDetails.toDate
+        },
         type: chartDetails.chartType,
         apiKey: chartDetails.apiKey,
-      });
+      })
+      .then((data) => {
+        console.log(data);
+        const { status, chartData } = data;
+        console.log(status);
+        setWorkerStatus(status);
+        if (status === 200) {
+          setWorkerError(false);
+          setChartData(chartData);
+        } else {
+          setWorkerError(true);
+          setChartData({
+            labels: [],
+            datasets: [],
+          });
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+    } else {
+      console.log("Worker Post Didnt Run")
     }
   }, [chartDetails, worker]);
 

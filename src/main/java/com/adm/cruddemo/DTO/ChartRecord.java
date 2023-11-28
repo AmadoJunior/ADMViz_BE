@@ -8,7 +8,7 @@ public record ChartRecord(
         String chartType,
         String method,
         String apiKey,
-        int fromDate,
-        int toDate
+        Long fromDate,
+        Long toDate
 ) {
 }

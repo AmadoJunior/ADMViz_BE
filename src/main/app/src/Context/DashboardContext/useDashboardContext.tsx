@@ -23,6 +23,9 @@ export const DashboardContext = createContext<IDashboardContext>({
   insertChart(chartDetails: IChartDetails, chartPosition?: IChartPosition) {},
   removeChart(chartId: number) {},
   getCharts() {},
+  getChartById(chartId: number) {
+    return undefined;
+  },
 });
 
 interface IDashboardContextHookProps {
@@ -101,6 +104,7 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
       },
       body: JSON.stringify({
         ...chartDetails,
+        
         position: chartPosition
       })
     })
@@ -132,6 +136,10 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     .catch(e => {
       console.error(e);
     })
+  }
+
+  const getChartById = (chartId: number): IChart | undefined => {
+    return charts.find((chart) => chart.chartId === chartId);
   }
 
   const getCharts = () => {
@@ -168,10 +176,8 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
               chartType: chart?.chartType,
               method: chart?.method,
               apiKey: chart?.apiKey,
-              filter: {
-                from: chart?.fromDate,
-                to: chart?.toDate
-              },
+              fromDate: chart?.fromDate,
+              toDate: chart?.toDate
             },
             position: chart?.position,
           }
@@ -205,6 +211,7 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     insertChart,
     removeChart,
     getCharts,
+    getChartById
   };
 }
 

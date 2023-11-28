@@ -12,7 +12,7 @@ public class Chart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty( "id" )
-    private int id;
+    private Long id;
     @Column(name="name", nullable = false)
     private String name;
     @Column(name="src_url")
@@ -28,9 +28,9 @@ public class Chart {
     @Column(name="api_key")
     private String apiKey;
     @Column(name="from_date")
-    private int fromDate;
+    private Long fromDate;
     @Column(name="to_date")
-    private int toDate;
+    private Long toDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dashboard_id", referencedColumnName = "id")
     private Dashboard dashboard;
@@ -54,7 +54,7 @@ public class Chart {
     //Constructors
     public Chart() {
     }
-    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String apiKey, int fromDate, int toDate, ChartPosition position, Dashboard dashboard, User user) {
+    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String apiKey, long fromDate, long toDate, ChartPosition position, Dashboard dashboard, User user) {
         this.name = name;
         this.srcUrl = srcUrl;
         this.dataKey = dataKey;
@@ -70,10 +70,10 @@ public class Chart {
     }
 
     //Getters & Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getName() {
@@ -118,16 +118,16 @@ public class Chart {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
-    public int getFromDate() {
+    public Long getFromDate() {
         return fromDate;
     }
-    public void setFromDate(int fromDate) {
+    public void setFromDate(Long fromDate) {
         this.fromDate = fromDate;
     }
-    public int getToDate() {
+    public Long getToDate() {
         return toDate;
     }
-    public void setToDate(int toDate) {
+    public void setToDate(Long toDate) {
         this.toDate = toDate;
     }
     public ChartPosition getPosition() {

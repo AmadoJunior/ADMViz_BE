@@ -15,10 +15,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 @RepositoryRestResource(path="charts")
-public interface ChartRepo extends CrudRepository<Chart, Integer> {
+public interface ChartRepo extends CrudRepository<Chart, Long> {
     @PostAuthorize("hasRole('ROLE_ADMIN') || returnObject.get().user.getId() == authentication.principal.getId()")
     @Override
-    Optional<Chart> findById(Integer chartId);
+    Optional<Chart> findById(Long chartId);
     @RestResource(exported = false)
     @Query("SELECT c FROM Chart c WHERE c.name = :chartName")
     public Chart findByChartName(@Param("chartName") String chartName);
@@ -30,25 +30,25 @@ public interface ChartRepo extends CrudRepository<Chart, Integer> {
     <S extends Chart> Iterable<S> saveAll(Iterable<S> entities);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    boolean existsById(Integer integer);
+    boolean existsById(Long chartId);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     Iterable<Chart> findAll();
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    Iterable<Chart> findAllById(Iterable<Integer> integers);
+    Iterable<Chart> findAllById(Iterable<Long> chartIds);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     long count();
     @RestResource(exported = false)
     @Override
-    void deleteById(Integer integer);
+    void deleteById(Long chartId);
     @RestResource(exported = false)
     @Override
     void delete(Chart entity);
     @RestResource(exported = false)
     @Override
-    void deleteAllById(Iterable<? extends Integer> integers);
+    void deleteAllById(Iterable<? extends Long> chartIds);
     @RestResource(exported = false)
     @Override
     void deleteAll(Iterable<? extends Chart> entities);
