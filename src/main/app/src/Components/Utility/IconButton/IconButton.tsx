@@ -19,12 +19,12 @@ const CustomIconButton: React.FC<IIconButtonProps> = ({title, handler, children}
         display: "flex"
       }}
     >
-      <Tooltip placement="left" arrow title={title}>
+      <Tooltip placement="bottom" arrow title={title}>
         <IconButton
           onClick={handler}
           sx={[
             {
-              padding: "10px",
+              padding: "6px",
               border: "1px solid",
               borderColor: "#302f2f",
               boxShadow: 6,

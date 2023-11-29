@@ -9,7 +9,6 @@ import { Direction } from "re-resizable/lib/resizer";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 //Context
-import { ScreenContext } from '../../../../Context/ScreenContext/useScreenContext';
 import { DashboardContext } from '../../../../Context/DashboardContext/useDashboardContext';
 
 //Interfaces && Types
@@ -28,7 +27,6 @@ type ModuleProps = {
 
 const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   //Window Context
-  const screenContext = React.useContext(ScreenContext);
   const dashboardContext = React.useContext(DashboardContext);
 
   //Props Destruct
@@ -45,7 +43,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   //Methods
   const updatePosition = (left: number, top: number) => {
     setY(top);
-    setX(Math.floor(left / COLUMN_WIDTH));
+    setX(Math.floor((left / COLUMN_WIDTH)));
   };
 
   const handleDrag = () => {
@@ -60,7 +58,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       GUTTER_SIZE,
       Math.min(
         initialPosition.current.left + Math.floor(movement.x / COLUMN_WIDTH) * COLUMN_WIDTH,
-        screenContext.width - w * COLUMN_WIDTH,
+        document.documentElement.clientWidth - (GUTTER_SIZE*4) - w * COLUMN_WIDTH,
       ),
     );
   
@@ -72,15 +70,12 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       const { updatedLeft, updatedTop } = findNearestFreePosition(position, collidingModule, newLeft, newTop);
   
       const clampedTop = Math.max(0, updatedTop);
-      const clampedLeft = Math.max(GUTTER_SIZE, Math.min(updatedLeft, screenContext.width - w * COLUMN_WIDTH));
+      const clampedLeft = Math.max(GUTTER_SIZE, Math.min(updatedLeft, document.documentElement.clientWidth - w * COLUMN_WIDTH));
       
       const updatedCollidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, clampedLeft, clampedTop);
       
       if (!updatedCollidingModule) {
-        
         updatePosition(clampedLeft, clampedTop);
-      } else {
-        
       }
     }
   };

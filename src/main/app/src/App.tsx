@@ -14,10 +14,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 //Component
 import Layout from "./Components/Layout/Layout";
-import Dashboard from "./Components/Dashboard/Dashboard";
 
 //Context
-import useScreenContext, {ScreenContext} from "./Context/ScreenContext/useScreenContext";
 import {useUserDetailsContext, UserDetailsContext} from "./Context/UserDetailsContext/useUserDetailsContext";
 
 import Authenticate from './Components/Authenticate/Authenticate';
@@ -69,17 +67,13 @@ function App() {
   //User
   const userDetailsContext = useUserDetailsContext();
 
-  //Screen
-  const screenContext = useScreenContext();
-
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
-        <ScreenContext.Provider value={screenContext}>
           <UserDetailsContext.Provider value={userDetailsContext}>
             <Box className="App" sx={{
-              backgroundColor: "background.default",
+              backgroundColor: "black",
               minHeight: "100vh",
             }}>
               
@@ -100,7 +94,6 @@ function App() {
               </Routes>
             </Box>
           </UserDetailsContext.Provider>
-        </ScreenContext.Provider>
       </ThemeProvider>
     </LocalizationProvider>
   );

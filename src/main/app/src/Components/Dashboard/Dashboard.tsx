@@ -31,6 +31,7 @@ const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userI
       height: "100%",
       width: "100%",
       overflowX: "hidden",
+      padding: "10px"
     }}>
       <DashboardContext.Provider value={dashboardContext}>
             <Box sx={{
@@ -42,10 +43,8 @@ const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userI
               width: "100%",
               
               backgroundColor: "background.paper",
-              borderBottom: "1px solid",
-              borderColor: "secondary.main"
+              borderRadius: "5px 5px 0px 0px"
             }}>
-              <Typography variant="h6" padding="0px 20px 0px 20px" color="primary.main">{dashboardName}</Typography>
               <ChartFactory></ChartFactory>
             </Box>
             <DndProvider backend={HTML5Backend}>

@@ -28,7 +28,6 @@ export const useUserDetailsContext = (): IUserDetailsContext => {
   //Methods
   const handleIsAuthenticated = (): Promise<any> => {
       //Fetch User Details
-      const basePath = "http://localhost:8080";
       return fetch(`/api/self`, {
         method: "GET"
       })

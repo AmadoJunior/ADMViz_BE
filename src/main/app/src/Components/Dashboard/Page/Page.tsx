@@ -12,7 +12,6 @@ import { GUTTER_SIZE } from "../../../constants";
 
 //Context
 import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
-import { ScreenContext } from "../../../Context/ScreenContext/useScreenContext";
 
 //Props
 interface IPageProps {
@@ -21,7 +20,6 @@ interface IPageProps {
 
 const Page: React.FC<IPageProps> = ({}) => {
   //State
-  const screenContext = useContext(ScreenContext);
   const dashboardContext = useContext(DashboardContext);
 
   // Wire the Module to DnD Drag System
@@ -34,15 +32,18 @@ const Page: React.FC<IPageProps> = ({}) => {
   drop(containerRef);
 
   //Calc Height
+  const MenuHeight = 214;
   const containerHeight = React.useMemo(() => {
     return (
       Math.max(
         ...dashboardContext?.charts?.map(({ position: { y, h } }) => y + h),
-        screenContext.height
+        document.documentElement.clientHeight - MenuHeight
       ) +
       GUTTER_SIZE * 2
     );
   }, [dashboardContext?.charts]);
+
+  console.log(containerHeight)
 
   //Render
   return (
@@ -50,17 +51,17 @@ const Page: React.FC<IPageProps> = ({}) => {
       ref={containerRef}
       position="relative"
       width="100%"
-      height={containerHeight}
       sx={{
-        display: "flex",
-        transition: "height 0.2s",
+        backgroundColor: "background.default",
+        height: `${containerHeight}px`,
+        overflow: "clip"
       }}
     >
-      {dashboardContext?.charts?.length && dashboardContext?.charts?.map((chart) => (
+      {dashboardContext?.charts?.length ? dashboardContext?.charts?.map((chart) => (
         <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
           <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
         </Module>
-      ))}
+      )) : null}
     </Box>
   );
 };

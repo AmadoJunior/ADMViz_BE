@@ -2,7 +2,7 @@
 import React from "react";
 
 //MUI
-import {Box, IconButton, Button, Tab, Input} from "@mui/material";
+import {Box, IconButton, Button, Tab, Input, Typography, useTheme} from "@mui/material";
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -14,6 +14,8 @@ import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDeta
 import Dashboard from "../Dashboard/Dashboard";
 
 //Custom
+import CustomIconButton from "../Utility/IconButton/IconButton";
+
 interface ICustomTabInput {
   label: string,
   dashboardId: number,
@@ -22,22 +24,12 @@ interface ICustomTabInput {
 function CustomTab({ label, dashboardId, onDelete }: ICustomTabInput) {
   return (
     <Box display="flex" alignItems="center">
-      <span>{label}</span>
-      <Box onClick={() => onDelete(dashboardId)} sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        marginLeft: "20px",
-        color: "white",
-        borderStyle: "solid",
-        borderWidth: "1px",
-        borderColor: "white",
-        borderRadius: "100%",
-        height: "35px",
-        width: "35px"
-      }}>
-        <DeleteIcon/>
-      </Box>
+      <Typography sx={{
+        marginRight: "15px"
+      }}>{label}</Typography>
+      <CustomIconButton title={`Delete Dashboard`} handler={() => onDelete(dashboardId)}>
+        <DeleteIcon fontSize="small"/>
+      </CustomIconButton>
     </Box>
   );
 }
@@ -53,6 +45,9 @@ interface IDashboardGridProps {
 }
 
 const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
+  //Theme
+  const theme = useTheme();
+
   //User
   const userDetailsContext = React.useContext(UserDetailsContext);
 
@@ -152,16 +147,21 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
   }
 
   return (
-    <Box >
+    <Box sx={{
+      
+    }}>
       {
-        dashboards?.length && 
+        dashboards?.length ?
         <TabContext value={curTab}>
           <Box sx={{ 
-            borderBottom: 1, 
+            borderWidth: "1px", 
             borderColor: 'divider',
+            borderRadius: "5px",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center"
+            alignItems: "center",
+            backgroundColor: `${theme.palette.background.paper} !important`,
+            margin: "10px 10px 0px 10px"
           }}>
             <TabList 
               onChange={handleChange} 
@@ -194,15 +194,18 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
                     <Box sx={{
                       display: "flex"
                     }}>
-                    <Input sx={{
+                    <Input placeholder="Dashboard Name" sx={{
                       width: "300px"
                     }} value={newChartName} onChange={handleInput}></Input>
-                    <Button variant="outlined" sx={{
-                      marginX: "10px"
+                    <Button variant="outlined" size="small" sx={{
+                      marginLeft: "15px"
                     }} onClick={() => handleNew(newChartName)}>Apply</Button>
+                    <Button variant="outlined" size="small" color="error" sx={{
+                      marginLeft: "10px"
+                    }} onClick={() => setIsOpen(false)}>Cancel</Button>
                     </Box>
                   ) : (
-                  <Button variant="outlined" onClick={() => setIsOpen(prev => !prev)}>Add</Button>
+                  <Button variant="outlined" size="small" onClick={() => setIsOpen(prev => !prev)}>New Dashboard</Button>
                   )
                 }
               </Box>
@@ -225,6 +228,8 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
             })
           }
         </TabContext>
+        :
+        null
       }
     </Box>
   );

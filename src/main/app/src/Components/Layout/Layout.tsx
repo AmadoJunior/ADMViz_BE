@@ -46,6 +46,7 @@ const Layout: React.FC<ILayoutProps> = (): JSX.Element => {
       return;
     }
     setOpen(false);
+    userDetailsContext.handleErrored(false);
   };
 
   return (

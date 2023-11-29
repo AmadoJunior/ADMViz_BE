@@ -68,7 +68,6 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
   };
   const handleLogout = () => {
     console.log("logging out");
-    const basePath = "http://localhost:8080"
     fetch(`/api/perform_logout`)
     .then(response => {
       console.log(response);
@@ -82,12 +81,17 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
   return (
     <AppBar
       position="sticky"
+      elevation={0}
       sx={{
         backgroundColor: "background.paper",
       }}
     >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
+      <Box sx={{
+        width: "100%",
+        paddingX: "20px",
+        maxWidth: "100%"
+      }}>
+        <Toolbar  variant="dense" disableGutters>
           <Box
             sx={{
               marginRight: 2,
@@ -171,19 +175,14 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
                 <Link key={page.path} to={`${page?.path}`}>
                   <Button
                     disabled={!userDetailsContext?.isAuthenticated}
-                    variant="contained"
+                    variant="outlined"
                     key={page?.path}
                     onClick={handleCloseNavMenu}
+                    size="small"
                     sx={[
                       {
-                        my: 1,
                         mx: 1,
-                        padding: "5px 15px 5px 15px !important",
-                        display: "block",
                       },
-                      () => ({
-                        "&:hover": {},
-                      }),
                     ]}
                   >
                     <Typography variant="subtitle2">{page?.title}</Typography>
@@ -194,14 +193,14 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
           </Box>
             {userDetailsContext.isAuthenticated && <Button 
               onClick={handleLogout} 
-              sx={{
-                backgroundColor: "error.main",
-                color: "white"
-              }}>
+              variant="outlined"
+              color="error"
+              size="small"
+              >
                 Log Out
             </Button>}
         </Toolbar>
-      </Container>
+      </Box>
     </AppBar>
   );
 };

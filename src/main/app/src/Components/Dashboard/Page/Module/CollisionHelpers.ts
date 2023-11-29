@@ -21,8 +21,8 @@ export const isColliding = (
 
     const horizontalOverlap =
       Math.floor(newLeft / COLUMN_WIDTH) + currentModule.w >
-        module.x &&
-      Math.floor(newLeft / COLUMN_WIDTH) < module.x + module.w;
+        module.x - 2 &&
+      Math.floor(newLeft / COLUMN_WIDTH) - 2 < module.x + module.w;
 
     return verticalOverlap && horizontalOverlap;
   });
@@ -41,10 +41,10 @@ export const findNearestFreePosition = (
   const leftCorrection =
     newLeft +
     moduleW2LocalWidth(currentModule.w) -
-    moduleX2LocalX(collidingModule.x);
+    moduleX2LocalX(collidingModule.x) - GUTTER_SIZE;
   const rightCorrection =
     moduleX2LocalX(collidingModule.x) +
-    moduleW2LocalWidth(collidingModule.w) -
+    moduleW2LocalWidth(collidingModule.w) + GUTTER_SIZE -
     newLeft;
   const isUpOrDown =
     Math.min(upCorrection, downCorrection) <

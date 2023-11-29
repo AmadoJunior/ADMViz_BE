@@ -24,28 +24,26 @@ const Login: React.FC<ILoginProps> = (props): JSX.Element => {
     event.preventDefault();
     userDetailsContext.handleErrored(false);
     const formData = new FormData(event.currentTarget);
-    const data = {
-      username: formData.get("username"),
-      password: formData.get("password"),
+    console.log(formData.get("username"), formData.get("password"))
+    if(formData.get("username") && formData.get("password")){
+      fetch(`/api/perform_login`, {
+        method: "POST",
+        body: formData,
+      })
+      .then(response => {
+        console.log(response);
+        if(response.status === 200){
+          return userDetailsContext.handleIsAuthenticated();
+        }
+        userDetailsContext.handleErrored(true);
+      })
+      .catch(e => {
+        userDetailsContext.handleErrored(true);
+        console.error(e);
+      })
+    } else {
+      userDetailsContext.handleErrored(true);
     }
-    console.log(data);
-
-    const basePath = "http://localhost:8080";
-    fetch(`/api/perform_login`, {
-      method: "POST",
-      body: formData,
-    })
-    .then(response => {
-      console.log(response);
-      if(response.status === 200){
-        return userDetailsContext.handleIsAuthenticated();
-      }
-      userDetailsContext.handleErrored(true);
-    })
-    .catch(e => {
-      userDetailsContext.handleErrored(true);
-      console.error(e);
-    })
   };
 
   return (
