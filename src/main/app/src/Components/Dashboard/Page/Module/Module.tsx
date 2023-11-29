@@ -117,10 +117,10 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     d: NumberSize
   ) => {
     stop();
-    console.log("stop")
+    console.log("stop", d)
     dashboardContext?.updateChartPosition(chartId, {
       id,
-      w: ((moduleW2LocalWidth(w) + GUTTER_SIZE + d.width))/(COLUMN_WIDTH),
+      w: ((moduleW2LocalWidth(w) + d.width - GUTTER_SIZE))/(COLUMN_WIDTH),
       h: h + d.height,
       y: y,
       x: x,
