@@ -30,9 +30,11 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   const dashboardContext = React.useContext(DashboardContext);
 
   //Props Destruct
-  const { id, w, h } = position;
+  const { id } = position;
 
   //State
+  const [w, setW] = useState(position.w);
+  const [h, setH] = useState(position.h);
   const [x, setX] = useState(position.x);
   const [y, setY] = useState(position.y);
   const initialPosition = React.useRef<{ top: number; left: number }>();
@@ -44,6 +46,11 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   const updatePosition = (left: number, top: number) => {
     setY(top);
     setX(Math.floor((left / COLUMN_WIDTH)));
+  };
+
+  const updateSize = (width: number, height: number) => {
+    setH(height);
+    setW(width);
   };
 
   const handleDrag = () => {
@@ -58,7 +65,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       GUTTER_SIZE,
       Math.min(
         initialPosition.current.left + Math.floor(movement.x / COLUMN_WIDTH) * COLUMN_WIDTH,
-        document.documentElement.clientWidth - (GUTTER_SIZE*4) - w * COLUMN_WIDTH,
+        document.documentElement.clientWidth - (GUTTER_SIZE*3) - w * COLUMN_WIDTH,
       ),
     );
   
@@ -116,15 +123,35 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     ref: HTMLElement,
     d: NumberSize
   ) => {
+    console.log("stop", d);
+    // Calculate tentative new width and height
+    const tentativeW = ((moduleW2LocalWidth(w) + d.width))/(COLUMN_WIDTH);
+    const tentativeH = h + d.height;
+
+    // Check for collisions with the tentative new size
+    const collision = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), {
+      ...position,
+      w: tentativeW,
+      h: tentativeH
+    }, moduleX2LocalX(x), y);
+
+    if (!collision) {
+      // Update size if no collision
+      console.log("Not Colliding", tentativeW, tentativeH)
+      updateSize(tentativeW, tentativeH);
+
+      dashboardContext?.updateChartPosition(chartId, {
+        id,
+        w: tentativeW,
+        h: tentativeH,
+        y: y,
+        x: x,
+      });
+    } else {
+      console.log(position, collision)
+    }
+
     stop();
-    console.log("stop", d)
-    dashboardContext?.updateChartPosition(chartId, {
-      id,
-      w: ((moduleW2LocalWidth(w) + d.width - GUTTER_SIZE))/(COLUMN_WIDTH),
-      h: h + d.height,
-      y: y,
-      x: x,
-    });
   }
 
   const onResizeStart = (e: any, direction: Direction) => {
@@ -154,7 +181,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
             border: "dashed 1px",
             borderColor: "#302f2f",
           }}
-          defaultSize={{
+          size={{
             width: moduleW2LocalWidth(w),
             height: h,
           }}

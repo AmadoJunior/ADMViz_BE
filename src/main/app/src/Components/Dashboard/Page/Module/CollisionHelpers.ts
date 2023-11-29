@@ -19,11 +19,12 @@ export const isColliding = (
       newTop + currentModule.h + GUTTER_SIZE > module.y &&
       newTop < module.y + module.h + GUTTER_SIZE;
 
+    const currentModuleRightEdge = (newLeft / COLUMN_WIDTH) + currentModule.w + GUTTER_SIZE/COLUMN_WIDTH;
+    const moduleRightEdge = module.x + module.w + GUTTER_SIZE/COLUMN_WIDTH;
+    
     const horizontalOverlap =
-      Math.floor(newLeft / COLUMN_WIDTH) + currentModule.w >
-        module.x - 2 &&
-      Math.floor(newLeft / COLUMN_WIDTH) - 2 < module.x + module.w;
-
+      currentModuleRightEdge > module.x &&
+      (newLeft / COLUMN_WIDTH) < moduleRightEdge;
     return verticalOverlap && horizontalOverlap;
   });
 };
