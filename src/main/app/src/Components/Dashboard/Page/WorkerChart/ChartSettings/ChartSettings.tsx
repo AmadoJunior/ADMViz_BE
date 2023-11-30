@@ -128,7 +128,7 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
         height: "100%",
         borderRadius: "10px",
         border: "solid 1px",
-        borderColor: "secondary.main",
+        borderColor: "background.default",
         boxShadow: 6,
         padding: "20px 20px 20px 20px",
         overflowY: "scroll",

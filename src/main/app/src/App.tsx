@@ -23,7 +23,7 @@ import Login from './Components/Authenticate/Login';
 import Register from './Components/Authenticate/Register';
 import About from './Components/About/About';
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
-import DashboardGrid from "./Components/DashboardGrid/DashboardGrid";
+import DashboardGrid from "./Components/DashboardViewer/DashboardViewer";
 
 //Darkest #08090a
 //Gray #111214

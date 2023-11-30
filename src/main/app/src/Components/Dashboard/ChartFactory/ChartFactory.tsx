@@ -2,14 +2,14 @@
 import {useState, useContext} from "react";
 
 //MUI
-import { Box, InputLabel, Input } from "@mui/material";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { Box } from "@mui/material";
 
 //Components
-import CustomeIconButton from "../../Utility/IconButton/IconButton";
+import CollapseForm from "../../Utility/CollapseForm/CollapseForm";
 
 //Constants
 import { COLUMN_WIDTH, MIN_HEIGHT, MIN_WIDTH, GUTTER_SIZE } from '../../../constants';
+import { DefaultChartDetails } from "./DefaultChartDetails";
 
 //Context
 import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
@@ -30,17 +30,9 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
 
   //State
   const [inputTitle, setInputTitle] = useState<string>("");
-  const [creationLoading, setCreationLoading] = useState(false);
 
   //Form Handler
-  const handleInputTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setInputTitle(e.target.value);
-  }
-
   const handleNew = () => {
-    setCreationLoading(true);
-
     const positionObj = {
       id: 0,
       x: GUTTER_SIZE / COLUMN_WIDTH,
@@ -51,58 +43,21 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
 
     const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
 
-    const collidingModule = isColliding(chartPositions, positionObj, positionObj.x, positionObj.y);
-    if (!collidingModule) {
-      dashboardContext.insertChart({
-        name: inputTitle,
-        srcUrl: "",
-        dataKey: "",
-        labelKey: "",
-        chartType: ChartType.BAR,
-        method: "GET",
-        apiKey: "",
-        fromDate: 0,
-        toDate: DateTime.now().toMillis(),
-      }, {
-        x: positionObj.x,
-        y: positionObj.y,
-        w: positionObj.w,
-        h: positionObj.h
-      })
-      .finally(() => {
-        setCreationLoading(false);
-      })
-    } else {
-      console.log(collidingModule);
-      //const { updatedTop } = findFreeSpace(dashboardContext?.charts?.map((chart) => chart?.position), positionObj);
-      const {updatedTop, updatedLeft} = findFreeSpace(chartPositions, positionObj, document.body.clientWidth);
-      dashboardContext.insertChart({
-        name: inputTitle,
-        srcUrl: "",
-        dataKey: "",
-        labelKey: "",
-        chartType: ChartType.BAR,
-        method: "GET",
-        apiKey: "",
-        fromDate: 0,
-        toDate: DateTime.now().toMillis(),
-      }, {
-        x: updatedLeft,
-        y: updatedTop,
-        w: positionObj.w,
-        h: positionObj.h
-      })
-      .finally(() => {
-        setTimeout(() => {
-          window.scrollTo({
-            top: updatedTop,
-            behavior: "smooth"
-          });
-        }, 100);
-        
-        setCreationLoading(false);
-      })
-    }
+    const {updatedTop, updatedLeft} = findFreeSpace(chartPositions, positionObj, document.body.clientWidth);
+    return dashboardContext.insertChart(DefaultChartDetails(inputTitle), {
+      x: updatedLeft,
+      y: updatedTop,
+      w: positionObj.w,
+      h: positionObj.h
+    })
+    .finally(() => {
+      setTimeout(() => {
+        window.scrollTo({
+          top: updatedTop,
+          behavior: "smooth"
+        });
+      }, 200);
+    })
   }
 
   return (
@@ -115,26 +70,14 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
         justifyContent: "center",
       }}
     >
-    <Box sx={{
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      paddingRight: "20px"
-    }}>
-    <Input
-      id="chartname"
-      defaultValue={inputTitle}
-      placeholder="Chart Name"
-      onChange={handleInputTitle}
-      sx={{
-        width: "300px"
+    <CollapseForm 
+      formName="Create Chart"
+      inputState={{
+        value: inputTitle,
+        setValue: setInputTitle,
       }}
+      submitHandler={handleNew}
     />
-    </Box>
-    <CustomeIconButton title={`Insert Chart`} loading={creationLoading} handler={handleNew}>
-      <AddCircleOutlineIcon fontSize="small"/>
-    </CustomeIconButton>
     </Box>
   );
 }
