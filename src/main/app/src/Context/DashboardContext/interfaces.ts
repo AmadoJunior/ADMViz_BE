@@ -15,6 +15,8 @@ export interface IChartPosition {
   h: number;
 }
 
+export type ChartPosition = Omit<IChartPosition, "id">;
+
 export interface IChartDetails {
   name: string;
   srcUrl: string;
@@ -46,10 +48,10 @@ export interface IDashboardContext {
   setCharts: React.Dispatch<React.SetStateAction<IChart[]>>,
 
   //Helpers
-  insertChart: (chartDetails: IChartDetails, chartPosition?: IChartPosition) => void,
-  removeChart: (chartId: number) => void,
-  updateChartDetails: (chartId: number, chartDetails: IChartDetails) => void,
-  updateChartPosition: (chartId: number, chartPosition: IChartPosition) => void,
+  insertChart: (chartDetails: IChartDetails, chartPosition?: ChartPosition) => Promise<void>,
+  removeChart: (chartId: number) => Promise<void>,
+  updateChartDetails: (chartId: number, chartDetails: IChartDetails) => Promise<void>,
+  updateChartPosition: (chartId: number, chartPosition: IChartPosition) => Promise<void>,
   getCharts: () => void,
   getChartById: (chartId: number) => IChart | undefined ,
 }

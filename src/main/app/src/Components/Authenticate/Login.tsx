@@ -1,9 +1,13 @@
 //Deps
 import React from "react";
+import toast from "react-hot-toast";
 
 //MUI
-import {Box, Avatar, Typography, TextField, Button} from "@mui/material";
+import {Box, Avatar, Typography, TextField} from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+
+//MUI LAB
+import { LoadingButton } from '@mui/lab';
 
 //Context
 import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDetailsContext";
@@ -13,19 +17,20 @@ import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDeta
 //Props
 interface ILoginProps {
   children?: React.ReactNode;
+  authProcessing: boolean;
+  setAuthProcessing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Login: React.FC<ILoginProps> = (props): JSX.Element => {
+const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.Element => {
   //User Details
   const userDetailsContext = React.useContext(UserDetailsContext);
 
   //Methods
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    userDetailsContext.handleErrored(false);
     const formData = new FormData(event.currentTarget);
-    console.log(formData.get("username"), formData.get("password"))
     if(formData.get("username") && formData.get("password")){
+      setAuthProcessing(true);
       fetch(`/api/perform_login`, {
         method: "POST",
         body: formData,
@@ -33,16 +38,19 @@ const Login: React.FC<ILoginProps> = (props): JSX.Element => {
       .then(response => {
         console.log(response);
         if(response.status === 200){
+          toast.success("Successfull Login");
           return userDetailsContext.handleIsAuthenticated();
         }
-        userDetailsContext.handleErrored(true);
+        throw new Error(`Failed Login: ${response.status}`);
       })
       .catch(e => {
-        userDetailsContext.handleErrored(true);
+        toast.error("Failed Login");
         console.error(e);
       })
+      .finally(() => {
+        setAuthProcessing(false);
+      })
     } else {
-      userDetailsContext.handleErrored(true);
     }
   };
 
@@ -81,14 +89,15 @@ const Login: React.FC<ILoginProps> = (props): JSX.Element => {
           id="password"
           autoComplete="current-password"
         />
-        <Button
+        <LoadingButton
           type="submit"
           fullWidth
           variant="contained"
+          loading={authProcessing}
           sx={{ mt: 3, mb: 2 }}
         >
           Sign In
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );

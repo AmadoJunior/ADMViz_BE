@@ -1,10 +1,10 @@
 //Deps
-import React from "react";
+import React, { ReactElement } from "react";
 import useSearchParam from "../useQueryState";
 
 //MUI
-import {Box, Avatar, Typography, TextField, FormControlLabel, Button, Checkbox, Grid} from "@mui/material";
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {Box, Button} from "@mui/material";
+import { LoadingButton } from '@mui/lab';
 
 //Components
 
@@ -16,6 +16,7 @@ interface IAuthenticateProps {
 
 const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): JSX.Element => {
   const [currentForm, setCurrentForm] = useSearchParam("authForm", "0");
+  const [authProcessing, setAuthProcessing] = React.useState(false);
 
   return (
     <Box
@@ -30,7 +31,10 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): 
       <Box sx={{
         maxWidth: "500px"
       }}>
-        {children?.length && children[parseInt(currentForm)]}
+        {children?.length && React.isValidElement(children[parseInt(currentForm)]) && React.cloneElement(children[parseInt(currentForm)] as ReactElement, {
+          authProcessing,
+          setAuthProcessing,
+        })}
       </Box>
       
       <Box sx={{
@@ -40,7 +44,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): 
       }}>
         {childrenProps?.map((item) => {
         return (
-          (parseInt(currentForm) === item.index ? null : <Button key={`${item.label}${String(item.index)}`} variant="outlined" onClick={() => {setCurrentForm(String(item.index))}}>{item.label}</Button>)
+          (parseInt(currentForm) === item.index ? null : <LoadingButton key={`${item.label}${String(item.index)}`} variant="outlined" loading={authProcessing} onClick={() => {setCurrentForm(String(item.index))}}>{item.label}</LoadingButton>)
         )
       })}
       </Box>

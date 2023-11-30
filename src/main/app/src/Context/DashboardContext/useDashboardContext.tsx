@@ -1,8 +1,9 @@
 //Deps
 import React, {createContext, useState} from "react";
+import toast from "react-hot-toast";
 
 //Interfaces
-import { IChart, IChartDetails, IChartPosition, IDashboardContext } from "./interfaces";
+import { IChart, IChartDetails, IChartPosition, ChartPosition, IDashboardContext } from "./interfaces";
 
 //Context
 export const DashboardContext = createContext<IDashboardContext>({
@@ -18,10 +19,10 @@ export const DashboardContext = createContext<IDashboardContext>({
   setCharts: () => {},
 
   //Helpers
-  updateChartDetails: (chartId: number, chartDetails: IChartDetails) => {},
-  updateChartPosition: (chartId: number, chartPosition: IChartPosition) => {},
-  insertChart(chartDetails: IChartDetails, chartPosition?: IChartPosition) {},
-  removeChart(chartId: number) {},
+  updateChartDetails: (chartId: number, chartDetails: IChartDetails): Promise<void> => Promise.reject(),
+  updateChartPosition: (chartId: number, chartPosition: IChartPosition): Promise<void> => Promise.reject(),
+  insertChart: (chartDetails: IChartDetails, chartPosition?: ChartPosition): Promise<void> => Promise.reject(),
+  removeChart: (chartId: number): Promise<void> => Promise.reject(),
   getCharts() {},
   getChartById(chartId: number) {
     return undefined;
@@ -42,8 +43,8 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
   const [charts, setCharts] = useState<IChart[]>([]);
 
   //Methods
-  const updateChartDetails = (chartId: number, chartDetails: IChartDetails) => {
-    fetch(`/api/dashboards/${dashboardId}/charts/${chartId}`, {
+  const updateChartDetails = (chartId: number, chartDetails: IChartDetails): Promise<void> => {
+    return fetch(`/api/dashboards/${dashboardId}/charts/${chartId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +52,6 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
       body: JSON.stringify(chartDetails)
     })
     .then((res) => {
-      console.log(res);
       if(res.status === 200) {
         setCharts(prev => {
           const updatedCharts = prev.map(chart => {
@@ -62,15 +62,29 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
           });
           return updatedCharts;
         })
+      } else {
+        throw new Error(`Failed Updating Chart Details: ${res.status}`);
       }
     })
     .catch(e => {
+      toast.error(`Failed Updating Chart Details`);
       console.error(e);
+      throw e;
     })
   }
 
-  const updateChartPosition = (chartId: number, chartPosition: IChartPosition) => {
-    fetch(`/api/dashboards/${dashboardId}/charts/${chartId}/position`, {
+  const updateChartPosition = (chartId: number, chartPosition: IChartPosition): Promise<void> => {
+    setCharts(prev => {
+      const updatedCharts = prev.map(chart => {
+        if (chart.chartId === chartId) {
+          return { ...chart, position: chartPosition };
+        }
+        return chart;
+      });
+      return updatedCharts;
+    })
+    
+    return fetch(`/api/dashboards/${dashboardId}/charts/${chartId}/position`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -78,26 +92,17 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
       body: JSON.stringify(chartPosition)
     })
     .then((res) => {
-      console.log(res);
-      if(res.status === 200) {
-        setCharts(prev => {
-          const updatedCharts = prev.map(chart => {
-            if (chart.chartId === chartId) {
-              return { ...chart, position: chartPosition };
-            }
-            return chart;
-          });
-          return updatedCharts;
-        })
-      }
+      if(res.status !== 200) throw new Error(`Failed Updating Chart Details: ${res.status}`);
     })
     .catch(e => {
+      toast.error(`Failed Updating Chart Position`);
       console.error(e);
+      throw e;
     })
   }
 
-  const insertChart = (chartDetails: IChartDetails, chartPosition?: IChartPosition) => {
-    fetch(`/api/dashboards/${dashboardId}/charts`, {
+  const insertChart = (chartDetails: IChartDetails, chartPosition?: ChartPosition): Promise<void> => {
+    return fetch(`/api/dashboards/${dashboardId}/charts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -108,33 +113,41 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
         position: chartPosition
       })
     })
-    .then((res) => {
-      console.log(res);
-      return res.json();
-    })
-    .then(data => {
-      console.log(data);
-      getCharts();
-    })
-    .catch(e => {
-      console.error(e);
-    })
+      .then((res) => {
+        if(res.status === 200){
+          return res.json();
+        }
+        throw new Error(`Failed Inserting Chart: ${res.status}`);
+      })
+      .then(data => {
+        if(data) {
+          getCharts();
+        } else {
+          throw new Error(`Failed Extracting Inserted Chart: ${JSON.stringify(data, null, 1)}`);
+        }
+      })
+      .catch(e => {
+        toast.error(`Failed Inserting Chart`);
+        console.error(e);
+        throw e;
+      })
   }
 
-  const removeChart = (chartId: number) => {
-    fetch(`/api/dashboards/${dashboardId}/charts/${chartId}`, {
+  const removeChart = (chartId: number): Promise<void> => {
+    return fetch(`/api/dashboards/${dashboardId}/charts/${chartId}`, {
       method: "DELETE"
     })
     .then((res) => {
-      console.log(res);
-      if(res.status === 200) {
-        setCharts(prev => {
-          return prev.filter((chart) => chart.chartId !== chartId)
-        })
+      if (res.status === 200) {
+        setCharts(prev => prev.filter((chart) => chart.chartId !== chartId));
+      } else {
+        throw new Error(`Failed Removing Chart: ${res.status}`);
       }
     })
     .catch(e => {
+      toast.error(`Failed Removing Chart`);
       console.error(e);
+      throw e;
     })
   }
 
@@ -147,11 +160,12 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
       method: "GET"
     })
     .then(res => {
-      console.log(res);
-      return res.json();
+      if(res.status === 200){
+        return res.json();
+      }
+      throw new Error(`Failed Fetching Charts: ${res.status}`);
     })
     .then(data => {
-      console.log(data);
       if(data?.["_embedded"]?.["charts"]) {
         setCharts(data?.["_embedded"]?.["charts"].map((chart: {
           id: number,
@@ -182,9 +196,12 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
             position: chart?.position,
           }
         }));
+        return;
       }
+      throw new Error(`Failed Extracting Fetched Charts: ${JSON.stringify(data, null, 1)}`);
     })
     .catch(e => {
+      toast.error(`Failed Fetching Charts`);
       console.error(e);
     })
   }

@@ -8,6 +8,9 @@ import { NumberSize } from "re-resizable";
 import { Direction } from "re-resizable/lib/resizer";
 import DeleteIcon from '@mui/icons-material/Delete';
 
+//MUI LAB
+import { LoadingButton } from '@mui/lab';
+
 //Context
 import { DashboardContext } from '../../../../Context/DashboardContext/useDashboardContext';
 
@@ -29,6 +32,9 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   //Window Context
   const dashboardContext = React.useContext(DashboardContext);
 
+  //Ref
+  const moduleRef = React.useRef<HTMLDivElement>(null);
+
   //Props Destruct
   const { id } = position;
 
@@ -38,6 +44,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   const [x, setX] = useState(position.x);
   const [y, setY] = useState(position.y);
   const initialPosition = React.useRef<{ top: number; left: number }>();
+  const [removalLoading, setRemovalLoading] = React.useState(false);
 
   //DnD Manager
   const dndManager = useDragDropManager();
@@ -68,8 +75,8 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
         document.documentElement.clientWidth - (GUTTER_SIZE*3) - w * COLUMN_WIDTH,
       ),
     );
-  
-    const collidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, newLeft, newTop);
+    const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
+    const collidingModule = isColliding(chartPositions, position, newLeft, newTop);
     if (!collidingModule) {
       updatePosition(newLeft, newTop);
     } else {
@@ -79,7 +86,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       const clampedTop = Math.max(0, updatedTop);
       const clampedLeft = Math.max(GUTTER_SIZE, Math.min(updatedLeft, document.documentElement.clientWidth - w * COLUMN_WIDTH));
       
-      const updatedCollidingModule = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), position, clampedLeft, clampedTop);
+      const updatedCollidingModule = isColliding(chartPositions, position, clampedLeft, clampedTop);
       
       if (!updatedCollidingModule) {
         updatePosition(clampedLeft, clampedTop);
@@ -129,7 +136,8 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     const tentativeH = h + d.height;
 
     // Check for collisions with the tentative new size
-    const collision = isColliding(dashboardContext?.charts?.map((chart) => chart?.position), {
+    const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
+    const collision = isColliding(chartPositions, {
       ...position,
       w: tentativeW,
       h: tentativeH
@@ -159,9 +167,18 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     console.log("start")
   }
 
+  const handleChartRemoval = (chartId: number) => {
+    setRemovalLoading(true);
+    dashboardContext.removeChart(chartId)
+    .finally(() => {
+      setRemovalLoading(false);
+    })
+  }
+
   //Render
   return (
       <Box
+        ref={moduleRef}
         display="flex"
         position="absolute"
         top={moduleY2LocalY(y)}
@@ -201,16 +218,16 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
           }}
           draggable
         >
-          <Button variant='contained' color="error"  sx={{
+          <LoadingButton variant='contained' color="error" loading={removalLoading}  sx={{
             position: "absolute",
             top: "10px",
             left: "10px",
             zIndex: 5,
           }}
-            onClick={() => dashboardContext.removeChart(chartId)}
+            onClick={() => handleChartRemoval(chartId)}
           >
             <DeleteIcon/>
-          </Button>
+          </LoadingButton>
           {children}
         </Box>
         </Resizable>

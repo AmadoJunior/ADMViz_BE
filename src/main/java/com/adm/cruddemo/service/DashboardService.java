@@ -84,8 +84,12 @@ public class DashboardService {
         return dashboardRepo.save(dashboardToUpdate);
     }
 
-    public ChartPosition createDefaultChartPosition(Chart parentChart) {
+    public ChartPosition createDefaultChartPosition() {
         return new ChartPosition(0, 0, 50, 565);
+    }
+
+    public ChartPosition createChartPosition(ChartPositionRecord positionRecord) {
+        return new ChartPosition(positionRecord.x(), positionRecord.y(), positionRecord.w(), positionRecord.h());
     }
 
     public Dashboard insertChart(long userId, long dashboardId, ChartRecord chartRecord) throws RuntimeException {
@@ -115,8 +119,8 @@ public class DashboardService {
         newChart.setToDate(chartRecord.toDate());
 
         //Position
-        ChartPosition defaultChartPosition = createDefaultChartPosition(newChart);
-        newChart.addPosition(defaultChartPosition);
+        ChartPosition curChartPos = chartRecord.position() == null ? createDefaultChartPosition() : createChartPosition(chartRecord.position());
+        newChart.addPosition(curChartPos);
 
         //Save Dashboard
         foundDashboard.get().addChart(newChart);

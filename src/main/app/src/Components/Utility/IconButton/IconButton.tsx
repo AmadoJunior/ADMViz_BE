@@ -1,17 +1,20 @@
 //Deps
 
 //MUI
-import { IconButton, Box } from "@mui/material";
+import { Box } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from "@mui/material/Tooltip";
 
 //Props
 interface IIconButtonProps {
   title: string,
+  loading?: boolean,
+  disabled?: boolean,
   handler: () => void,
   children?: React.ReactNode;
 }
 
-const CustomIconButton: React.FC<IIconButtonProps> = ({title, handler, children}): JSX.Element => {
+const CustomIconButton: React.FC<IIconButtonProps> = ({title, loading, disabled, handler, children}): JSX.Element => {
   return (
     <Box
       sx={{
@@ -20,15 +23,25 @@ const CustomIconButton: React.FC<IIconButtonProps> = ({title, handler, children}
       }}
     >
       <Tooltip placement="bottom" arrow title={title}>
-        <IconButton
+        <Box
           onClick={handler}
           sx={[
             {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+
               padding: "6px",
-              border: "1px solid",
+
+              borderWidth: "1px",
+              borderStyle: "solid",
               borderColor: "#302f2f",
+              borderRadius: "100%",
+
               boxShadow: 6,
               backgroundColor: "background.paper",
+
+              cursor: "pointer",
             },
             () => ({
               "&:hover": {
@@ -37,8 +50,8 @@ const CustomIconButton: React.FC<IIconButtonProps> = ({title, handler, children}
             }),
           ]}
         >
-          {children}
-        </IconButton>
+          {loading ? (<CircularProgress size={20}/>) : children}
+        </Box>
       </Tooltip>
     </Box>
   );

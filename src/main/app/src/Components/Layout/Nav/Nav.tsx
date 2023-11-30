@@ -1,6 +1,10 @@
 //Deps
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
+
+//MUI LAB
+import { LoadingButton } from '@mui/lab';
 
 //MUI
 import {
@@ -10,7 +14,6 @@ import {
   Menu,
   MenuItem,
   Button,
-  Container,
   Toolbar,
   SvgIcon,
   IconButton,
@@ -53,28 +56,44 @@ const pages: IPage[] = [
 ];
 
 const Nav: React.FC<INavProps> = (): JSX.Element => {
+  //User Details
   const userDetailsContext = React.useContext(UserDetailsContext);
+
+  //Misc
   const theme = useTheme();
   const location = useLocation();
+
+  const [logoutLoading, setLogoutLoading] = React.useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
 
+  //Mobile Helpers
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+
+  //Logout Handler
   const handleLogout = () => {
-    console.log("logging out");
+    setLogoutLoading(true);
     fetch(`/api/perform_logout`)
     .then(response => {
-      console.log(response);
-      userDetailsContext.clearAuthentication();
+      if(response.status === 200){
+        toast.success("Successfull Logout");
+        userDetailsContext.clearAuthentication();
+      } else {
+        throw new Error(`Failed Logout: ${response.status}`);
+      }
     })
     .catch(e => {
+      toast.error("Failed Logout");
       console.error(e);
+    })
+    .finally(() => {
+      setLogoutLoading(false);
     })
   }
 
@@ -191,14 +210,15 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               );
             })}
           </Box>
-            {userDetailsContext.isAuthenticated && <Button 
+            {userDetailsContext.isAuthenticated && <LoadingButton 
+              loading={logoutLoading}
               onClick={handleLogout} 
               variant="outlined"
               color="error"
               size="small"
               >
                 Log Out
-            </Button>}
+            </LoadingButton>}
         </Toolbar>
       </Box>
     </AppBar>

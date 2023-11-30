@@ -1,9 +1,11 @@
 //Deps
 import { useMemo, useEffect, useState, useContext, useRef } from "react";
 import * as Comlink from "comlink";
+import toast from "react-hot-toast";
 
 //MUI
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
+import { LoadingButton } from '@mui/lab';
 import SettingsIcon from "@mui/icons-material/Settings";
 
 //Components
@@ -38,6 +40,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
   //Worker Status
   const [workerStatus, setWorkerStatus] = useState(200);
   const [workerError, setWorkerError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   //Chart Worker
   const worker = useMemo(
@@ -46,7 +49,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
   );
 
   //Data
-  const [isActive, setIsActive] = useState<boolean>(false);
+  const [settingsActive, setSettingsActive] = useState<boolean>(false);
   const [chartData, setChartData] = useState<IChartData>({
     labels: [],
     datasets: [],
@@ -54,9 +57,17 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
 
   //Effects
   useEffect(() => {
-    console.log(chartDetails);
-    if (chartDetails) {
-      console.log("Called Worker Method...")
+    if (
+        chartDetails &&
+        chartDetails.srcUrl?.length &&
+        chartDetails.dataKey?.length &&
+        chartDetails.labelKey?.length &&
+        chartDetails.method?.length &&
+        chartDetails.chartType?.length &&
+        chartDetails.toDate
+    ) {
+      console.log("Called Worker Method...");
+      setIsLoading(true);
       worker.fetchData({
         srcUrl: chartDetails.srcUrl,
         dataKey: chartDetails.dataKey,
@@ -70,26 +81,32 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
         apiKey: chartDetails.apiKey,
       })
       .then((data) => {
-        console.log(data);
         const { status, chartData } = data;
-        console.log(status);
         setWorkerStatus(status);
         if (status === 200) {
           setWorkerError(false);
           setChartData(chartData);
-        } else {
-          setWorkerError(true);
-          setChartData({
-            labels: [],
-            datasets: [],
-          });
+          return;
         }
+        throw new Error(`Worker Failed with Status: ${status}`);
       })
       .catch((e) => {
+        setWorkerError(true);
+        setChartData({
+          labels: [],
+          datasets: [],
+        });
+
+        toast.error("Worker Failed Fetching Data");
+        
         console.error(e);
       })
+      .finally(() => {
+        setIsLoading(false);
+      })
     } else {
-      console.log("Worker Post Didnt Run")
+      console.log("Worker Post Didnt Run");
+      setSettingsActive(true);
     }
   }, [chartDetails, worker]);
 
@@ -97,7 +114,7 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
       <Box
         sx={{
           display: "flex",
-          flexDirection: isActive ? "column" : "row",
+          flexDirection: settingsActive ? "column" : "row",
           width: "100%",
           height: "100% !important",
           padding: "20px 20px 20px 20px",
@@ -133,20 +150,20 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
           <CustomIconButton
             title="Settings"
             handler={() =>
-              setIsActive(prev => !prev)
+              setSettingsActive(prev => !prev)
             }
           >
-            <SettingsIcon />
+            <SettingsIcon fontSize="small"/>
           </CustomIconButton>
         </Box>
-        <ChartSettings chartId={chartId} isActive={isActive} setIsActive={setIsActive}/>
+        <ChartSettings chartId={chartId} isActive={settingsActive} setIsActive={setSettingsActive}/>
         <Box
           sx={{
             position: "relative",
             width: "100%",
           }}
         >
-          {!isActive ? (
+          {!settingsActive && (
             workerError ? (
               <Box
                 sx={{
@@ -168,13 +185,17 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
                 </Typography>
                 <Typography>{workerStatus}</Typography>
               </Box>
+            ) : isLoading ? (
+              <Skeleton variant="rounded" sx={{
+                height: "100%"
+              }}/>
             ) : (
-              <AbstractChart
-                type={chartDetails.chartType as ChartType}
-                data={chartData}
-              />
+            <AbstractChart
+              type={chartDetails.chartType as ChartType}
+              data={chartData}
+            />
             )
-          ) : null}
+          )}
         </Box>
       </Box>
   );

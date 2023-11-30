@@ -9,6 +9,7 @@ public record ChartRecord(
         String method,
         String apiKey,
         Long fromDate,
-        Long toDate
+        Long toDate,
+        ChartPositionRecord position
 ) {
 }

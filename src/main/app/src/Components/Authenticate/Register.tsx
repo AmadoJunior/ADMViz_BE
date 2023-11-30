@@ -1,53 +1,69 @@
 //Deps
 import React from "react";
 import useSearchParam from "./../useQueryState";
+import toast from "react-hot-toast";
 
 //MUI
-import {Box, Avatar, Typography, TextField, FormControlLabel, Button, Checkbox, Grid} from "@mui/material";
+import {Box, Avatar, Typography, TextField} from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
+//MUI LAB
+import { LoadingButton } from '@mui/lab';
+
 //Context
-import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDetailsContext";
 
 //Props
 interface IRegisterProps {
   children?: React.ReactNode;
+  authProcessing: boolean;
+  setAuthProcessing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Register: React.FC<IRegisterProps> = (props): JSX.Element => {
-  const userDetailsContext = React.useContext(UserDetailsContext);
+const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing}): JSX.Element => {
   const [currentForm, setCurrentForm] = useSearchParam("authForm", "0");
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    userDetailsContext.handleErrored(false);
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data = {
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      userName: formData.get("userName"),
-      email: formData.get("email"),
-      password: formData.get("password"),
+    const jsonData = {
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      userName: formData.get("userName") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
     }
-    console.log(data);
-    const basePath = "http://localhost:8080";
-    fetch(`/api/perform_register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-    .then(response => {
-      console.log(response);
-      if(response?.status !== 201) throw new Error("Error: " + response);
-      userDetailsContext.handleErrored(false);
-      setCurrentForm();
-    })
-    .catch(e => {
-      userDetailsContext.handleErrored(true);
-      console.error(e);
-    })
+    if(
+      jsonData.firstName?.length && 
+      jsonData.lastName?.length && 
+      jsonData.userName?.length && 
+      jsonData.email?.length && 
+      jsonData.password?.length
+    ) {
+      setAuthProcessing(true);
+      fetch(`/api/perform_register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonData),
+      })
+      .then(response => {
+        console.log(response);
+        if(response?.status === 201) {
+          toast.success("Successfull Register");
+          return setCurrentForm();
+        }
+        throw new Error("Error: " + response);
+      })
+      .catch(e => {
+        toast.error("Failed Register");
+        console.error(e);
+      })
+      .finally(() => {
+        setAuthProcessing(false);
+      })
+    }
+    
   };
 
   return (
@@ -112,14 +128,15 @@ const Register: React.FC<IRegisterProps> = (props): JSX.Element => {
           id="password"
           autoComplete="current-password"
         />
-        <Button
+        <LoadingButton
           type="submit"
           fullWidth
           variant="contained"
+          loading={authProcessing}
           sx={{ mt: 3, mb: 2 }}
         >
           Register
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );

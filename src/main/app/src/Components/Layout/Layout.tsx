@@ -1,12 +1,10 @@
 //Deps
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
 
 //MUI
-import { Box } from "@mui/material";
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { Box, useTheme } from "@mui/material";
 
 //Context
 import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDetailsContext";
@@ -14,40 +12,17 @@ import { UserDetailsContext } from "../../Context/UserDetailsContext/useUserDeta
 //Components
 import Nav from "./Nav/Nav";
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref,
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 //Props
 interface ILayoutProps {
   children?: React.ReactNode;
 }
 
 const Layout: React.FC<ILayoutProps> = (): JSX.Element => {
+  //Theme
+  const theme = useTheme();
+
   //User
   const userDetailsContext = React.useContext(UserDetailsContext);
-
-  //Errors
-  const [open, setOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if(userDetailsContext?.errored) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
-  }, [userDetailsContext?.errored])
-
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpen(false);
-    userDetailsContext.handleErrored(false);
-  };
 
   return (
     <Box
@@ -65,12 +40,23 @@ const Layout: React.FC<ILayoutProps> = (): JSX.Element => {
             width: "100%",
           }}
         >
-          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert severity="error">Something Went Wrong!</Alert>
-          </Snackbar>
+          <Toaster 
+            position="top-center"
+            toastOptions={{
+              duration: 5000,
+              style: {
+                background: theme.palette.background.paper,
+                color: "white"
+              },
           
+              success: {
+                duration: 3000,
+                style: {
+                },
+              },
+            }}
+          />
           <Outlet context={{isAuthenticated: userDetailsContext?.isAuthenticated}}/>
-          
         </Box>
       
     </Box>

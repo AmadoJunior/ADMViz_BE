@@ -71,3 +71,45 @@ export const findNearestFreePosition = (
     updatedTop,
   };
 };
+
+export const findFreeSpace = (
+  chartPositions: IChartPosition[],
+  currentModule: IChartPosition,
+  clientWidth: number,
+) => {
+  let availableSpaces = chartPositions
+    .map(pos => ({
+      x: pos.x + pos.w,
+      y: pos.y
+    }))
+    .filter(space => moduleW2LocalWidth(space.x) + moduleW2LocalWidth(currentModule.w) <= clientWidth);
+
+  // Add initial position
+  availableSpaces.push({ x: 0, y: 0 });
+
+  // Sort by y, then by x
+  availableSpaces.sort((a, b) => a.y - b.y || a.x - b.x);
+
+  for (const space of availableSpaces) {
+    let isSpaceFree = true;
+
+    for (const pos of chartPositions) {
+      if (space.x < pos.x + pos.w && 
+          space.x + moduleW2LocalWidth(currentModule.w) > pos.x &&
+          space.y < pos.y + pos.h && 
+          space.y + currentModule.h > pos.y) {
+        isSpaceFree = false;
+        break;
+      }
+    }
+
+    //Free Space Found
+    if (isSpaceFree) {
+      return { updatedLeft: space.x + GUTTER_SIZE/COLUMN_WIDTH, updatedTop: space.y};
+    }
+  }
+
+  //Return Lowest Pos
+  let lowestPosition = chartPositions.reduce((max, pos) => Math.max(max, pos.y + pos.h), 0);
+  return { updatedLeft: currentModule.x, updatedTop: lowestPosition + GUTTER_SIZE };
+};

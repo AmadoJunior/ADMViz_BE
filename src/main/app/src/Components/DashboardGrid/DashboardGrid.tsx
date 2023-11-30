@@ -1,12 +1,18 @@
 //Deps
 import React from "react";
+import toast from "react-hot-toast";
 
 //MUI
-import {Box, IconButton, Button, Tab, Input, Typography, useTheme} from "@mui/material";
-import Tabs, { tabsClasses } from '@mui/material/Tabs';
+import {Box, Button, Tab, Input, Typography, useTheme} from "@mui/material";
+import { tabsClasses } from '@mui/material/Tabs';
+
+//MUI LAB
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import { LoadingButton } from '@mui/lab';
+
+//Icons
 import DeleteIcon from '@mui/icons-material/Delete';
 
 //Context
@@ -19,17 +25,27 @@ import CustomIconButton from "../Utility/IconButton/IconButton";
 interface ICustomTabInput {
   label: string,
   dashboardId: number,
+  tabValue: string,
+  curTab: string,
+  isLoading: boolean,
   onDelete: (dashboardId: number) => void,
 }
-function CustomTab({ label, dashboardId, onDelete }: ICustomTabInput) {
+function CustomTab({ label, dashboardId, tabValue, curTab, isLoading, onDelete }: ICustomTabInput) {
   return (
     <Box display="flex" alignItems="center">
       <Typography sx={{
         marginRight: "15px"
       }}>{label}</Typography>
-      <CustomIconButton title={`Delete Dashboard`} handler={() => onDelete(dashboardId)}>
-        <DeleteIcon fontSize="small"/>
-      </CustomIconButton>
+      {
+        curTab === tabValue && 
+        <CustomIconButton title={`Delete Dashboard`} loading={isLoading} handler={() => onDelete(dashboardId)}>
+          
+            <DeleteIcon fontSize="small" sx={{
+              color: "white"
+            }}/>
+          
+        </CustomIconButton>
+      }
     </Box>
   );
 }
@@ -59,37 +75,45 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   //Form State
+  const [removalLoading, setRemoveLoading] = React.useState(false);
+  const [creationLoading, setCreationLoading] = React.useState(false);
   const [newChartName, setNewChartName] = React.useState("");
 
+  //Effect
   React.useEffect(() => {
     if(userDetailsContext?.isAuthenticated && userDetailsContext?.userDetails){
       const { id } = userDetailsContext?.userDetails;
-      fetch(`/sdr/users/${id}/dashboards`, {
-        method: "GET",
-      })
-      .then(res => {
-        console.log(res);
-        return res.json();
-      })
-      .then(data => {
-        console.log(data);
-        if(data?.["_embedded"]?.["dashboards"]) {
-          setDashboards(data?.["_embedded"]?.["dashboards"]);
-        }
-      })
-      .catch(e => {
-        console.error(e);
-      })
+      fetchDashboards(id);
     }
-    
   }, [userDetailsContext?.isAuthenticated])
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setCurTab(newValue);
-  };
+  //API Helpers
+  const fetchDashboards = (userId: number) => {
+    fetch(`/sdr/users/${userId}/dashboards`, {
+      method: "GET",
+    })
+    .then(res => {
+      if(res.status === 200){
+        return res.json();
+      }
+      throw new Error(`Failed Fetching Dashboards: ${res.status}`);
+    })
+    .then(data => {
+      console.log(data);
+      if(data?.["_embedded"]?.["dashboards"]) {
+        return setDashboards(data?.["_embedded"]?.["dashboards"]);
+      }
+      throw new Error(`Failed Extracting Dashboards: ${JSON.stringify(data, null, 1)}`);
+    })
+    .catch(e => {
+      toast.error("Failed Fetching Dashboards");
+      console.error(e);
+    })
+  }
 
   const handleNew = (dashboardName: string) => {
     if(userDetailsContext?.userDetails){
+      setCreationLoading(true);
       fetch(`/api/dashboards`, {
         method: "POST",
         headers: {
@@ -100,11 +124,12 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
         })
       })
         .then(res => {
-          console.log(res);
-          return res.json();
+          if(res.status === 200){
+            return res.json();
+          }
+          throw new Error(`Failed Creating Dashboard: ${res.status}`);
         })
         .then(data => {
-          console.log(data);
           if(data) {
             setDashboards(prev => [
               ...prev, 
@@ -115,31 +140,48 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
             ]);
             setIsOpen(false);
             setNewChartName("");
+            return;
           }
+          throw new Error(`Failed Retrieving Created Dashboard: ${JSON.stringify(data, null, 1)}`);
         })
         .catch(e => {
+          toast.error("Failed Creating Dashboard");
           console.error(e);
+        })
+        .finally(() => {
+          setCreationLoading(false);
         })
     }
   }
 
   const handleRemove = (dashboardId: number) => {
     if(userDetailsContext?.userDetails){
+      setRemoveLoading(true);
       fetch(`/api/dashboards/${dashboardId}`, {
         method: "DELETE",
       })
         .then(res => {
-          console.log(res);
           if(res?.status === 200) {
             setDashboards(prev => prev.filter((value) => value?.id !== dashboardId));
             setCurTab("0");
+            return;
           }
+          throw new Error(`Failed Removing Dashboard: ${res.status}`);
         })
         .catch(e => {
+          toast.error("Failed Removing Dashboard");
           console.error(e);
+        })
+        .finally(() => {
+          setRemoveLoading(false);
         })
     }
   }
+
+  //Event Handlers
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setCurTab(newValue);
+  };
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -179,7 +221,16 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
                   return (
                     <Tab
                       key={`TabList:${dashboard.name}${index}`}
-                      label={<CustomTab label={dashboard.name} dashboardId={dashboard.id} onDelete={() => handleRemove(dashboard.id)} />}
+                      label={
+                        <CustomTab 
+                          label={dashboard.name} 
+                          dashboardId={dashboard.id}
+                          tabValue={String(index)}
+                          curTab={curTab}
+                          isLoading={removalLoading}
+                          onDelete={() => handleRemove(dashboard.id)} 
+                        />
+                      }
                       value={String(index)}
                     />
                   )
@@ -194,13 +245,13 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
                     <Box sx={{
                       display: "flex"
                     }}>
-                    <Input placeholder="Dashboard Name" sx={{
+                    <Input placeholder="Dashboard Name" disabled={creationLoading} sx={{
                       width: "300px"
                     }} value={newChartName} onChange={handleInput}></Input>
-                    <Button variant="outlined" size="small" sx={{
+                    <LoadingButton variant="outlined" size="small" loading={creationLoading} sx={{
                       marginLeft: "15px"
-                    }} onClick={() => handleNew(newChartName)}>Apply</Button>
-                    <Button variant="outlined" size="small" color="error" sx={{
+                    }} onClick={() => handleNew(newChartName)}>Apply</LoadingButton>
+                    <Button variant="outlined" size="small" color="error" disabled={creationLoading} sx={{
                       marginLeft: "10px"
                     }} onClick={() => setIsOpen(false)}>Cancel</Button>
                     </Box>
