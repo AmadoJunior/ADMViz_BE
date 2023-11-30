@@ -75,8 +75,8 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
         alignItems: 'center',
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-        <LockOutlinedIcon color="primary"/>
+      <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+        <LockOutlinedIcon/>
       </Avatar>
       <Typography component="h1" variant="h5">
         Register
@@ -89,7 +89,6 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           id="firstName"
           label="First Name"
           name="firstName"
-          autoComplete="firstName"
         />
          <TextField
           margin="normal"
@@ -98,7 +97,7 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           id="lastName"
           label="Last Name"
           name="lastName"
-          autoComplete="lastName"
+
         />
          <TextField
           margin="normal"
@@ -107,7 +106,7 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           id="userName"
           label="User Name"
           name="userName"
-          autoComplete="userName"
+
         />
         <TextField
           margin="normal"
@@ -116,7 +115,6 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           id="email"
           label="Email Address"
           name="email"
-          autoComplete="email"
         />
         <TextField
           margin="normal"
@@ -126,7 +124,7 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           label="Password"
           type="password"
           id="password"
-          autoComplete="current-password"
+          autoComplete='new-password'
         />
         <LoadingButton
           type="submit"

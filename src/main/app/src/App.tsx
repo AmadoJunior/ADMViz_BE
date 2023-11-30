@@ -43,23 +43,10 @@ const darkTheme = createTheme({
         main: "#1976d2",
         contrastText: "#FFFFFF",
       },
-      secondary: {
-        main: "#302f2f"
-      },
       background: {
         default: "#08090a",
         paper: "#111214",
       },
-      success: {
-        light: "#81c784",
-        main: "#66bb6a",
-        dark: "#388e3c"
-      },
-      error: {
-        light: "#e57373",
-        main: "#f44336",
-        dark: "#d32f2f"
-      }
   },
 });
 

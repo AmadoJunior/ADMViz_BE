@@ -64,6 +64,7 @@ interface IDashboardGridProps {
 const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
   //Theme
   const theme = useTheme();
+  const [height, setHeight] = React.useState(0);
 
   //User
   const userDetailsContext = React.useContext(UserDetailsContext);
@@ -87,6 +88,22 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
       fetchDashboards(id);
     }
   }, [userDetailsContext?.isAuthenticated])
+
+  React.useEffect(() => {
+    // Function to handle the resize event
+    const handleResize = () => {
+      setHeight(document.documentElement.clientHeight);
+    };
+
+    // Set initial height
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   //API Helpers
   const fetchDashboards = (userId: number) => {
@@ -286,7 +303,7 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
           }}/>
           <Skeleton variant="rounded" sx={{
             marginTop: "10px",
-            height: `${document.documentElement.clientHeight - NAV_HEIGHT + DASH_CONTROLS_HEIGHT + GUTTER_SIZE*2}px`
+            height: `${height - NAV_HEIGHT + DASH_CONTROLS_HEIGHT + GUTTER_SIZE*2}px`
           }}/>
         </>
         

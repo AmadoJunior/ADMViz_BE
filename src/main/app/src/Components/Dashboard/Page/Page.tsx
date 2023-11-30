@@ -21,6 +21,7 @@ interface IPageProps {
 const Page: React.FC<IPageProps> = ({}) => {
   //State
   const dashboardContext = useContext(DashboardContext);
+  const [height, setHeight] = React.useState(0);
 
   // Wire the Module to DnD Drag System
   const [, drop] = useDrop(() => ({
@@ -36,13 +37,27 @@ const Page: React.FC<IPageProps> = ({}) => {
     return (
       Math.max(
         ...dashboardContext?.charts?.map(({ position: { y, h } }) => y + h),
-        document.documentElement.clientHeight - NAV_HEIGHT
+        height - NAV_HEIGHT
       ) +
       GUTTER_SIZE * 2
     );
-  }, [dashboardContext?.charts]);
+  }, [dashboardContext?.charts, height]);
 
-  console.log(containerHeight)
+  React.useEffect(() => {
+    // Function to handle the resize event
+    const handleResize = () => {
+      setHeight(document.documentElement.clientHeight);
+    };
+
+    // Set initial height
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   //Render
   return (

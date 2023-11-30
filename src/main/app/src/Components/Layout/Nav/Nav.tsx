@@ -201,6 +201,7 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
                     sx={[
                       {
                         mx: 1,
+                        backgroundColor: location.pathname === page.path ? "rgba(0, 0, 0, 0.3)" : "none"
                       },
                     ]}
                   >

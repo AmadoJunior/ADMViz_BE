@@ -63,8 +63,8 @@ const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.
         alignItems: 'center',
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-        <LockOutlinedIcon color="primary"/>
+      <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+        <LockOutlinedIcon/>
       </Avatar>
       <Typography component="h1" variant="h5">
         Sign In
@@ -74,10 +74,8 @@ const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.
           margin="normal"
           required
           fullWidth
-          id="username"
           label="User Name"
           name="username"
-          autoComplete="username"
         />
         <TextField
           margin="normal"
@@ -86,8 +84,6 @@ const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.
           name="password"
           label="Password"
           type="password"
-          id="password"
-          autoComplete="current-password"
         />
         <LoadingButton
           type="submit"

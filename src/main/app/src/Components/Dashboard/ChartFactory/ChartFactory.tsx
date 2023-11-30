@@ -122,16 +122,13 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
       justifyContent: "center",
       paddingRight: "20px"
     }}>
-    <InputLabel htmlFor="chartname" sx={{
-      width: "160px"
-    }}>New Chart</InputLabel>
     <Input
       id="chartname"
       defaultValue={inputTitle}
+      placeholder="Chart Name"
       onChange={handleInputTitle}
       sx={{
-        textAlign: "center",
-        width: "100%",
+        width: "300px"
       }}
     />
     </Box>
