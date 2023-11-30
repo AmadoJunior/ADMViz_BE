@@ -3,7 +3,7 @@ import React from "react";
 import toast from "react-hot-toast";
 
 //MUI
-import {Box, Button, Tab, Input, Typography, useTheme} from "@mui/material";
+import {Box, Button, Tab, Input, Typography, useTheme, Skeleton} from "@mui/material";
 import { tabsClasses } from '@mui/material/Tabs';
 
 //MUI LAB
@@ -21,6 +21,7 @@ import Dashboard from "../Dashboard/Dashboard";
 
 //Custom
 import CustomIconButton from "../Utility/IconButton/IconButton";
+import { DASH_CONTROLS_HEIGHT, GUTTER_SIZE, NAV_HEIGHT } from "../../constants";
 
 interface ICustomTabInput {
   label: string,
@@ -190,7 +191,7 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
 
   return (
     <Box sx={{
-      
+      padding: "10px 10px 10px 10px"
     }}>
       {
         dashboards?.length ?
@@ -203,7 +204,6 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
             justifyContent: "space-between",
             alignItems: "center",
             backgroundColor: `${theme.palette.background.paper} !important`,
-            margin: "10px 10px 0px 10px"
           }}>
             <TabList 
               onChange={handleChange} 
@@ -280,7 +280,16 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
           }
         </TabContext>
         :
-        null
+        <>
+          <Skeleton variant="rounded" sx={{
+            height: `${DASH_CONTROLS_HEIGHT}px`
+          }}/>
+          <Skeleton variant="rounded" sx={{
+            marginTop: "10px",
+            height: `${document.documentElement.clientHeight - NAV_HEIGHT + DASH_CONTROLS_HEIGHT + GUTTER_SIZE*2}px`
+          }}/>
+        </>
+        
       }
     </Box>
   );

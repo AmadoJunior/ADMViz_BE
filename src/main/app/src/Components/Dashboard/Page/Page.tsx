@@ -8,7 +8,7 @@ import Module from "./Module/Module";
 import WorkerChart from "./WorkerChart/WorkerChart";
 
 //Constants
-import { GUTTER_SIZE } from "../../../constants";
+import { GUTTER_SIZE, NAV_HEIGHT } from "../../../constants";
 
 //Context
 import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
@@ -32,12 +32,11 @@ const Page: React.FC<IPageProps> = ({}) => {
   drop(containerRef);
 
   //Calc Height
-  const MenuHeight = 214;
   const containerHeight = React.useMemo(() => {
     return (
       Math.max(
         ...dashboardContext?.charts?.map(({ position: { y, h } }) => y + h),
-        document.documentElement.clientHeight - MenuHeight
+        document.documentElement.clientHeight - NAV_HEIGHT
       ) +
       GUTTER_SIZE * 2
     );

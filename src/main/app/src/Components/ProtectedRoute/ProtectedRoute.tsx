@@ -16,9 +16,9 @@ const ProtectedRoute: React.FC<IProtectedRouteProps> = ({children}): JSX.Element
   return( 
     <>
     {
-      isAuthenticated ? 
-        (children) : 
-        (<Navigate to={`/authenticate`}></Navigate>)
+      isAuthenticated === false ? 
+        (<Navigate to={`/authenticate`}></Navigate>)  :
+        (children)
     }
   </>);
 }

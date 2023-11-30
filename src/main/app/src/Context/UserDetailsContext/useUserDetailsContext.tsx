@@ -7,7 +7,7 @@ import { IUserDetailsContext, IAuthority, IUserDetails } from "./interfaces";
 
 //Context
 export const UserDetailsContext = createContext<IUserDetailsContext>({
-  isAuthenticated: false,
+  isAuthenticated: null,
   handleIsAuthenticated: (): Promise<void> => { 
     return new Promise((resolve, reject) => reject())
   },
@@ -20,7 +20,7 @@ export const useUserDetailsContext = (): IUserDetailsContext => {
 
   //State
   const [userDetails, setUserDetails] = useState<IUserDetails | undefined>();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   //Methods
   const handleIsAuthenticated = (): Promise<any> => {

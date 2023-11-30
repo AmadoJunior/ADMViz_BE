@@ -31,7 +31,7 @@ const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userI
       height: "100%",
       width: "100%",
       overflowX: "hidden",
-      padding: "10px"
+      paddingTop: "10px"
     }}>
       <DashboardContext.Provider value={dashboardContext}>
             <Box sx={{

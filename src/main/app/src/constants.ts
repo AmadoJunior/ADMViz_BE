@@ -7,3 +7,5 @@ export const moduleW2LocalWidth = (moduleW: number) =>
 export const moduleX2LocalX = (moduleX: number) =>
   moduleW2LocalWidth(moduleX);
 export const moduleY2LocalY = (moduleY: number) => moduleY + GUTTER_SIZE;
+export const NAV_HEIGHT = 214;
+export const DASH_CONTROLS_HEIGHT = 58;

@@ -66,6 +66,7 @@ const darkTheme = createTheme({
 function App() {
   //User
   const userDetailsContext = useUserDetailsContext();
+  const [authProcessing, setAuthProcessing] = React.useState(false);
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -82,12 +83,12 @@ function App() {
                   <Route index element={<ProtectedRoute><DashboardGrid></DashboardGrid></ProtectedRoute>}/>
                   <Route path="/about" element={<ProtectedRoute><About/></ProtectedRoute>}/>
                   <Route path="/authenticate" element={
-                    <Authenticate childrenProps={[
+                    <Authenticate authProcessing={authProcessing} setAuthProcessing={setAuthProcessing} childrenProps={[
                       {label: "Sign In", index: 0},
                       {label: "Register", index: 1}
                     ]}>
-                      <Login/>
-                      <Register/>
+                      <Login authProcessing={authProcessing} setAuthProcessing={setAuthProcessing}/>
+                      <Register authProcessing={authProcessing} setAuthProcessing={setAuthProcessing}/>
                     </Authenticate>
                   }/>
                 </Route>

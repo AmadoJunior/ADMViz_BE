@@ -12,11 +12,12 @@ import { LoadingButton } from '@mui/lab';
 interface IAuthenticateProps {
   children?: React.ReactNode[];
   childrenProps: {label: string, index: number}[];
+  authProcessing: boolean;
+  setAuthProcessing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): JSX.Element => {
+const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps, authProcessing, setAuthProcessing}): JSX.Element => {
   const [currentForm, setCurrentForm] = useSearchParam("authForm", "0");
-  const [authProcessing, setAuthProcessing] = React.useState(false);
 
   return (
     <Box
@@ -31,10 +32,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps}): 
       <Box sx={{
         maxWidth: "500px"
       }}>
-        {children?.length && React.isValidElement(children[parseInt(currentForm)]) && React.cloneElement(children[parseInt(currentForm)] as ReactElement, {
-          authProcessing,
-          setAuthProcessing,
-        })}
+        {children?.length && children[parseInt(currentForm)]}
       </Box>
       
       <Box sx={{
