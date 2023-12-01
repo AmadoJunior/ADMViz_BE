@@ -2,6 +2,7 @@ package com.adm.cruddemo.service;
 
 import com.adm.cruddemo.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.adm.cruddemo.entity.User;
@@ -23,7 +24,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepo = userRepo;
     }
     @Override
+    @Cacheable("UserDetailsService:loadUserByUsername")
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        System.out.println("Database Accessed! Cache Mechanism Was Not Used.");
         return loadUser(userName);
     }
 
@@ -55,6 +58,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
-
-
 }

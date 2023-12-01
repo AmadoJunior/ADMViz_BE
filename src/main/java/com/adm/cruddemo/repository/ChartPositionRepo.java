@@ -1,6 +1,7 @@
 package com.adm.cruddemo.repository;
 
 import com.adm.cruddemo.entity.ChartPosition;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;

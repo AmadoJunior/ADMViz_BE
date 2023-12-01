@@ -36,7 +36,7 @@ public class DashboardsController {
             @RequestBody DashboardRecord newDashboard
     ) {
         try {
-            System.out.println(userDetails);
+            System.out.println(userDetails.getId());
             Dashboard savedDashboard = dashboardService.createDashboard(userDetails.getId(), newDashboard);
             logger.debug("Created Dashboard");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);

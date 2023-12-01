@@ -3,6 +3,7 @@ package com.adm.cruddemo.repository;
 import com.adm.cruddemo.entity.Chart;
 import com.adm.cruddemo.entity.Dashboard;
 import com.adm.cruddemo.entity.User;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

@@ -6,6 +6,7 @@ import com.adm.cruddemo.entity.User;
 import com.adm.cruddemo.service.AuthenticationService;
 import com.adm.cruddemo.service.CustomUserDetails;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.Cacheable;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -32,7 +32,7 @@ public class DashboardService {
     @Autowired
     private ChartPositionRepo chartPositionRepo;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     public DashboardService(){}
 
