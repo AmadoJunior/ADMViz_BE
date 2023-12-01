@@ -172,9 +172,9 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
       return prevInputs.map(input => {
         if(input.name === inputName) {
           if(input.exceptions?.length){
-            return {...input, exceptions: [...input.exceptions, exception]};
+            return {...input, error: true, errorMsg: exception.msg, exceptions: [...input.exceptions, exception]};
           } else {
-            return {...input, exceptions: [exception]};
+            return {...input, error: true, errorMsg: exception.msg, exceptions: [exception]};
           }
         }
         return input;
@@ -223,7 +223,7 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           const conflictValue = jsonData.userName;
           const conflictMessage = "Username Unavailable";
           addException(conflictTarget, {
-            regex: RegExp(conflictValue),
+            regex: RegExp(`^${conflictValue}$`),
             msg: conflictMessage
           });
           toast.error("Username Unavailable");
