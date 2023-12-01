@@ -1,5 +1,6 @@
 //Deps
 import React, { useContext, useEffect, useState } from 'react';
+import { getEmptyImage } from "react-dnd-html5-backend";
 import { Box, Button } from '@mui/material';
 import { useDrag, useDragDropManager } from 'react-dnd';
 import { useRafLoop } from 'react-use';
@@ -118,11 +119,17 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
   }
 
   // Wire the Module to DnD Drag System
-  const [, drag] = useDrag(() => ({
+  const [{isDragging}, drag, preview] = useDrag(() => ({
     type: 'module',
     item: onDragStart,
     end: onDragStop,
+    collect: monitor => ({
+      isDragging: !!monitor.isDragging(),
+    }),
   }), [y, x]);
+
+  //Disable Preview
+  preview(getEmptyImage(), { captureDraggingState: true });
 
   const onResizeStop = (
     e: MouseEvent | TouchEvent,
@@ -183,6 +190,10 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
         position="absolute"
         top={moduleY2LocalY(y)}
         left={moduleX2LocalX(x)}
+        sx={{
+          opacity: isDragging ? 0.5 : 1,
+          
+        }}
       >
         <Resizable
           boundsByDirection={true}
@@ -214,7 +225,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
           sx={{ 
             position: "relative",
             cursor: 'move', 
-            width: "100%"
+            width: "100%",
           }}
           draggable
         >
