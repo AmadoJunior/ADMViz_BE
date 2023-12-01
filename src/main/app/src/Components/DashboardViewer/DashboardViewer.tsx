@@ -37,6 +37,7 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
   const userDetailsContext = React.useContext(UserDetailsContext);
 
   //Dashboards
+  const [loading, setLoading] = React.useState(true);
   const [dashboards, setDashboards] = React.useState<IDashboard[]>([]);
 
   //Tab State
@@ -88,6 +89,9 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
       toast.error("Failed Fetching Dashboards");
       console.error(e);
     })
+    .finally(() => {
+      setLoading(false);
+    })
   }
 
   return (
@@ -95,7 +99,7 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
       padding: "10px 10px 10px 10px"
     }}>
       {
-        dashboards?.length ?
+        !loading ?
         <TabContext value={curTab}>
           <DashboardControl 
             curTab={curTab}

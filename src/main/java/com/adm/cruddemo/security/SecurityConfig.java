@@ -77,6 +77,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/perform_login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/perform_register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/perform_verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/self").permitAll()
                         .anyRequest().authenticated()
         );

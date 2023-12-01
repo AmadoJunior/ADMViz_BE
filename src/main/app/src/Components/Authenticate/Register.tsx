@@ -52,6 +52,8 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
         if(response?.status === 201) {
           toast.success("Successfull Register");
           return setCurrentForm();
+        } else if (response?.status === 409) {
+          toast.error("Username Already Taken");
         }
         throw new Error("Error: " + response);
       })

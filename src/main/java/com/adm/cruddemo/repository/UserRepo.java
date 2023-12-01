@@ -19,6 +19,12 @@ public interface UserRepo extends CrudRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.userName = :userName")
     public Optional<User> findByUserName(@Param("userName") String userName);
     @RestResource(exported = false)
+    @Query("SELECT u FROM User u WHERE u.userName = :userName OR u.email = :userName")
+    public Optional<User> findByUsernameOrEmail(@Param("userName") String userName);
+    @RestResource(exported = false)
+    @Query("SELECT u FROM User u WHERE u.verificationCode = :verificationCode")
+    public Optional<User> findByVerificaitonCode(@Param("verificationCode") String verificationCode);
+    @RestResource(exported = false)
     @Query("SELECT u FROM User u WHERE u.email = :email")
     public Optional<User> findByUserEmail(@Param("email") String email);
     @RestResource(exported = false)

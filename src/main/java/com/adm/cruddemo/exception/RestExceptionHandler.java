@@ -1,5 +1,6 @@
 package com.adm.cruddemo.exception;
 
+import jakarta.mail.MessagingException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.naming.AuthenticationException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
@@ -47,5 +49,26 @@ public class RestExceptionHandler {
         error.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler({
+            DuplicateUsernameException.class
+    })
+    public ResponseEntity<ErrorResponse> handleDuplicateUsername(RuntimeException exception){
+        ErrorResponse error = new ErrorResponse();
+        error.setStatus(HttpStatus.CONFLICT.value());
+        error.setMessage(HttpStatus.CONFLICT.getReasonPhrase());
+        error.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler({
+            MessagingException.class,
+            UnsupportedEncodingException.class
+    })
+    public ResponseEntity<ErrorResponse> handleGenericException(RuntimeException exception){
+        ErrorResponse error = new ErrorResponse();
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        error.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

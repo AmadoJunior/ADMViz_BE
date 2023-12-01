@@ -5,6 +5,7 @@ import com.adm.cruddemo.entity.Role;
 import com.adm.cruddemo.entity.User;
 import com.adm.cruddemo.service.AuthenticationService;
 import com.adm.cruddemo.service.CustomUserDetails;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -35,10 +41,10 @@ public class AuthenticationController {
     }
     @Transactional
     @PostMapping("/perform_register")
-    public ResponseEntity<?> registerUser(@RequestBody Register registerDTO){
+    public ResponseEntity<?> registerUser(@RequestBody Register registerDTO) throws UnsupportedEncodingException, MessagingException {
         if(authenticationService.isDuplicateUser(registerDTO.getUserName(), registerDTO.getEmail())){
             logger.debug("Duplicate User Found");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.CONFLICT.getReasonPhrase(), HttpStatus.CONFLICT);
         }
 
         if(authenticationService.isInvalidEmail(registerDTO.getEmail())){
@@ -63,8 +69,12 @@ public class AuthenticationController {
         newUser.setUserName(registerDTO.getUserName());
         newUser.setEmail(registerDTO.getEmail());
         newUser.setPassword(encodedPassword);
-        newUser.setEnabled(true);
         newUser.addRole(userRole);
+
+        //Verification
+        UUID randomCode = UUID.randomUUID();
+        newUser.setVerificationCode(randomCode.toString());
+        newUser.setEnabled(false);
 
         //Save
         User savedUser = authenticationService.createUser(newUser);
@@ -72,7 +82,23 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
 
+        authenticationService.sendVerificationEmail(savedUser, "http://localhost:8080/");
+
         logger.debug("User Successfully Created: " + savedUser.getId());
         return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(), HttpStatus.CREATED);
+    }
+
+    @Transactional
+    @GetMapping("/perform_verify")
+    public ResponseEntity<?> verifyUser(@RequestParam String code){
+        Optional<User> verifiedUser = authenticationService.verifyUser(code);
+
+        if(verifiedUser.isPresent()){
+            logger.debug("User Successfully Identified: " + verifiedUser.get().getEmail());
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:3000")).build();
+        }
+
+        logger.debug("User Failed Email Identification: " + code);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -23,6 +23,9 @@ public class User {
     private String email;
     @Column(name="password", nullable = false)
     private String password;
+    @JsonIgnore
+    @Column(name="verification_code")
+    private String verificationCode;
     @Column(name="enabled", nullable = false)
     private boolean enabled;
     @ManyToMany(fetch = FetchType.EAGER)
@@ -116,5 +119,10 @@ public class User {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
 }

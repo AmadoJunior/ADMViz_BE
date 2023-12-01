@@ -74,7 +74,7 @@ const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.
           margin="normal"
           required
           fullWidth
-          label="User Name"
+          label="Username or Email"
           name="username"
         />
         <TextField
