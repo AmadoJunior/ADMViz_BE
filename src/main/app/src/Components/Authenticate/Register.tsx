@@ -26,6 +26,10 @@ interface IFormInput {
   validators?: {
     regex: RegExp,
     msg: string,
+  }[],
+  exceptions?: {
+    regex: RegExp,
+    msg: string,
   }[]
 }
 
@@ -37,7 +41,7 @@ interface IRegisterFormData {
   password: string,
 }
 
-const defaultFormInputs = [
+const defaultFormInputs: IFormInput[] = [
   {
     label: "First Name",
     name: "firstName",
@@ -60,7 +64,7 @@ const defaultFormInputs = [
         regex: /^[a-zA-Z0-9]{5,}$/,
         msg: "Length Requirement: 5"
       },
-    ]
+    ],
   },
   {
     label: "Email",
@@ -72,7 +76,7 @@ const defaultFormInputs = [
         regex: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
         msg: "Invalid Email"
       },
-    ]
+    ],
   },
   {
     label: "Password",
@@ -84,7 +88,7 @@ const defaultFormInputs = [
         regex: /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
         msg: "Weak Password"
       },
-    ]
+    ],
   },
 ];
 
@@ -95,7 +99,7 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
   const validateInputs = (formData: FormData): Promise<IRegisterFormData> => {
     return new Promise((resolve, reject) => {
 
-      const {isValid, updatedFormInputs} = defaultFormInputs.reduce<{
+      const {isValid, updatedFormInputs} = formInputs.reduce<{
         isValid: boolean,
         updatedFormInputs: IFormInput[],
       }>((accumulator, currentValue, currentIndex) => {
@@ -110,7 +114,7 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
             errorMsg: "Required Field"
           }
         } else if(currentValue?.validators?.length){
-          for(let validator of currentValue.validators) {
+          for(const validator of currentValue.validators) {
             if(!validator.regex.test(inputValue)) {
               accumulator.isValid = false;
               accumulator.updatedFormInputs[currentIndex] = {
@@ -120,11 +124,28 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
               }
             }
           }
+        } else if(currentValue?.exceptions?.length) {
+          for(const exception of currentValue.exceptions){
+            if(exception.regex.test(inputValue)) {
+              accumulator.isValid = false;
+              accumulator.updatedFormInputs[currentIndex] = {
+                ...currentValue,
+                error: true,
+                errorMsg: exception.msg
+              }
+            }
+          }
+        } else {
+          accumulator.updatedFormInputs[currentIndex] = {
+            ...currentValue,
+            error: false,
+            errorMsg: ""
+          }
         }
         return accumulator;
       }, { 
         isValid: true,
-        updatedFormInputs: [...defaultFormInputs],
+        updatedFormInputs: [...formInputs],
       });
       
       setFormInputs(updatedFormInputs);
@@ -141,6 +162,42 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
       
       return reject(new Error("Invalid Form Fields"));
     })
+  }
+
+  const addException = (inputName: string, exception: {
+    regex: RegExp,
+    msg: string,
+  }) => {
+    setFormInputs(prevInputs => {
+      return prevInputs.map(input => {
+        if(input.name === inputName) {
+          if(input.exceptions?.length){
+            return {...input, exceptions: [...input.exceptions, exception]};
+          } else {
+            return {...input, exceptions: [exception]};
+          }
+        }
+        return input;
+      });
+    });
+  }
+
+  const removeException = (inputName: string, targetException: {
+    regex: RegExp,
+    msg: string,
+  }) => {
+    setFormInputs(prevInputs => {
+      return prevInputs.map(input => {
+        if(input.name === inputName && input.exceptions?.length) {
+          const updatedExceptions = input.exceptions.filter(exception => 
+            exception.msg !== targetException.msg ||
+            exception.regex.source !== targetException.regex.source
+          );
+          return {...input, exceptions: updatedExceptions};
+        }
+        return input;
+      });
+    });
   }
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -162,24 +219,14 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
           toast.success("Successfull Register");
           return setCurrentForm();
         } else if (response?.status === 409) {
-          setFormInputs(prevInputs => {
-            return prevInputs.map(input => {
-              if(input.name === 'userName') {
-                return {...input, error: true, errorMsg: "Username Already Taken"};
-              }
-              return input;
-            });
+          const conflictTarget = "userName";
+          const conflictValue = jsonData.userName;
+          const conflictMessage = "Username Unavailable";
+          addException(conflictTarget, {
+            regex: RegExp(conflictValue),
+            msg: conflictMessage
           });
-          toast.error("Username Already Taken");
-        } else {
-          setFormInputs(prevInputs => {
-            return prevInputs.map(input => {
-              if(input.name === 'userName') {
-                return {...input, error: false, errorMsg: ""};
-              }
-              return input;
-            });
-          });
+          toast.error("Username Unavailable");
         }
         throw new Error("Error: " + response);
       })
