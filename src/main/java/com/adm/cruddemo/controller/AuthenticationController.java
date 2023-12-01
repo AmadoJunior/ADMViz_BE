@@ -47,12 +47,12 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.CONFLICT.getReasonPhrase(), HttpStatus.CONFLICT);
         }
 
-        if(authenticationService.isInvalidEmail(registerDTO.getEmail())){
+        if(!authenticationService.isValidEmail(registerDTO.getEmail())){
             logger.debug("Invalid Email");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
 
-        if(authenticationService.isInvalidPassword(registerDTO.getPassword())){
+        if(!authenticationService.isValidPassword(registerDTO.getPassword())){
             logger.debug("Invalid Password");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }

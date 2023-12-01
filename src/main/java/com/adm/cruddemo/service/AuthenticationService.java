@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class AuthenticationService {
@@ -39,12 +40,16 @@ public class AuthenticationService {
         return userRepository.findByUserName(userName).isPresent() || userRepository.findByUserEmail(email).isPresent();
     }
 
-    public boolean isInvalidPassword(String password) {
-        return password.length() < 6;
+    public boolean isValidPassword(String password) {
+        return Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$")
+                .matcher(password)
+                .matches();
     }
 
-    public boolean isInvalidEmail(String email) {
-        return email.length() < 8;
+    public boolean isValidEmail(String email) {
+        return Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+                .matcher(email)
+                .matches();
     }
 
     public String encodePassword(String password) {
