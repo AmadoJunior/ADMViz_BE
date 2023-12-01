@@ -1,6 +1,5 @@
 package com.adm.cruddemo.service;
 
-import com.adm.cruddemo.repository.RoleRepo;
 import com.adm.cruddemo.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

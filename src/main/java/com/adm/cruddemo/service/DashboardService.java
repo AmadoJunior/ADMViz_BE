@@ -14,6 +14,8 @@ import com.adm.cruddemo.repository.ChartRepo;
 import com.adm.cruddemo.repository.DashboardRepo;
 import com.adm.cruddemo.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ public class DashboardService {
     private ChartRepo chartRepo;
     @Autowired
     private ChartPositionRepo chartPositionRepo;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     public DashboardService(){}
 

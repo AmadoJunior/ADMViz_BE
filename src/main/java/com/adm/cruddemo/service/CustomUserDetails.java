@@ -25,6 +25,9 @@ public class CustomUserDetails implements UserDetails {
 
     private boolean credentialsNonExpired;
 
+    public CustomUserDetails() {
+    }
+
     public CustomUserDetails(long id, String username, String email, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
