@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class HomeController {
-    @RequestMapping(value = { "/", "/dashboards", "/about" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/authenticate", "/dashboards", "/about" }, method = RequestMethod.GET)
     public String getIndex(HttpServletRequest request) {
         System.out.println(request.toString());
         return "/index.html";

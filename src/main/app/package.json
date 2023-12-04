@@ -41,7 +41,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "move": "xcopy \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\app\\build\\\" \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\resources\\static\\\" /s /y",
-    "bundle": "tsc && vite build && xcopy \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\app\\build\\\" \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\resources\\static\\\" /s /y",
+    "bundle": "tsc && vite build && xcopy \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\app\\dist\\\" \"C:\\Users\\adm27\\Documents\\Java_Projects\\cruddemoauto\\src\\main\\resources\\static\\\" /s /y",
     "preview": "vite preview"
   },
   "eslintConfig": {
@@ -66,7 +66,8 @@
     "@types/colormap": "^2.3.2",
     "@types/luxon": "^3.3.1",
     "@types/uuid": "^9.0.2",
-    "vite-plugin-comlink": "^3.0.5"
+    "vite-plugin-comlink": "^3.0.5",
+    "vite-plugin-pwa": "^0.17.2"
   },
   "proxy": "http://localhost:8080"
 }

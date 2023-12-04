@@ -8,7 +8,8 @@
     ],
     "types": [
       "vite/client",
-      "vite-plugin-comlink/client"
+      "vite-plugin-comlink/client",
+      "vite-plugin-pwa/client"
     ],
     "allowJs": true,
     "skipLibCheck": true,

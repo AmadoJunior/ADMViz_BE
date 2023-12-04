@@ -3,6 +3,7 @@ package com.adm.cruddemo.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,7 +20,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
@@ -73,7 +76,7 @@ public class SecurityConfig {
                 configure
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/index*", "/static/**", "/*.js", "/*.json", "/*.ico")
+                                "/index*", "/static/**", "/*.js", "/*.json", "/*.ico", "/*.png", "/*.webmanifest", "robots.txt")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/perform_login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/perform_register").permitAll()
