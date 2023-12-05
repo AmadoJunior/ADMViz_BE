@@ -57,7 +57,6 @@ const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.
   return (
     <Box
       sx={{
-        marginTop: 8,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

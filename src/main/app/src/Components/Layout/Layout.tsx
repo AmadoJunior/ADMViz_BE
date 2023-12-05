@@ -33,11 +33,13 @@ const Layout: React.FC<ILayoutProps> = (): JSX.Element => {
         alignItems: "center",
       }}
     >
-      
         <Nav />
         <Box
           sx={{
             width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center"
           }}
         >
           <Toaster 

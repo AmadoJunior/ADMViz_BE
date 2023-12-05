@@ -96,7 +96,8 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
 
   return (
     <Box sx={{
-      padding: "10px 10px 10px 10px"
+      padding: "10px 10px 10px 10px",
+      width: "100%"
     }}>
       {
         !loading ?

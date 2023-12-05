@@ -79,9 +79,9 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     if (!collidingModule) {
       updatePosition(newLeft, newTop);
       moduleRef.current?.scrollIntoView({
-        behavior: "instant",
-        inline: "nearest",
-        block: "nearest"
+        behavior: "instant" as ScrollBehavior,
+        inline: "nearest" as ScrollLogicalPosition,
+        block: "nearest" as ScrollLogicalPosition 
       });
     } else {
       
@@ -95,9 +95,9 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       if (!updatedCollidingModule) {
         updatePosition(clampedLeft, clampedTop);
         moduleRef.current?.scrollIntoView({
-          behavior: "instant",
-          inline: "nearest",
-          block: "nearest"
+          behavior: "instant" as ScrollBehavior,
+          inline: "nearest" as ScrollLogicalPosition,
+          block: "nearest" as ScrollLogicalPosition 
         });
       }
     }

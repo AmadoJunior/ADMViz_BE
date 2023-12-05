@@ -26,11 +26,16 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps, au
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        width: "100%"
+        width: "100%",
+        maxWidth: "500px",
+        backgroundColor: "background.paper",
+        padding: "20px 40px 20px 40px",
+        borderRadius: "10px"
       }}
     >
       <Box sx={{
-        maxWidth: "500px"
+        
+        
       }}>
         {children?.length && children[parseInt(currentForm)]}
       </Box>
