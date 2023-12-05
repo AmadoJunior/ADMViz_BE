@@ -67,19 +67,22 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     if (!initialPosition.current || !movement) {
       return;
     }
-  
+
     let newTop = Math.max(0, initialPosition.current.top + movement.y - GUTTER_SIZE);
     let newLeft = Math.max(
       GUTTER_SIZE,
-      Math.min(
-        initialPosition.current.left + Math.floor(movement.x / COLUMN_WIDTH) * COLUMN_WIDTH,
-        document.documentElement.clientWidth - (GUTTER_SIZE*3) - w * COLUMN_WIDTH,
-      ),
+      initialPosition.current.left + Math.floor(movement.x / COLUMN_WIDTH) * COLUMN_WIDTH
     );
+
     const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
     const collidingModule = isColliding(chartPositions, position, newLeft, newTop);
     if (!collidingModule) {
       updatePosition(newLeft, newTop);
+      moduleRef.current?.scrollIntoView({
+        behavior: "instant",
+        inline: "nearest",
+        block: "nearest"
+      });
     } else {
       
       const { updatedLeft, updatedTop } = findNearestFreePosition(position, collidingModule, newLeft, newTop);
@@ -91,6 +94,11 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       
       if (!updatedCollidingModule) {
         updatePosition(clampedLeft, clampedTop);
+        moduleRef.current?.scrollIntoView({
+          behavior: "instant",
+          inline: "nearest",
+          block: "nearest"
+        });
       }
     }
   };
@@ -191,7 +199,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
         top={moduleY2LocalY(y)}
         left={moduleX2LocalX(x)}
         sx={{
-          opacity: isDragging ? 0.5 : 1,
+          opacity: isDragging ? 0.8 : 1,
           
         }}
       >

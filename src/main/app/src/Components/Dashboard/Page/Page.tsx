@@ -1,14 +1,16 @@
 //Deps
 import React, { useContext } from "react";
-import { Box } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 import { useDrop } from "react-dnd";
+import { useDraggable } from "react-use-draggable-scroll";
+import useSize from './../../../Hooks/useSize';
 
 //Components
 import Module from "./Module/Module";
 import WorkerChart from "./WorkerChart/WorkerChart";
 
 //Constants
-import { GUTTER_SIZE, NAV_HEIGHT } from "../../../constants";
+import { COLUMN_WIDTH, GUTTER_SIZE, NAV_HEIGHT } from "../../../constants";
 
 //Context
 import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
@@ -19,6 +21,9 @@ interface IPageProps {
 }
 
 const Page: React.FC<IPageProps> = ({}) => {
+  //Theme
+  const theme = useTheme();
+
   //State
   const dashboardContext = useContext(DashboardContext);
   const [height, setHeight] = React.useState(0);
@@ -29,20 +34,26 @@ const Page: React.FC<IPageProps> = ({}) => {
   }));
 
   //Ref
-  const containerRef = React.useRef<HTMLDivElement>();
+  const containerRef = React.useRef<HTMLDivElement>(null) as React.MutableRefObject<HTMLInputElement>;
+  const [scrollWidth, scrollHeight] = useSize(containerRef);
+
+  //Setup Drop Container
   drop(containerRef);
+
+  //Setup Draggable Scroll
+  const { events } = useDraggable(containerRef, {
+    activeMouseButton: "Right"
+  });
 
   //Calc Height
   const containerHeight = React.useMemo(() => {
     return (
-      Math.max(
-        ...dashboardContext?.charts?.map(({ position: { y, h } }) => y + h),
-        height - NAV_HEIGHT
-      ) +
+      (height - NAV_HEIGHT) +
       GUTTER_SIZE * 2
     );
   }, [dashboardContext?.charts, height]);
-
+  
+  //Effects
   React.useEffect(() => {
     // Function to handle the resize event
     const handleResize = () => {
@@ -62,14 +73,20 @@ const Page: React.FC<IPageProps> = ({}) => {
   //Render
   return (
     <Box
+      {...events}
       ref={containerRef}
       position="relative"
       width="100%"
       sx={{
         backgroundColor: "background.default",
         height: `${containerHeight}px`,
-        overflow: "clip"
+        overflow: "scroll",
+        cursor: "grab",
+        backgroundImage: `linear-gradient(${theme.palette.background.paper} 1px, transparent 1px), linear-gradient(90deg, ${theme.palette.background.paper} 1px, transparent 1px)`,
+        backgroundSize: `${COLUMN_WIDTH}px ${COLUMN_WIDTH}px`,
+        backgroundAttachment: "local",
       }}
+      onContextMenu={(e)=> e.preventDefault()}
     >
       {dashboardContext?.charts?.length ? dashboardContext?.charts?.map((chart) => (
         <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
