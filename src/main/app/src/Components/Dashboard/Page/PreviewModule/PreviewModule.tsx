@@ -2,7 +2,8 @@
 import React from "react";
 
 //MUI
-import {Box, Typography} from "@mui/material";
+import {Box, useTheme} from "@mui/material";
+import { useDragDropManager } from "react-dnd";
 
 //Components
 
@@ -13,16 +14,23 @@ interface IPreviewModuleProps {
   width: number,
 }
 
+const getStyle = (height: number, width: number): React.CSSProperties => {
+  return {
+    height: `${height}px`,
+    width: `${width}px`,
+    borderColor: true ? "#302f2f" : "#f44336",
+  }
+}
+
 const PreviewModule: React.FC<IPreviewModuleProps> = ({height, width}): JSX.Element => {
   return (
     <Box sx={{
       display: "inline-block",
-      height: `${height}px`,
-      width: `${width}px`,
       backgroundColor:"rgba(0, 0, 0, 0.5)",
-      border: "dashed 1px",
-      borderColor: "#302f2f",
+      borderWidth: "1px",
+      borderStyle: "dashed",
       padding:"10px",
+      ...getStyle(height, width)
     }}>
       <Box sx={{
         height: "100%",

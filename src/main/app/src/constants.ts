@@ -1,5 +1,5 @@
 export const MIN_WIDTH = 500;
-export const MIN_HEIGHT = 565;
+export const MIN_HEIGHT = 560;
 export const GUTTER_SIZE = 10;
 export const COLUMN_WIDTH = 10;
 // export const moduleW2LocalWidth = (moduleW: number) =>

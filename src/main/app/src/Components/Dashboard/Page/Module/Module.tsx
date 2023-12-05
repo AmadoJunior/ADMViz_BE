@@ -28,7 +28,7 @@ type ModuleProps = {
   children?: React.ReactNode
 };
 
-function getStyles(
+function getPositionStyles(
   left: number,
   top: number,
   isDragging: boolean,
@@ -127,15 +127,18 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       <Box
         ref={moduleRef}
         display="flex"
+        position="absolute"
+        top="0px"
+        left="0px"
         sx={
-          getStyles(x, y, isDragging)
+          getPositionStyles(x, y, isDragging)
         }
       >
         <Resizable
           boundsByDirection={true}
           minWidth={MIN_WIDTH}
           minHeight={MIN_HEIGHT}
-          grid={[COLUMN_WIDTH, 1]}
+          grid={[COLUMN_WIDTH, COLUMN_WIDTH]}
           style={{
             padding:"10px",
             display: "flex",

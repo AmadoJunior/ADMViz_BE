@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import type { XYCoord } from 'react-dnd';
-import { useDragLayer } from 'react-dnd';
+import { useDragLayer, useDragDropManager } from 'react-dnd';
 
 //Helpers
 import { snapToGrid } from './../Module/CollisionHelpers';
@@ -13,19 +13,20 @@ import PreviewModule from '../PreviewModule/PreviewModule';
 //Const
 import { COLUMN_WIDTH, GUTTER_SIZE } from '../../../../constants';
 
-//Props
-interface CustomDragLayerProps {}
-
 function getPositionStyles(
   initialOffset: XYCoord | null,
   currentOffset: XYCoord | null,
-) {
-  if (!initialOffset || !currentOffset) {
+  parentEl: React.MutableRefObject<HTMLInputElement>,
+): React.CSSProperties {
+  if (!initialOffset || !currentOffset || !parentEl?.current) {
     return {
       display: 'none',
     }
   }
-
+  const parentOrigin = {
+    x: parentEl.current?.offsetLeft,
+    y: parentEl.current?.offsetTop,
+  };
   const { x, y } = currentOffset;
 
   const xDifference = x - initialOffset.x;
@@ -34,15 +35,19 @@ function getPositionStyles(
   const targetX = initialOffset.x + xStep;
   const targetY = initialOffset.y + yStep;
   
-  const transform = `translate(${targetX - GUTTER_SIZE}px, ${targetY - GUTTER_SIZE}px)`;
+  const transform = `translate(${targetX - (GUTTER_SIZE + parentOrigin.x)}px, ${targetY - (GUTTER_SIZE + parentOrigin.y)}px)`;
   return {
     transform,
     WebkitTransform: transform,
-    transformOrigin: "0px 0px"
   }
 }
 
-const CustomDragLayer: React.FC<CustomDragLayerProps> = () => {
+//Props
+interface CustomDragLayerProps {
+  parentEl: React.MutableRefObject<HTMLInputElement>;
+}
+
+const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
   const { itemType, isDragging, item, initialOffset, currentOffset } =
     useDragLayer((monitor) => ({
       item: monitor.getItem(),
@@ -52,13 +57,15 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = () => {
       isDragging: monitor.isDragging(),
     }));
 
+  const dragDropManager = useDragDropManager();
+
   if(!isDragging){
     return null;
   }
 
   return (
     <Box sx={{
-      position: 'fixed',
+      position: 'relative',
       pointerEvents: 'none',
       zIndex: 100,
       left: 0,
@@ -66,7 +73,7 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = () => {
       width: '100%',
       height: '100%',
     }}>
-      <Box sx={getPositionStyles(initialOffset, currentOffset)}>
+      <Box position="absolute" sx={getPositionStyles(initialOffset, currentOffset, parentEl)}>
         <PreviewModule height={item?.position?.h} width={item?.position?.w} />
       </Box>
     </Box>

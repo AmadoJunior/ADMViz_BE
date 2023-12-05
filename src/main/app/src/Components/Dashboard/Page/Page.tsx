@@ -1,7 +1,7 @@
 //Deps
 import React, { useContext } from "react";
 import { Box, useTheme } from "@mui/material";
-import { useDrop } from "react-dnd";
+import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDraggable } from "react-use-draggable-scroll";
 
 //Components
@@ -16,7 +16,8 @@ import { COLUMN_WIDTH, GUTTER_SIZE, NAV_HEIGHT } from "../../../constants";
 import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
 import { IChart, IChartPosition } from "../../../Context/DashboardContext/interfaces";
 
-import { snapToGrid } from "./Module/CollisionHelpers";
+//Helpers
+import { getCollidingModule, snapToGrid } from "./Module/CollisionHelpers";
 
 //Props
 interface IPageProps {
@@ -45,9 +46,9 @@ const Page: React.FC<IPageProps> = ({}) => {
   )
 
   // Wire the Module to DnD Drag System
-  const [, drop] = useDrop(() => ({
+  const [{canDrop}, drop] = useDrop(() => ({
     accept: "module",
-    drop(item: IChart, monitor) {
+    drop(item: IChart, monitor: DropTargetMonitor<IChart, unknown>) {
       const delta = monitor.getDifferenceFromInitialOffset();
 
       if(!delta) return;
@@ -61,8 +62,8 @@ const Page: React.FC<IPageProps> = ({}) => {
         item.chartId,
         {
           id: item?.position?.id,
-          x: left,
-          y: top,
+          x: Math.max(left, GUTTER_SIZE),
+          y: Math.max(top, GUTTER_SIZE),
           w: item?.position?.w,
           h: item?.position?.h
         }
@@ -70,6 +71,30 @@ const Page: React.FC<IPageProps> = ({}) => {
 
       return;
     },
+    canDrop(item: IChart, monitor: DropTargetMonitor<IChart, unknown>) {
+      const delta = monitor.getDifferenceFromInitialOffset();
+
+      if(!delta) return true;
+
+      let left = Math.round(item?.position?.x + delta.x);
+      let top = Math.round(item?.position?.y + delta.y);
+
+      ;[left, top] = snapToGrid(left, top, COLUMN_WIDTH);
+
+      const collidingChart = getCollidingModule(
+        charts,
+        item,
+        left,
+        top,
+      );
+      
+      return collidingChart ? false : true;
+    },
+    collect(monitor) {
+      return {
+        canDrop: !!monitor.canDrop(),
+      }
+    }
   }), [moveChart]);
 
   //Ref
@@ -131,7 +156,7 @@ const Page: React.FC<IPageProps> = ({}) => {
 
       onContextMenu={(e)=> e.preventDefault()}
     >
-      <CustomDragLayer/>
+      <CustomDragLayer parentEl={containerRef} canDrop={canDrop}/>
       {charts?.length ? charts?.map((chart) => (
         <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
           <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 

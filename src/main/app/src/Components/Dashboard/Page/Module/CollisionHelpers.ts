@@ -2,30 +2,47 @@ import {
   COLUMN_WIDTH,
   GUTTER_SIZE,
 } from "../../../../constants";
-import { IChartPosition } from "../../../../Context/DashboardContext/interfaces";
+import { IChartPosition, IChart } from "../../../../Context/DashboardContext/interfaces";
 
-export const isColliding = (
-  chartPositions: IChartPosition[],
-  currentModule: IChartPosition,
+export const getCollidingModule = (
+  charts: IChart[],
+  currentChart: IChart,
   newLeft: number,
   newTop: number
-): IChartPosition | undefined => {
-  return chartPositions.find((module) => {
+): IChart | undefined => {
+  const currentModule = currentChart.position;
+  return charts?.find((chart) => {
+    const module = chart.position;
     if (module.id === currentModule.id) return false;
 
     const verticalOverlap =
       newTop + currentModule.h + GUTTER_SIZE > module.y &&
       newTop < module.y + module.h + GUTTER_SIZE;
 
-    const currentModuleRightEdge = (newLeft / COLUMN_WIDTH) + currentModule.w + GUTTER_SIZE/COLUMN_WIDTH;
-    const moduleRightEdge = module.x + module.w + GUTTER_SIZE/COLUMN_WIDTH;
+    const currentModuleRightEdge = newLeft + currentModule.w + GUTTER_SIZE;
+    const moduleRightEdge = module.x + module.w + GUTTER_SIZE;
     
     const horizontalOverlap =
       currentModuleRightEdge > module.x &&
-      (newLeft / COLUMN_WIDTH) < moduleRightEdge;
+      (newLeft) < moduleRightEdge;
     return verticalOverlap && horizontalOverlap;
   });
 };
+
+export const checkBounds = (
+  boudingBox: {
+    left: number,
+    top: number,
+    bottom: number,
+    right: number,
+  },
+  currentChart: IChart,
+  newLeft: number,
+  newTop: number,
+) => {
+
+  
+}
 
 // export const findNearestFreePosition = (
 //   currentModule: IChartPosition,
