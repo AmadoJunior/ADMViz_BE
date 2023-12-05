@@ -284,4 +284,4 @@ const Register: React.FC<IRegisterProps> = ({authProcessing, setAuthProcessing})
   );
 }
 
-export default Register;
+export default React.memo(Register);

@@ -1,5 +1,5 @@
 //Deps
-import {useState, useContext} from "react";
+import React, {useState, useContext} from "react";
 
 //MUI
 import { Box } from "@mui/material";
@@ -17,7 +17,7 @@ import { ChartType } from "../../../Context/DashboardContext/interfaces";
 import { DateTime } from "luxon";
 
 //Helpers
-import { isColliding, findFreeSpace } from "../Page/Module/CollisionHelpers";
+import { findFreeSpace } from "../Page/Module/CollisionHelpers";
 
 //Props
 interface IChartFactoryProps {
@@ -35,9 +35,9 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
   const handleNew = () => {
     const positionObj = {
       id: 0,
-      x: GUTTER_SIZE / COLUMN_WIDTH,
+      x: 0,
       y: 0,
-      w: Math.floor(MIN_WIDTH / COLUMN_WIDTH),
+      w: MIN_WIDTH,
       h: MIN_HEIGHT,
     }
 
@@ -45,8 +45,8 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
 
     const {updatedTop, updatedLeft} = findFreeSpace(chartPositions, positionObj, document.body.clientWidth);
     return dashboardContext.insertChart(DefaultChartDetails(inputTitle), {
-      x: updatedLeft,
-      y: updatedTop,
+      x: Math.max(updatedLeft, GUTTER_SIZE),
+      y: Math.max(updatedTop, GUTTER_SIZE),
       w: positionObj.w,
       h: positionObj.h
     })
@@ -82,4 +82,4 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
   );
 }
 
-export default ChartFactory;
+export default React.memo(ChartFactory);

@@ -23,4 +23,4 @@ const ProtectedRoute: React.FC<IProtectedRouteProps> = ({children}): JSX.Element
   </>);
 }
 
-export default ProtectedRoute;
+export default React.memo(ProtectedRoute);

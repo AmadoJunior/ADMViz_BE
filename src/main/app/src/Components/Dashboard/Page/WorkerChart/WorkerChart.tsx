@@ -1,5 +1,5 @@
 //Deps
-import { useMemo, useEffect, useState, useContext, useRef } from "react";
+import React, { useMemo, useEffect, useState, useContext, useRef } from "react";
 import * as Comlink from "comlink";
 import toast from "react-hot-toast";
 
@@ -201,4 +201,4 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
   );
 };
 
-export default WorkerChart;
+export default React.memo(WorkerChart);

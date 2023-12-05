@@ -98,4 +98,4 @@ const Login: React.FC<ILoginProps> = ({authProcessing, setAuthProcessing}): JSX.
   );
 }
 
-export default Login;
+export default React.memo(Login);

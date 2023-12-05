@@ -183,4 +183,4 @@ const DashboardControl: React.FC<IDashboardControlProps> = ({dashboards, setDash
   );
 }
 
-export default DashboardControl;
+export default React.memo(DashboardControl);

@@ -1,7 +1,7 @@
 //Deps
 import React, { useContext, useEffect, useState } from 'react';
 import { getEmptyImage } from "react-dnd-html5-backend";
-import { Box, Button } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { useDrag, useDragDropManager } from 'react-dnd';
 import { useRafLoop } from 'react-use';
 import { Resizable } from 're-resizable';
@@ -19,8 +19,7 @@ import { DashboardContext } from '../../../../Context/DashboardContext/useDashbo
 import { IChartPosition } from '../../../../Context/DashboardContext/interfaces';
 
 //Constants && Helpers
-import { COLUMN_WIDTH, GUTTER_SIZE, MIN_HEIGHT, MIN_WIDTH, moduleW2LocalWidth, moduleX2LocalX, moduleY2LocalY } from '../../../../constants';
-import {isColliding, findNearestFreePosition} from "./CollisionHelpers";
+import { COLUMN_WIDTH, GUTTER_SIZE, MIN_HEIGHT, MIN_WIDTH } from '../../../../constants';
 
 //Props
 type ModuleProps = {
@@ -29,102 +28,48 @@ type ModuleProps = {
   children?: React.ReactNode
 };
 
+function getStyles(
+  left: number,
+  top: number,
+  isDragging: boolean,
+): React.CSSProperties {
+  const transform = `translate3d(${left}px, ${top}px, 0)`;
+  return {
+    position: 'absolute',
+    transform,
+    WebkitTransform: transform,
+    // IE fallback: hide the real node using CSS when dragging
+    // because IE will ignore our custom "empty image" drag preview.
+    opacity: isDragging ? 0 : 1,
+    height: isDragging ? 0 : '',
+  }
+}
+
 const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
+  const theme = useTheme();
+
   //Window Context
-  const dashboardContext = React.useContext(DashboardContext);
+  const {updateChartPosition, removeChart} = React.useContext(DashboardContext);
 
   //Ref
   const moduleRef = React.useRef<HTMLDivElement>(null);
 
   //Props Destruct
-  const { id } = position;
+  const { id, w, h, x, y } = position;
 
   //State
-  const [w, setW] = useState(position.w);
-  const [h, setH] = useState(position.h);
-  const [x, setX] = useState(position.x);
-  const [y, setY] = useState(position.y);
-  const initialPosition = React.useRef<{ top: number; left: number }>();
   const [removalLoading, setRemovalLoading] = React.useState(false);
+  const [isResizing, setIsResizing] = React.useState(false);
 
-  //DnD Manager
-  const dndManager = useDragDropManager();
+  //Drag Handlers
+  const onDragStart = React.useCallback(() => {
+    return { 
+      chartId,
+      position,
+    };
+  }, [chartId, id, w, h, x, y]);
 
-  //Methods
-  const updatePosition = (left: number, top: number) => {
-    setY(top);
-    setX(Math.floor((left / COLUMN_WIDTH)));
-  };
-
-  const updateSize = (width: number, height: number) => {
-    setH(height);
-    setW(width);
-  };
-
-  const handleDrag = () => {
-    const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
-  
-    if (!initialPosition.current || !movement) {
-      return;
-    }
-
-    let newTop = Math.max(0, initialPosition.current.top + movement.y - GUTTER_SIZE);
-    let newLeft = Math.max(
-      GUTTER_SIZE,
-      initialPosition.current.left + Math.floor(movement.x / COLUMN_WIDTH) * COLUMN_WIDTH
-    );
-
-    const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
-    const collidingModule = isColliding(chartPositions, position, newLeft, newTop);
-    if (!collidingModule) {
-      updatePosition(newLeft, newTop);
-      moduleRef.current?.scrollIntoView({
-        behavior: "instant" as ScrollBehavior,
-        inline: "nearest" as ScrollLogicalPosition,
-        block: "nearest" as ScrollLogicalPosition 
-      });
-    } else {
-      
-      const { updatedLeft, updatedTop } = findNearestFreePosition(position, collidingModule, newLeft, newTop);
-  
-      const clampedTop = Math.max(0, updatedTop);
-      const clampedLeft = Math.max(GUTTER_SIZE, Math.min(updatedLeft, document.documentElement.clientWidth - w * COLUMN_WIDTH));
-      
-      const updatedCollidingModule = isColliding(chartPositions, position, clampedLeft, clampedTop);
-      
-      if (!updatedCollidingModule) {
-        updatePosition(clampedLeft, clampedTop);
-        moduleRef.current?.scrollIntoView({
-          behavior: "instant" as ScrollBehavior,
-          inline: "nearest" as ScrollLogicalPosition,
-          block: "nearest" as ScrollLogicalPosition 
-        });
-      }
-    }
-  };
-
-  //Raf Loop
-  const [stop, start] = useRafLoop(handleDrag, false);
-
-  const onDragStart = () => {
-    // Track the Initial Position
-    initialPosition.current = { top: moduleY2LocalY(y), left: moduleX2LocalX(x) };
-
-    // Start RAF
-    start();
-    return { id };
-  }
-
-  const onDragStop = () => {
-    stop();
-    dashboardContext?.updateChartPosition(chartId, {
-      id,
-      x,
-      y,
-      w,
-      h,
-    });
-  }
+  const onDragStop = () => {};
 
   // Wire the Module to DnD Drag System
   const [{isDragging}, drag, preview] = useDrag(() => ({
@@ -134,91 +79,75 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }), [y, x]);
+  }), [id, y, x, h, w]);
 
   //Disable Preview
-  preview(getEmptyImage(), { captureDraggingState: true });
-
-  const onResizeStop = (
+  React.useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [])
+  
+  //Resize Handlers
+  const onResizeStop = React.useCallback((
     e: MouseEvent | TouchEvent,
     direction: Direction,
     ref: HTMLElement,
     d: NumberSize
   ) => {
-    console.log("stop", d);
+    console.log("Resize Stopped");
+
     // Calculate tentative new width and height
-    const tentativeW = ((moduleW2LocalWidth(w) + d.width))/(COLUMN_WIDTH);
+    const tentativeW = w + d.width;
     const tentativeH = h + d.height;
 
-    // Check for collisions with the tentative new size
-    const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
-    const collision = isColliding(chartPositions, {
-      ...position,
+    updateChartPosition(chartId, {
+      id,
       w: tentativeW,
-      h: tentativeH
-    }, moduleX2LocalX(x), y);
+      h: tentativeH,
+      y: y,
+      x: x,
+    });
+    setIsResizing(false);
+  }, [updateChartPosition, chartId, id, y, x, h, w]);
 
-    if (!collision) {
-      // Update size if no collision
-      console.log("Not Colliding", tentativeW, tentativeH)
-      updateSize(tentativeW, tentativeH);
+  const onResizeStart = React.useCallback((e: any, direction: Direction) => {
+    console.log("Resize Started");
+    setIsResizing(true);
+  }, [setIsResizing]);
 
-      dashboardContext?.updateChartPosition(chartId, {
-        id,
-        w: tentativeW,
-        h: tentativeH,
-        y: y,
-        x: x,
-      });
-    } else {
-      console.log(position, collision)
-    }
-
-    stop();
-  }
-
-  const onResizeStart = (e: any, direction: Direction) => {
-    start();
-    console.log("start")
-  }
-
-  const handleChartRemoval = (chartId: number) => {
+  const handleChartRemoval = React.useCallback((chartId: number) => {
     setRemovalLoading(true);
-    dashboardContext.removeChart(chartId)
+    removeChart(chartId)
     .finally(() => {
       setRemovalLoading(false);
     })
-  }
+  }, [removeChart, setRemovalLoading, chartId]);
 
   //Render
   return (
       <Box
         ref={moduleRef}
         display="flex"
-        position="absolute"
-        top={moduleY2LocalY(y)}
-        left={moduleX2LocalX(x)}
-        sx={{
-          opacity: isDragging ? 0.8 : 1,
-          
-        }}
+        sx={
+          getStyles(x, y, isDragging)
+        }
       >
         <Resizable
           boundsByDirection={true}
-          minWidth={moduleW2LocalWidth(Math.floor(MIN_WIDTH/COLUMN_WIDTH))}
+          minWidth={MIN_WIDTH}
           minHeight={MIN_HEIGHT}
           grid={[COLUMN_WIDTH, 1]}
           style={{
-            padding:"20px",
+            padding:"10px",
             display: "flex",
             alignItems: "flex-start",
             justifyContent: "flex-start",
             backgroundColor:"rgba(0, 0, 0, 0.5)",
-            border: "dashed 1px",
-            borderColor: "#302f2f",
+            borderStyle: "dashed",
+            borderColor: `${isResizing ? theme.palette.primary.main : "#302f2f"}`,
+            borderWidth: "1px",
           }}
           size={{
-            width: moduleW2LocalWidth(w),
+            width: w,
             height: h,
           }}
           onResizeStart={onResizeStart}
@@ -251,7 +180,6 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
         </Box>
         </Resizable>
       </Box>
- 
   );
 };
 

@@ -56,4 +56,4 @@ const Authenticate: React.FC<IAuthenticateProps> = ({children, childrenProps, au
   );
 }
 
-export default Authenticate;
+export default React.memo(Authenticate);

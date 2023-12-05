@@ -81,4 +81,4 @@ const CollapseForm = ({formName, inputState, submitHandler}: ICollapseFormProps)
   );
 }
 
-export default CollapseForm;
+export default React.memo(CollapseForm);

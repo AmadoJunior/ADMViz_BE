@@ -41,4 +41,4 @@ const DatePicker: React.FC<IDatePickerProps> = ({fromDate, toDate, setFrom, setT
   );
 }
 
-export default DatePicker;
+export default React.memo(DatePicker);

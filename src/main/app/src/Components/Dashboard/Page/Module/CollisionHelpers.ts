@@ -1,8 +1,6 @@
 import {
   COLUMN_WIDTH,
   GUTTER_SIZE,
-  moduleW2LocalWidth,
-  moduleX2LocalX,
 } from "../../../../constants";
 import { IChartPosition } from "../../../../Context/DashboardContext/interfaces";
 
@@ -29,48 +27,55 @@ export const isColliding = (
   });
 };
 
-export const findNearestFreePosition = (
-  currentModule: IChartPosition,
-  collidingModule: IChartPosition,
-  newLeft: number,
-  newTop: number
-) => {
-  const upCorrection =
-    newTop + currentModule.h - collidingModule.y + GUTTER_SIZE;
-  const downCorrection =
-    collidingModule.y + collidingModule.h - newTop + GUTTER_SIZE;
-  const leftCorrection =
-    newLeft +
-    moduleW2LocalWidth(currentModule.w) -
-    moduleX2LocalX(collidingModule.x) - GUTTER_SIZE;
-  const rightCorrection =
-    moduleX2LocalX(collidingModule.x) +
-    moduleW2LocalWidth(collidingModule.w) + GUTTER_SIZE -
-    newLeft;
-  const isUpOrDown =
-    Math.min(upCorrection, downCorrection) <
-    Math.min(leftCorrection, rightCorrection);
+// export const findNearestFreePosition = (
+//   currentModule: IChartPosition,
+//   collidingModule: IChartPosition,
+//   newLeft: number,
+//   newTop: number
+// ) => {
+//   const upCorrection =
+//     newTop + currentModule.h - collidingModule.y + GUTTER_SIZE;
+//   const downCorrection =
+//     collidingModule.y + collidingModule.h - newTop + GUTTER_SIZE;
+//   const leftCorrection =
+//     newLeft +
+//     moduleW2LocalWidth(currentModule.w) -
+//     moduleX2LocalX(collidingModule.x) - GUTTER_SIZE;
+//   const rightCorrection =
+//     moduleX2LocalX(collidingModule.x) +
+//     moduleW2LocalWidth(collidingModule.w) + GUTTER_SIZE -
+//     newLeft;
+//   const isUpOrDown =
+//     Math.min(upCorrection, downCorrection) <
+//     Math.min(leftCorrection, rightCorrection);
 
-  const updatedTop =
-    newTop +
-    (isUpOrDown
-      ? upCorrection < downCorrection
-        ? -upCorrection
-        : downCorrection
-      : 0);
-  const updatedLeft =
-    newLeft +
-    (!isUpOrDown
-      ? leftCorrection < rightCorrection
-        ? -(leftCorrection + COLUMN_WIDTH * 2)
-        : rightCorrection
-      : 0);
+//   const updatedTop =
+//     newTop +
+//     (isUpOrDown
+//       ? upCorrection < downCorrection
+//         ? -upCorrection
+//         : downCorrection
+//       : 0);
+//   const updatedLeft =
+//     newLeft +
+//     (!isUpOrDown
+//       ? leftCorrection < rightCorrection
+//         ? -(leftCorrection + COLUMN_WIDTH * 2)
+//         : rightCorrection
+//       : 0);
 
-  return {
-    updatedLeft,
-    updatedTop,
-  };
-};
+//   return {
+//     updatedLeft,
+//     updatedTop,
+//   };
+// };
+
+export const snapToGrid = (x: number, y: number, stepSize: number): [number, number] => {
+  const snappedX = Math.round(x / stepSize) * stepSize
+  const snappedY = Math.round(y / stepSize) * stepSize
+  return [snappedX, snappedY]
+}
+
 
 export const findFreeSpace = (
   chartPositions: IChartPosition[],
@@ -82,7 +87,7 @@ export const findFreeSpace = (
       x: pos.x + pos.w,
       y: pos.y
     }))
-    .filter(space => moduleW2LocalWidth(space.x) + moduleW2LocalWidth(currentModule.w) <= clientWidth);
+    .filter(space => space.x + currentModule.w <= clientWidth);
 
   // Add initial position
   availableSpaces.push({ x: 0, y: 0 });
@@ -95,7 +100,7 @@ export const findFreeSpace = (
 
     for (const pos of chartPositions) {
       if (space.x < pos.x + pos.w && 
-          space.x + moduleW2LocalWidth(currentModule.w) > pos.x &&
+          space.x + currentModule.w > pos.x &&
           space.y < pos.y + pos.h && 
           space.y + currentModule.h > pos.y) {
         isSpaceFree = false;
@@ -105,7 +110,7 @@ export const findFreeSpace = (
 
     //Free Space Found
     if (isSpaceFree) {
-      return { updatedLeft: space.x + GUTTER_SIZE/COLUMN_WIDTH, updatedTop: space.y};
+      return { updatedLeft: space.x + GUTTER_SIZE, updatedTop: space.y };
     }
   }
 

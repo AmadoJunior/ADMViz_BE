@@ -1,5 +1,5 @@
 //Deps
-import { ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
 
 //MUI
 import { Box, InputLabel, Input } from "@mui/material";
@@ -39,4 +39,4 @@ const CustonInput: React.FC<ICustonInputProps> = ({
   );
 };
 
-export default CustonInput;
+export default React.memo(CustonInput);

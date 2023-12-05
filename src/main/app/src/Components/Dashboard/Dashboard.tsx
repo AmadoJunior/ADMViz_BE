@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 //MUI
-import {Box, Typography, Button} from "@mui/material";
+import { Box } from "@mui/material";
 
 //Components
 import ChartFactory from "./ChartFactory/ChartFactory";
@@ -57,4 +57,4 @@ const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userI
   );
 }
 
-export default Dashboard;
+export default React.memo(Dashboard);

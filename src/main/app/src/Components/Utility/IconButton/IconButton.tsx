@@ -1,4 +1,5 @@
 //Deps
+import React from "react";
 
 //MUI
 import { Box } from "@mui/material";
@@ -57,4 +58,4 @@ const CustomIconButton: React.FC<IIconButtonProps> = ({title, loading, disabled,
   );
 }
 
-export default CustomIconButton;
+export default React.memo(CustomIconButton);

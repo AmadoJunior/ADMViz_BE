@@ -117,4 +117,4 @@ const AbstractChart: React.FC<IAbstractChartProps> = (({type, data}): JSX.Elemen
   );
 });
 
-export default AbstractChart;
+export default React.memo(AbstractChart);

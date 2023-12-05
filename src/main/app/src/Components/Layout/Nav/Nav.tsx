@@ -226,4 +226,4 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
   );
 };
 
-export default Nav;
+export default React.memo(Nav);

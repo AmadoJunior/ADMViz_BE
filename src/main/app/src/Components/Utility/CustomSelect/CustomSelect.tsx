@@ -1,4 +1,5 @@
 //Deps
+import React from "react";
 
 //MUI
 import { Box, InputLabel, Typography, Select, MenuItem, SelectChangeEvent } from "@mui/material";
@@ -67,4 +68,4 @@ const CustomSelect: React.FC<ICustomSelectProps> = ({title, handler, value, opti
   );
 }
 
-export default CustomSelect;
+export default React.memo(CustomSelect);

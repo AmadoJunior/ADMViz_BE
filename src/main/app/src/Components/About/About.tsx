@@ -27,4 +27,4 @@ const About: React.FC<IAboutProps> = (props): JSX.Element => {
   );
 }
 
-export default About;
+export default React.memo(About);

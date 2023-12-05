@@ -196,4 +196,4 @@ const ChartSettings: React.FC<IChartSettingsProps> = ({chartId, isActive, setIsA
   );
 }
 
-export default ChartSettings;
+export default React.memo(ChartSettings);

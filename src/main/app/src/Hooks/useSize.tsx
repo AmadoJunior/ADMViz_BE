@@ -37,4 +37,4 @@ export interface UseSizeOptions {
   initialHeight: number
 }
 
-export default useSize
+export default React.memo(useSize)

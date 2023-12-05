@@ -19,4 +19,4 @@ const Template: React.FC<ITemplateProps> = (props): JSX.Element => {
   );
 }
 
-export default Template;
+export default React.memo(Template);
