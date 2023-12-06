@@ -27,7 +27,8 @@ import { COLUMN_WIDTH, GUTTER_SIZE, MIN_HEIGHT, MIN_WIDTH } from '../../../../co
 type ModuleProps = {
   chartId: number,
   position: IChartPosition;
-  children?: React.ReactNode
+  children?: React.ReactNode;
+  parentEl: React.MutableRefObject<HTMLInputElement>;
 };
 
 function getPositionStyles(
@@ -43,7 +44,7 @@ function getPositionStyles(
   }
 }
 
-const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
+const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) => {
   const theme = useTheme();
 
   //Dash Context
@@ -75,7 +76,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children}) => {
       setY(Math.max(newTop, GUTTER_SIZE));
       setX(Math.max(newLeft, GUTTER_SIZE));
     },
-    [x, y, setX, setY],
+    [x, y, setX, setY, parentEl?.current],
   );
 
   //Drag Handlers

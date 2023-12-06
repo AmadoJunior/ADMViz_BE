@@ -103,7 +103,7 @@ const Page: React.FC<IPageProps> = ({}) => {
     >
       <CustomDragLayer parentEl={containerRef}/>
       {charts?.length ? charts?.map((chart) => (
-        <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
+        <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position} parentEl={containerRef}>
           <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
         </Module>
       )) : null}
