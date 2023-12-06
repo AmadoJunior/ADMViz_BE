@@ -44,6 +44,7 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
     const chartPositions = dashboardContext?.charts?.map((chart) => chart?.position);
 
     const {updatedTop, updatedLeft} = findFreeSpace(chartPositions, positionObj, document.body.clientWidth);
+    console.log(updatedLeft, updatedTop)
     return dashboardContext.insertChart(DefaultChartDetails(inputTitle), {
       x: Math.max(updatedLeft, GUTTER_SIZE),
       y: Math.max(updatedTop, GUTTER_SIZE),

@@ -30,6 +30,7 @@ const PreviewModule: React.FC<IPreviewModuleProps> = ({height, width}): JSX.Elem
       borderWidth: "1px",
       borderStyle: "dashed",
       padding:"10px",
+      opacity: "0.5",
       ...getStyle(height, width)
     }}>
       <Box sx={{

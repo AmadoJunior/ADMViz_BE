@@ -29,63 +29,78 @@ export const getCollidingModule = (
   });
 };
 
-export const checkBounds = (
-  boudingBox: {
-    left: number,
-    top: number,
-    bottom: number,
-    right: number,
-  },
-  currentChart: IChart,
+export const isColliding = (
+  charts: IChart[],
+  moduleId: number,
+  newWidth: number,
+  newHeight: number,
   newLeft: number,
-  newTop: number,
+  newTop: number
+): boolean => {
+  return charts?.find((chart) => {
+    const module = chart.position;
+
+    if (module.id === moduleId) return false;
+    
+    const verticalOverlap =
+      newTop + newHeight + GUTTER_SIZE > module.y &&
+      newTop < module.y + module.h + GUTTER_SIZE;
+
+    const currentModuleRightEdge = newLeft + newWidth + GUTTER_SIZE;
+    const moduleRightEdge = module.x + module.w + GUTTER_SIZE;
+    
+    const horizontalOverlap =
+      currentModuleRightEdge > module.x &&
+      (newLeft) < moduleRightEdge;
+    return verticalOverlap && horizontalOverlap;
+  }) ? true : false;
+};
+
+export const findNearestFreePosition = (
+  currentChart: IChart,
+  collidingChart: IChart,
+  newLeft: number,
+  newTop: number
 ) => {
+  const currentModule = currentChart.position;
+  const collidingModule = collidingChart.position;
 
-  
-}
+  const upCorrection =
+    newTop + currentModule.h - collidingModule.y + GUTTER_SIZE;
+  const downCorrection =
+    collidingModule.y + collidingModule.h - newTop + GUTTER_SIZE;
+  const leftCorrection =
+    newLeft +
+    currentModule.w -
+    collidingModule.x - GUTTER_SIZE;
+  const rightCorrection =
+    collidingModule.x +
+    collidingModule.w + GUTTER_SIZE -
+    newLeft;
+  const isUpOrDown =
+    Math.min(upCorrection, downCorrection) <
+    Math.min(leftCorrection, rightCorrection);
 
-// export const findNearestFreePosition = (
-//   currentModule: IChartPosition,
-//   collidingModule: IChartPosition,
-//   newLeft: number,
-//   newTop: number
-// ) => {
-//   const upCorrection =
-//     newTop + currentModule.h - collidingModule.y + GUTTER_SIZE;
-//   const downCorrection =
-//     collidingModule.y + collidingModule.h - newTop + GUTTER_SIZE;
-//   const leftCorrection =
-//     newLeft +
-//     moduleW2LocalWidth(currentModule.w) -
-//     moduleX2LocalX(collidingModule.x) - GUTTER_SIZE;
-//   const rightCorrection =
-//     moduleX2LocalX(collidingModule.x) +
-//     moduleW2LocalWidth(collidingModule.w) + GUTTER_SIZE -
-//     newLeft;
-//   const isUpOrDown =
-//     Math.min(upCorrection, downCorrection) <
-//     Math.min(leftCorrection, rightCorrection);
+  const updatedTop =
+    newTop +
+    (isUpOrDown
+      ? upCorrection < downCorrection
+        ? -upCorrection
+        : downCorrection
+      : 0);
+  const updatedLeft =
+    newLeft +
+    (!isUpOrDown
+      ? leftCorrection < rightCorrection
+        ? -(leftCorrection + COLUMN_WIDTH * 2)
+        : rightCorrection
+      : 0);
 
-//   const updatedTop =
-//     newTop +
-//     (isUpOrDown
-//       ? upCorrection < downCorrection
-//         ? -upCorrection
-//         : downCorrection
-//       : 0);
-//   const updatedLeft =
-//     newLeft +
-//     (!isUpOrDown
-//       ? leftCorrection < rightCorrection
-//         ? -(leftCorrection + COLUMN_WIDTH * 2)
-//         : rightCorrection
-//       : 0);
-
-//   return {
-//     updatedLeft,
-//     updatedTop,
-//   };
-// };
+  return {
+    updatedLeft,
+    updatedTop,
+  };
+};
 
 export const snapToGrid = (x: number, y: number, stepSize: number): [number, number] => {
   const snappedX = Math.round(x / stepSize) * stepSize
@@ -99,6 +114,7 @@ export const findFreeSpace = (
   currentModule: IChartPosition,
   clientWidth: number,
 ) => {
+  console.log(chartPositions, currentModule, clientWidth)
   let availableSpaces = chartPositions
     .map(pos => ({
       x: pos.x + pos.w,

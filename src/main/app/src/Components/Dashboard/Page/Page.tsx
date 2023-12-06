@@ -29,73 +29,18 @@ const Page: React.FC<IPageProps> = ({}) => {
   const theme = useTheme();
 
   //State
-  const {charts, updateChartPosition} = useContext(DashboardContext);
+  const {charts} = useContext(DashboardContext);
   const [height, setHeight] = React.useState(0);
 
-  const moveChart = React.useCallback(
-    (chartId: number, position: IChartPosition) => {
-      updateChartPosition(chartId, {
-        id: position?.id,
-        x: position?.x,
-        y: position?.y,
-        w: position?.w,
-        h: position?.h,
-      });
-    },
-    [updateChartPosition],
-  )
-
   // Wire the Module to DnD Drag System
-  const [{canDrop}, drop] = useDrop(() => ({
+  const [, drop] = useDrop(() => ({
     accept: "module",
-    drop(item: IChart, monitor: DropTargetMonitor<IChart, unknown>) {
-      const delta = monitor.getDifferenceFromInitialOffset();
-
-      if(!delta) return;
-
-      let left = Math.round(item?.position?.x + delta.x);
-      let top = Math.round(item?.position?.y + delta.y);
-
-      ;[left, top] = snapToGrid(left, top, COLUMN_WIDTH);
-
-      moveChart(
-        item.chartId,
-        {
-          id: item?.position?.id,
-          x: Math.max(left, GUTTER_SIZE),
-          y: Math.max(top, GUTTER_SIZE),
-          w: item?.position?.w,
-          h: item?.position?.h
-        }
-      )
-
-      return;
-    },
-    canDrop(item: IChart, monitor: DropTargetMonitor<IChart, unknown>) {
-      const delta = monitor.getDifferenceFromInitialOffset();
-
-      if(!delta) return true;
-
-      let left = Math.round(item?.position?.x + delta.x);
-      let top = Math.round(item?.position?.y + delta.y);
-
-      ;[left, top] = snapToGrid(left, top, COLUMN_WIDTH);
-
-      const collidingChart = getCollidingModule(
-        charts,
-        item,
-        left,
-        top,
-      );
-      
-      return collidingChart ? false : true;
-    },
     collect(monitor) {
       return {
         canDrop: !!monitor.canDrop(),
       }
     }
-  }), [moveChart]);
+  }), []);
 
   //Ref
   const containerRef = React.useRef<HTMLDivElement>(null) as React.MutableRefObject<HTMLInputElement>;
@@ -156,7 +101,7 @@ const Page: React.FC<IPageProps> = ({}) => {
 
       onContextMenu={(e)=> e.preventDefault()}
     >
-      <CustomDragLayer parentEl={containerRef} canDrop={canDrop}/>
+      <CustomDragLayer parentEl={containerRef}/>
       {charts?.length ? charts?.map((chart) => (
         <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position}>
           <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
