@@ -5,7 +5,10 @@ import type { XYCoord } from 'react-dnd';
 import { useDragLayer, useDragDropManager } from 'react-dnd';
 
 //Helpers
-import { snapToGrid } from './../Module/CollisionHelpers';
+import { snapToGrid, getCollidingModule } from './../Module/CollisionHelpers';
+
+//Context
+import { DashboardContext } from '../../../../Context/DashboardContext/useDashboardContext';
 
 //Components
 import PreviewModule from '../PreviewModule/PreviewModule';
@@ -49,6 +52,12 @@ interface CustomDragLayerProps {
 }
 
 const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
+  //Dash Context
+  const {charts} = React.useContext(DashboardContext);
+
+  //DnD Manager
+  const initialPosition = React.useRef<{ top: number; left: number }>();
+  const dndManager = useDragDropManager();
   const { itemType, isDragging, item, initialOffset, currentOffset } =
     useDragLayer((monitor) => ({
       item: monitor.getItem(),
@@ -57,12 +66,32 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
       currentOffset: monitor.getSourceClientOffset(),
       isDragging: monitor.isDragging(),
     }));
-
+  const [canDrop, setCanDrop] = React.useState(true);
   const [positionStyle, setPositionStyle] = React.useState(getPositionStyles(initialOffset, currentOffset, parentEl));
   const handleStyles = React.useCallback(() => {
     console.log("Raf Running")
     setPositionStyle(getPositionStyles(initialOffset, currentOffset, parentEl));
-  }, [initialOffset, currentOffset, parentEl?.current, setPositionStyle]);
+    const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
+    const currentChart = dndManager.getMonitor().getItem();
+
+    if (!initialPosition.current || !movement) {
+      return;
+    }
+  
+    let left = Math.round(initialPosition.current.left + movement.x);
+    let top = Math.round(initialPosition.current.top + movement.y);
+
+    const [newLeft, newTop] = snapToGrid(left, top, COLUMN_WIDTH);
+  
+    const collidingChart = getCollidingModule(charts, currentChart, newLeft, newTop);
+    if (!collidingChart) {
+      console.log("candrop")
+      setCanDrop(true);
+    } else {
+      console.log("cannotdrop")
+      setCanDrop(false);
+    }
+  }, [initialOffset, currentOffset, parentEl, charts, setPositionStyle]);
 
   const [stop, start] = useRafLoop(handleStyles, true);
 
@@ -73,6 +102,15 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
       stop();
     }
   }, [isDragging])
+
+  React.useEffect(() => {
+    if(item?.position) {
+      initialPosition.current = {
+        top: item.position?.y,
+        left: item.position?.x,
+      }
+    }
+  }, [item])
 
   if(!isDragging){
     return null;
@@ -88,8 +126,11 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
       width: '100%',
       height: '100%',
     }}>
-      <Box position="absolute" sx={positionStyle}>
-        <PreviewModule height={item?.position?.h} width={item?.position?.w} />
+      <Box position="absolute" sx={{
+        ...positionStyle,
+        
+      }}>
+        <PreviewModule height={item?.position?.h} width={item?.position?.w} canDrop={canDrop}/>
       </Box>
     </Box>
   )
