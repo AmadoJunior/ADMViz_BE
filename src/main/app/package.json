@@ -21,7 +21,6 @@
     "colormap": "^2.3.2",
     "comlink": "^4.4.1",
     "luxon": "^3.4.0",
-    "re-resizable": "^6.9.11",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dnd": "^16.0.1",
