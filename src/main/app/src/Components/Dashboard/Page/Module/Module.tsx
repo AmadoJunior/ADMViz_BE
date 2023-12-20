@@ -1,13 +1,9 @@
 //Deps
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { Box, useTheme } from '@mui/material';
 import { useDrag, useDragDropManager } from 'react-dnd';
 import { useRafLoop } from 'react-use';
-import {useUpdate} from 'react-use';
-import { Resizable } from 're-resizable';
-import { NumberSize } from "re-resizable";
-import { Direction } from "re-resizable/lib/resizer";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 //MUI LAB
@@ -54,18 +50,17 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
   const moduleRef = React.useRef<HTMLDivElement>(null);
 
   //Props Destruct
-  const { id, h, w } = position;
+  const { id } = position;
 
   //Local Vars
   const initialPosition = React.useRef<{ top: number; left: number }>();
   const [x, setX] = React.useState(position.x);
   const [y, setY] = React.useState(position.y);
+  const [h, setH] = React.useState(position.h);
+  const [w, setW] = React.useState(position.w);
 
   //State
   const [removalLoading, setRemovalLoading] = React.useState(false);
-  const [isResizing, setIsResizing] = React.useState(false);
-  const [resizeError, setResizeError] = React.useState(false);
-  
   
   //DnD Manager
   const dndManager = useDragDropManager();
@@ -75,6 +70,14 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
     (newLeft: number, newTop: number) => {
       setY(Math.max(newTop, GUTTER_SIZE));
       setX(Math.max(newLeft, GUTTER_SIZE));
+    },
+    [x, y, setX, setY, parentEl?.current],
+  );
+
+  const resizeChart = React.useCallback(
+    (newHeight: number, newWidth: number) => {
+      setH(newHeight);
+      setW(newWidth);
     },
     [x, y, setX, setY, parentEl?.current],
   );
@@ -141,7 +144,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
 
 
   // Wire the Module to DnD Drag System
-  const [{isDragging}, drag, preview] = useDrag(() => ({
+  const [{isDragging}, drag, dragPreview] = useDrag(() => ({
     type: 'module',
     item: onDragStart,
     end: onDragStop,
@@ -150,65 +153,75 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
     }),
   }), [id, y, x, h, w]);
 
+  // Custom Resize State
+  const handleResize = React.useCallback(() => {
+    console.log("resize handler");
+    const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
+    const currentChart = dndManager.getMonitor().getItem();
+
+    if (!initialSize.current || !movement) {
+      return;
+    }
+
+    let width = Math.max(Math.round(initialSize.current.width + movement.x), MIN_WIDTH);
+    let height = Math.max(Math.round(initialSize.current.height + movement.y), MIN_HEIGHT);
+
+    const [newWidth, newHeight] = snapToGrid(width, height, COLUMN_WIDTH);
+  
+    const collidingChart = isColliding(charts, id, newWidth, newHeight, x, y);
+    if (!collidingChart) {
+      resizeChart(newHeight, newWidth);
+    }
+  }, [dndManager, w, h, x, y]);
+
+  //Drag Raf
+  const [stopResize, startResize] = useRafLoop(handleResize, false);
+
+  const initialSize = React.useRef<{ width: number; height: number }>();
+  
+  const onResizeStart = React.useCallback(() => {
+    console.log("resize start");
+    // Track the Initial Position
+    initialSize.current = { height: h, width: w };
+
+    // Start RAF
+    startResize();
+
+    return { 
+      chartId,
+      position,
+    };
+  }, [chartId, id, w, h, x, y]);
+
+  const onResizeStop = React.useCallback(() => {
+    console.log("resize stop");
+
+    //Stop RAF
+    stopResize();
+
+    updateChartPosition(chartId, {
+      id,
+      x,
+      y,
+      h,
+      w
+    })
+  }, [updateChartPosition, chartId, id, x, y, h, w]);
+
+  const [{isResizing}, resize, resizePreview] = useDrag(() => ({
+    type: 'resize',
+    item: onResizeStart,
+    end: onResizeStop,
+    collect: monitor => ({
+      isResizing: !!monitor.isDragging(),
+    }),
+  }), [id, y, x, h, w]);
+
   //Disable Preview
   React.useEffect(() => {
-    preview(getEmptyImage(), { captureDraggingState: true });
+    dragPreview(getEmptyImage(), { captureDraggingState: true });
+    resizePreview(getEmptyImage(), { captureDraggingState: true });
   }, [])
-  
-  //Resize Handlers
-  const [resizeStart, resizeStop] = useRafLoop(() => {});
-  const handleResize = React.useCallback((e: MouseEvent | TouchEvent, direction: Direction, ref: HTMLElement, d: NumberSize) => {
-    // Calculate New Values
-    const tentativeW = w + d.width;
-    const tentativeH = h + d.height;
-
-    const collidingChart = isColliding(charts, id, tentativeW, tentativeH, x, y);
-
-    if(!collidingChart){
-      setResizeError(false);
-    } else {
-      setResizeError(true);
-    }
-  }, [charts, id, x, y, w, h]);
-
-  const onResizeStop = React.useCallback((
-    e: MouseEvent | TouchEvent,
-    direction: Direction,
-    ref: HTMLElement,
-    d: NumberSize
-  ) => {
-    console.log("Resize Stopped");
-    const tentativeW = w + d.width;
-    const tentativeH = h + d.height;
-
-    const collidingChart = isColliding(charts, id, tentativeW, tentativeH, x, y);
-
-    if(!collidingChart){
-      updateChartPosition(chartId, {
-        id,
-        x,
-        y,
-        h: tentativeH,
-        w: tentativeW,
-      })
-    }
-    
-    //Resizing State
-    setIsResizing(false);
-    setResizeError(false);
-    
-    //Stop Raf
-    resizeStop();
-  }, [updateChartPosition, chartId, id, y, x, h, w]);
-
-  const onResizeStart = React.useCallback((e: any, direction: Direction) => {
-    console.log("Resize Started");
-    //Start Raf
-    resizeStart();
-
-    //Resizing State
-    setIsResizing(true);
-  }, [setIsResizing]);
 
   //Delete
   const handleChartRemoval = React.useCallback((chartId: number) => {
@@ -227,59 +240,64 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
         position="absolute"
         top="0px"
         left="0px"
-        sx={
-          getPositionStyles(x, y, isDragging)
-        }
+        sx={{
+          ...getPositionStyles(x, y, isDragging),
+        }}
       >
-        <Resizable
-          boundsByDirection={true}
-          minWidth={MIN_WIDTH}
-          minHeight={MIN_HEIGHT}
-          grid={[COLUMN_WIDTH, COLUMN_WIDTH]}
-          style={{
-            padding:"10px",
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            backgroundColor:"rgba(0, 0, 0, 0.5)",
-            borderStyle: "dashed",
-            borderColor: `${isResizing ? resizeError ? theme.palette.error.main : theme.palette.primary.main : "#302f2f"}`,
-            borderWidth: "1px",
-          }}
-          size={{
-            width: w,
-            height: h,
-          }}
-          onResizeStart={onResizeStart}
-          onResizeStop={onResizeStop}
-          onResize={handleResize}
-        >
-        <Box
-          ref={drag}
-          height="100%"
-          display="flex"
-          alignItems="flex-start"
-          justifyContent="flex-start"
-          sx={{ 
-            position: "relative",
-            cursor: 'move', 
-            width: "100%",
-          }}
-          draggable
-        >
-          <LoadingButton variant='contained' color="error" loading={removalLoading}  sx={{
-            position: "absolute",
-            top: "10px",
-            left: "10px",
-            zIndex: 5,
-          }}
-            onClick={() => handleChartRemoval(chartId)}
+        <Box sx={{
+          padding:"10px",
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          backgroundColor:"rgba(0, 0, 0, 0.5)",
+          borderStyle: "dashed",
+          borderColor: "#302f2f",
+          borderWidth: "1px",
+ 
+          minWidth: MIN_WIDTH,
+          minHeight: MIN_HEIGHT,
+        }}>
+          <Box
+            ref={drag}
+            height="100%"
+            display="flex"
+            alignItems="flex-start"
+            justifyContent="flex-start"
+            sx={{ 
+              position: "relative",
+              cursor: 'move', 
+              width: w,
+              height: h,
+            }}
+            draggable
           >
-            <DeleteIcon/>
-          </LoadingButton>
-          {children}
+            <LoadingButton variant='contained' color="error" loading={removalLoading}  sx={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              zIndex: 5,
+            }}
+              onClick={() => handleChartRemoval(chartId)}
+            >
+              <DeleteIcon/>
+            </LoadingButton>
+            {children}
+          </Box>
+          <Box
+            ref={resize}
+            draggable
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: '10px',
+              height: '10px',
+              backgroundColor: 'blue',
+              cursor: 'nwse-resize',
+            }}
+          />
         </Box>
-        </Resizable>
+        
       </Box>
   );
 };

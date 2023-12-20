@@ -34,7 +34,7 @@ const Page: React.FC<IPageProps> = ({}) => {
 
   // Wire the Module to DnD Drag System
   const [, drop] = useDrop(() => ({
-    accept: "module",
+    accept: ["module", "resize"],
     collect(monitor) {
       return {
         canDrop: !!monitor.canDrop(),

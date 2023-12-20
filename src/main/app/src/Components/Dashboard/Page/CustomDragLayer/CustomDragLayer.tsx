@@ -21,29 +21,28 @@ function getPositionStyles(
   initialOffset: XYCoord | null,
   currentOffset: XYCoord | null,
   parentEl: React.MutableRefObject<HTMLInputElement>,
+  initialWidth: number,
+  initialHeight: number,
+  resizeDelta: { width: number, height: number }
 ): React.CSSProperties {
   if (!initialOffset || !currentOffset || !parentEl?.current) {
-    return {
-      display: 'none',
-    }
+    return { display: 'none' };
   }
-  const parentOrigin = {
-    x: parentEl.current?.offsetLeft - parentEl.current?.scrollLeft,
-    y: parentEl.current?.offsetTop - parentEl.current?.scrollTop,
-  };
-  const { x, y } = currentOffset;
 
-  const xDifference = x - initialOffset.x;
-  const yDifference = y - initialOffset.y;
-  const [xStep, yStep] = snapToGrid(xDifference, yDifference, COLUMN_WIDTH);
-  const targetX = initialOffset.x + xStep;
-  const targetY = initialOffset.y + yStep;
+  // Calculate the scale factors
+  const scaleX = (initialWidth + resizeDelta.width) / initialWidth;
+  const scaleY = (initialHeight + resizeDelta.height) / initialHeight;
+
+  // Adjust translation for the bottom-right corner
+  const transformedX = initialOffset.x - parentEl.current.offsetLeft;
+  const transformedY = initialOffset.y - parentEl.current.offsetTop;
+
+  const transform = `translate(${transformedX}px, ${transformedY}px) scale(${scaleX}, ${scaleY})`;
   
-  const transform = `translate(${targetX - (GUTTER_SIZE + parentOrigin.x)}px, ${targetY - (GUTTER_SIZE + parentOrigin.y)}px)`;
   return {
     transform,
     WebkitTransform: transform,
-  }
+  };
 }
 
 //Props
@@ -66,13 +65,29 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
       currentOffset: monitor.getSourceClientOffset(),
       isDragging: monitor.isDragging(),
     }));
+
   const [canDrop, setCanDrop] = React.useState(true);
-  const [positionStyle, setPositionStyle] = React.useState(getPositionStyles(initialOffset, currentOffset, parentEl));
+  console.log(itemType)
+  const [positionStyle, setPositionStyle] = React.useState({});
+  
   const handleStyles = React.useCallback(() => {
     console.log("Raf Running")
-    setPositionStyle(getPositionStyles(initialOffset, currentOffset, parentEl));
+    
     const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
     const currentChart = dndManager.getMonitor().getItem();
+    const resizeDelta = itemType === 'resize' && currentOffset && initialOffset ? {
+      width: currentOffset.x - initialOffset.x,
+      height: currentOffset.y - initialOffset.y,
+    } : { width: 0, height: 0 };
+
+    const initialWidth = item?.position?.w || 0;
+    const initialHeight = item?.position?.h || 0;
+
+    const newPositionStyle = getPositionStyles(
+      initialOffset, currentOffset, parentEl, initialWidth, initialHeight, resizeDelta
+    );
+
+    setPositionStyle(newPositionStyle);
 
     if (!initialPosition.current || !movement) {
       return;
@@ -91,7 +106,7 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
       console.log("cannotdrop")
       setCanDrop(false);
     }
-  }, [initialOffset, currentOffset, parentEl, charts, setPositionStyle]);
+  }, [initialOffset, currentOffset, parentEl, charts, setPositionStyle, itemType, item?.position?.w, item?.position?.h]);
 
   const [stop, start] = useRafLoop(handleStyles, true);
 
@@ -128,9 +143,8 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
     }}>
       <Box position="absolute" sx={{
         ...positionStyle,
-        
       }}>
-        <PreviewModule height={item?.position?.h} width={item?.position?.w} canDrop={canDrop}/>
+        <PreviewModule height={item?.position?.h + GUTTER_SIZE*2} width={item?.position?.w + GUTTER_SIZE*2} canDrop={canDrop} />
       </Box>
     </Box>
   )

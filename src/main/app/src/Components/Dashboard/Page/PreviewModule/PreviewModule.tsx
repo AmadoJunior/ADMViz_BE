@@ -33,6 +33,7 @@ const PreviewModule: React.FC<IPreviewModuleProps> = ({height, width, canDrop}):
       borderStyle: "dashed",
       padding:"10px",
       borderColor: canDrop ? theme.palette.primary.main : theme.palette.error.main,
+      
       ...getStyle(height, width)
     }}>
       <Box sx={{
