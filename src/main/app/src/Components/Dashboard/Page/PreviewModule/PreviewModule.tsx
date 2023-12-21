@@ -10,8 +10,6 @@ import { useDragDropManager } from "react-dnd";
 //Props
 interface IPreviewModuleProps {
   children?: React.ReactNode;
-  height: number,
-  width: number,
   canDrop: boolean,
 }
 
@@ -22,7 +20,7 @@ const getStyle = (height: number, width: number): React.CSSProperties => {
   }
 }
 
-const PreviewModule: React.FC<IPreviewModuleProps> = ({height, width, canDrop}): JSX.Element => {
+const PreviewModule: React.FC<IPreviewModuleProps> = ({canDrop}): JSX.Element => {
   const theme = useTheme();
 
   return (
@@ -33,8 +31,8 @@ const PreviewModule: React.FC<IPreviewModuleProps> = ({height, width, canDrop}):
       borderStyle: "dashed",
       padding:"10px",
       borderColor: canDrop ? theme.palette.primary.main : theme.palette.error.main,
-      
-      ...getStyle(height, width)
+      height: "100%",
+      width: "100%",
     }}>
       <Box sx={{
         height: "100%",

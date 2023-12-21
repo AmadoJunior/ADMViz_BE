@@ -17,7 +17,7 @@ import PreviewModule from '../PreviewModule/PreviewModule';
 import { COLUMN_WIDTH, GUTTER_SIZE } from '../../../../constants';
 import { useRafLoop } from 'react-use';
 
-function getDragStyles(
+function getPositionStyles(
   initialOffset: XYCoord | null,
   currentOffset: XYCoord | null,
   parentEl: React.MutableRefObject<HTMLInputElement>,
@@ -46,36 +46,6 @@ function getDragStyles(
   }
 }
 
-function getResizeStyles(
-  initialOffset: XYCoord | null,
-  currentOffset: XYCoord | null,
-  parentEl: React.MutableRefObject<HTMLInputElement>,
-  initialSize: React.MutableRefObject<{ height: number; width: number; } | undefined>,
-): React.CSSProperties {
-  if (!initialOffset || !currentOffset || !parentEl?.current || !initialSize?.current) {
-    return {
-      display: 'none',
-    }
-  }
-  const parentOrigin = {
-    x: parentEl.current?.offsetLeft - parentEl.current?.scrollLeft,
-    y: parentEl.current?.offsetTop - parentEl.current?.scrollTop,
-  };
-  const { x, y } = currentOffset;
-
-  const xDifference = x - initialOffset.x;
-  const yDifference = y - initialOffset.y;
-  const [xStep, yStep] = snapToGrid(xDifference, yDifference, COLUMN_WIDTH);
-  const targetW = initialOffset.x + xStep;
-  const targetH = initialOffset.y + yStep;
-  
-  const transform = `translate(${parentOrigin.x + initialSize.current.width}px, ${parentOrigin.y + initialSize.current.height}px)`;
-  return {
-    transform,
-    WebkitTransform: transform,
-  }
-}
-
 //Props
 interface CustomDragLayerProps {
   parentEl: React.MutableRefObject<HTMLInputElement>;
@@ -87,8 +57,7 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
 
   //Initial Pos/Size
   const initialPosition = React.useRef<{ top: number; left: number }>();
-  const initialSize = React.useRef<{height: number, width: number}>();
-
+  
   //DnD Manager
   const dndManager = useDragDropManager();
   const { itemType, isDragging, item, initialOffset, currentOffset } =
@@ -102,17 +71,12 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
 
   //State
   const [canDrop, setCanDrop] = React.useState(true);
-  const [positionStyle, setPositionStyle] = React.useState({});
-  
+  const [positionStyle, setPositionStyle] = React.useState(getPositionStyles(initialOffset, currentOffset, parentEl));
+
   //Raf Loop Handler
   const handleStyles = React.useCallback(() => {
     console.log("Raf Running")
-    if(itemType === "resize"){
-      setPositionStyle(getResizeStyles(initialOffset, currentOffset, parentEl, initialSize))
-    } else {
-      setPositionStyle(getDragStyles(initialOffset, currentOffset, parentEl));
-    }
-    
+    setPositionStyle(getPositionStyles(initialOffset, currentOffset, parentEl));
     const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
     const currentChart = dndManager.getMonitor().getItem();
 
@@ -152,12 +116,8 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
         top: item.position?.y,
         left: item.position?.x,
       };
-      initialSize.current = {
-        height: item.position?.h,
-        width: item.position?.w,
-      };
     }
-  }, [item])
+  }, [item]);
 
   //Render
   if(!isDragging){
@@ -176,10 +136,9 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
     }}>
       <Box position="absolute" sx={{
         ...positionStyle,
-        height: item?.position?.h,
-        width: item?.position?.w,
+        
       }}>
-        <PreviewModule canDrop={canDrop}/>
+        <PreviewModule height={item?.position?.h} width={item?.position?.w} canDrop={canDrop}/>
       </Box>
     </Box>
   )
