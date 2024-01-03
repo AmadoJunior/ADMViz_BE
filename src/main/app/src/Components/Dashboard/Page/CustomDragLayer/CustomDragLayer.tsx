@@ -14,7 +14,7 @@ import { DashboardContext } from '../../../../Context/DashboardContext/useDashbo
 import PreviewModule from '../PreviewModule/PreviewModule';
 
 //Const
-import { COLUMN_WIDTH, GUTTER_SIZE } from '../../../../constants';
+import { COLUMN_WIDTH, GUTTER_SIZE, MIN_HEIGHT, MIN_WIDTH } from '../../../../constants';
 import { useRafLoop } from 'react-use';
 
 function getDragStyles(
@@ -27,6 +27,7 @@ function getDragStyles(
       display: 'none',
     }
   }
+
   const parentOrigin = {
     x: parentEl.current?.offsetLeft - parentEl.current?.scrollLeft,
     y: parentEl.current?.offsetTop - parentEl.current?.scrollTop,
@@ -66,12 +67,15 @@ function getResizeStyles(
   const xDifference = x - initialOffset.x;
   const yDifference = y - initialOffset.y;
   const [xStep, yStep] = snapToGrid(xDifference, yDifference, COLUMN_WIDTH);
-  const targetW = initialOffset.x + xStep;
-  const targetH = initialOffset.y + yStep;
-  
-  const transform = `translate(${parentOrigin.x + initialSize.current.width}px, ${parentOrigin.y + initialSize.current.height}px)`;
+  const targetW = initialSize.current.width + xStep;
+  const targetH = initialSize.current.height + yStep;
+  const targetX = initialOffset.x - (initialSize.current?.width - GUTTER_SIZE);
+  const targetY = initialOffset.y - (initialSize.current?.height - GUTTER_SIZE);
+
+  const transform = `translate(${targetX - (parentOrigin.x)}px, ${targetY - (parentOrigin.y)}px) scale(${targetW / initialSize.current.width}, ${targetH / initialSize.current.height})`;
   return {
     transform,
+    transformOrigin: "top left",
     WebkitTransform: transform,
   }
 }
@@ -85,10 +89,6 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
   //Dash Context
   const {charts} = React.useContext(DashboardContext);
 
-  //Initial Pos/Size
-  const initialPosition = React.useRef<{ top: number; left: number }>();
-  const initialSize = React.useRef<{height: number, width: number}>();
-
   //DnD Manager
   const dndManager = useDragDropManager();
   const { itemType, isDragging, item, initialOffset, currentOffset } =
@@ -100,13 +100,16 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
       isDragging: monitor.isDragging(),
     }));
 
+  //Initial Pos/Size
+  const initialPosition = React.useRef<{ top: number; left: number }>();
+  const initialSize = React.useRef<{height: number, width: number}>();
+
   //State
   const [canDrop, setCanDrop] = React.useState(true);
   const [positionStyle, setPositionStyle] = React.useState({});
   
   //Raf Loop Handler
   const handleStyles = React.useCallback(() => {
-    console.log("Raf Running")
     if(itemType === "resize"){
       setPositionStyle(getResizeStyles(initialOffset, currentOffset, parentEl, initialSize))
     } else {
@@ -114,23 +117,36 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
     }
     
     const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
-    const currentChart = dndManager.getMonitor().getItem();
 
-    if (!initialPosition.current || !movement) {
+    if (!initialPosition.current || !initialSize.current || !movement) {
       return;
     }
+
+    let left;
+    let top;
+    let width;
+    let height;
   
-    let left = Math.round(initialPosition.current.left + movement.x);
-    let top = Math.round(initialPosition.current.top + movement.y);
+    if(itemType === "resize") {
+      left = initialPosition.current.left;
+      top = initialPosition.current.top;
+      width =  Math.round(initialSize.current.width + movement.x);
+      height =  Math.round(initialSize.current.height + movement.y);
+    } else {
+      left = Math.round(initialPosition.current.left + movement.x);
+      top = Math.round(initialPosition.current.top + movement.y);
+      width = initialSize.current.width;
+      height = initialSize.current.height;
+    }
 
     const [newLeft, newTop] = snapToGrid(left, top, COLUMN_WIDTH);
+    const [newWidth, newHeight] = snapToGrid(width, height, COLUMN_WIDTH);
   
-    const collidingChart = getCollidingModule(charts, currentChart, newLeft, newTop);
-    if (!collidingChart) {
-      console.log("candrop")
+    const collidingChart = getCollidingModule(charts, item.position.id, newWidth, newHeight, newLeft, newTop);
+
+    if (!collidingChart && newWidth >= MIN_WIDTH && newHeight >= MIN_HEIGHT) {
       setCanDrop(true);
     } else {
-      console.log("cannotdrop")
       setCanDrop(false);
     }
   }, [initialOffset, currentOffset, parentEl, charts, setPositionStyle]);
@@ -145,9 +161,9 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
     }
   }, [isDragging])
 
-  //Initial State
   React.useEffect(() => {
-    if(item?.position) {
+    if(item){
+      console.log(item?.position)
       initialPosition.current = {
         top: item.position?.y,
         left: item.position?.x,
@@ -156,8 +172,9 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
         height: item.position?.h,
         width: item.position?.w,
       };
+      console.log(initialPosition, initialSize)
     }
-  }, [item])
+  }, [charts, item])
 
   //Render
   if(!isDragging){
@@ -185,4 +202,4 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
   )
 }
 
-export default React.memo(CustomDragLayer);
+export default CustomDragLayer;

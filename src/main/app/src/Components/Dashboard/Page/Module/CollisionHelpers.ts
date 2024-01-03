@@ -6,20 +6,21 @@ import { IChartPosition, IChart } from "../../../../Context/DashboardContext/int
 
 export const getCollidingModule = (
   charts: IChart[],
-  currentChart: IChart,
+  moduleId: number,
+  newWidth: number,
+  newHeight: number,
   newLeft: number,
   newTop: number
 ): IChart | undefined => {
-  const currentModule = currentChart.position;
   return charts?.find((chart) => {
     const module = chart.position;
-    if (module.id === currentModule.id) return false;
+    if (module.id === moduleId) return false;
 
     const verticalOverlap =
-      newTop + currentModule.h + GUTTER_SIZE > module.y &&
+      newTop + newHeight + GUTTER_SIZE > module.y &&
       newTop < module.y + module.h + GUTTER_SIZE;
 
-    const currentModuleRightEdge = newLeft + currentModule.w + GUTTER_SIZE;
+    const currentModuleRightEdge = newLeft + newWidth + GUTTER_SIZE;
     const moduleRightEdge = module.x + module.w + GUTTER_SIZE;
     
     const horizontalOverlap =
@@ -99,6 +100,52 @@ export const findNearestFreePosition = (
   return {
     updatedLeft,
     updatedTop,
+  };
+};
+
+export const findNearestFreeSize = (
+  currentChart: IChart,
+  collidingChart: IChart,
+  newWidth: number,
+  newHeight: number
+) => {
+  const currentModule = currentChart.position;
+  const collidingModule = collidingChart.position;
+
+  const upCorrection =
+    currentModule.y + newHeight - collidingModule.y + GUTTER_SIZE;
+  const downCorrection =
+    collidingModule.y + collidingModule.h - currentModule.y + GUTTER_SIZE;
+  const leftCorrection =
+    currentModule.x +
+    newWidth -
+    collidingModule.x + GUTTER_SIZE;
+  const rightCorrection =
+    collidingModule.x +
+    collidingModule.w + GUTTER_SIZE -
+    currentModule.x;
+  const isUpOrDown =
+    Math.min(upCorrection, downCorrection) <
+    Math.min(leftCorrection, rightCorrection);
+
+  const updatedHeight =
+  newHeight +
+    (isUpOrDown
+      ? upCorrection < downCorrection
+        ? -(upCorrection)
+        : downCorrection
+      : 0);
+  const updatedWidth =
+    newWidth +
+    (!isUpOrDown
+      ? leftCorrection < rightCorrection
+        ? -(leftCorrection)
+        : rightCorrection
+      : 0);
+
+  return {
+    updatedWidth,
+    updatedHeight,
   };
 };
 

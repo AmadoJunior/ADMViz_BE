@@ -35,8 +35,8 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
   const handleNew = () => {
     const positionObj = {
       id: 0,
-      x: 0,
-      y: 0,
+      x: 10,
+      y: 10,
       w: MIN_WIDTH,
       h: MIN_HEIGHT,
     }

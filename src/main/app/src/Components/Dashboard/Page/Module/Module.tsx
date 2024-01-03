@@ -16,7 +16,7 @@ import { DashboardContext } from '../../../../Context/DashboardContext/useDashbo
 import { IChartPosition } from '../../../../Context/DashboardContext/interfaces';
 
 //Constants && Helpers
-import { snapToGrid, getCollidingModule, findNearestFreePosition, isColliding } from './CollisionHelpers';
+import { snapToGrid, getCollidingModule, findNearestFreePosition, findNearestFreeSize } from './CollisionHelpers';
 import { COLUMN_WIDTH, GUTTER_SIZE, MIN_HEIGHT, MIN_WIDTH } from '../../../../constants';
 
 //Props
@@ -79,7 +79,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
       setH(newHeight);
       setW(newWidth);
     },
-    [x, y, setX, setY, parentEl?.current],
+    [x, y, setH, setW, parentEl?.current],
   );
 
   //Drag Handlers
@@ -95,20 +95,17 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
     let top = Math.round(initialPosition.current.top + movement.y);
 
     const [newLeft, newTop] = snapToGrid(left, top, COLUMN_WIDTH);
-  
-    const collidingChart = getCollidingModule(charts, currentChart, newLeft, newTop);
+    const collidingChart = getCollidingModule(charts, id, w, h, newLeft, newTop);
     if (!collidingChart) {
       moveChart(newLeft, newTop);
     } else {
       
       const { updatedLeft, updatedTop } = findNearestFreePosition(currentChart, collidingChart, newLeft, newTop);
       
-      const updatedCollidingChart = getCollidingModule(charts, currentChart, updatedLeft, updatedTop);
+      const updatedCollidingChart = getCollidingModule(charts, id, w, h, updatedLeft, updatedTop);
       
       if (!updatedCollidingChart && updatedLeft >= 0 && updatedTop >= 0) {
         moveChart(updatedLeft, updatedTop);
-      } else {
-        
       }
     }
   }, [dndManager, w, h, x, y])
@@ -125,7 +122,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
 
     return { 
       chartId,
-      position,
+      position: {id, w, h, x, y},
     };
   }, [chartId, id, w, h, x, y]);
 
@@ -155,10 +152,9 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
 
   // Custom Resize State
   const handleResize = React.useCallback(() => {
-    console.log("resize handler");
     const movement = dndManager.getMonitor().getDifferenceFromInitialOffset();
     const currentChart = dndManager.getMonitor().getItem();
-
+    
     if (!initialSize.current || !movement) {
       return;
     }
@@ -167,10 +163,16 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
     let height = Math.max(Math.round(initialSize.current.height + movement.y), MIN_HEIGHT);
 
     const [newWidth, newHeight] = snapToGrid(width, height, COLUMN_WIDTH);
-  
-    const collidingChart = isColliding(charts, id, newWidth, newHeight, x, y);
+    const collidingChart = getCollidingModule(charts, id, newWidth, newHeight, x, y);
     if (!collidingChart) {
       resizeChart(newHeight, newWidth);
+    } else {
+      const { updatedWidth, updatedHeight } = findNearestFreeSize(currentChart, collidingChart, newWidth, newHeight);
+      const updatedCollidingChart = getCollidingModule(charts, id, updatedWidth, updatedHeight, x, y);
+      
+      if (!updatedCollidingChart) {
+        resizeChart(updatedHeight, updatedWidth);
+      }
     }
   }, [dndManager, w, h, x, y]);
 
@@ -189,7 +191,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
 
     return { 
       chartId,
-      position,
+      position: {id, w, h, x, y},
     };
   }, [chartId, id, w, h, x, y]);
 
@@ -245,7 +247,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
         }}
       >
         <Box sx={{
-          padding:"10px",
+          padding: `${GUTTER_SIZE}px`,
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "flex-start",
@@ -266,8 +268,8 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
             sx={{ 
               position: "relative",
               cursor: 'move', 
-              width: w,
-              height: h,
+              width: w - GUTTER_SIZE*2,
+              height: h - GUTTER_SIZE*2,
             }}
             draggable
           >
