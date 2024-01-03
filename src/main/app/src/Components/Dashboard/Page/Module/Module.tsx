@@ -294,7 +294,9 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
               right: 0,
               width: '10px',
               height: '10px',
-              backgroundColor: 'blue',
+              borderRight: "2px solid",
+              borderBottom: "2px solid",
+              borderColor: "white",
               cursor: 'nwse-resize',
             }}
           />

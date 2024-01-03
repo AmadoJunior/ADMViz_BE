@@ -144,7 +144,7 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({parentEl}) => {
   
     const collidingChart = getCollidingModule(charts, item.position.id, newWidth, newHeight, newLeft, newTop);
 
-    if (!collidingChart && newWidth >= MIN_WIDTH && newHeight >= MIN_HEIGHT) {
+    if (!collidingChart && newWidth >= MIN_WIDTH && newHeight >= MIN_HEIGHT && newLeft >= 10 && newTop >= 10) {
       setCanDrop(true);
     } else {
       setCanDrop(false);

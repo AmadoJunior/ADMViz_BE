@@ -1,6 +1,8 @@
 import {
   COLUMN_WIDTH,
   GUTTER_SIZE,
+  MIN_HEIGHT,
+  MIN_WIDTH,
 } from "../../../../constants";
 import { IChartPosition, IChart } from "../../../../Context/DashboardContext/interfaces";
 
@@ -144,8 +146,8 @@ export const findNearestFreeSize = (
       : 0);
 
   return {
-    updatedWidth,
-    updatedHeight,
+    updatedWidth: Math.max(updatedWidth, MIN_WIDTH),
+    updatedHeight: Math.max(updatedHeight, MIN_HEIGHT),
   };
 };
 
