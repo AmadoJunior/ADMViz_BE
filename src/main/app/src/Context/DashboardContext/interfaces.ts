@@ -41,12 +41,13 @@ export interface IDashboardContext {
   dashboardId: number,
   name: string,
   charts: IChart[],
+  isLocked: boolean,
 
   //Setters
   setDashboardId: React.Dispatch<React.SetStateAction<number>>,
   setName: React.Dispatch<React.SetStateAction<string>>,
   setCharts: React.Dispatch<React.SetStateAction<IChart[]>>,
-
+  
   //Helpers
   insertChart: (chartDetails: IChartDetails, chartPosition?: ChartPosition) => Promise<void>,
   removeChart: (chartId: number) => Promise<void>,
@@ -54,4 +55,5 @@ export interface IDashboardContext {
   updateChartPosition: (chartId: number, chartPosition: IChartPosition) => Promise<void>,
   getCharts: () => void,
   getChartById: (chartId: number) => IChart | undefined ,
+  toggleLocked: () => void,
 }

@@ -41,10 +41,8 @@ function getPositionStyles(
 }
 
 const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) => {
-  const theme = useTheme();
-
   //Dash Context
-  const {charts, updateChartPosition, removeChart} = React.useContext(DashboardContext);
+  const {charts, updateChartPosition, removeChart, isLocked} = React.useContext(DashboardContext);
 
   //Ref
   const moduleRef = React.useRef<HTMLDivElement>(null);
@@ -66,21 +64,17 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
   const dndManager = useDragDropManager();
 
   //Local State
-  const moveChart = React.useCallback(
+  const moveChart = 
     (newLeft: number, newTop: number) => {
       setY(Math.max(newTop, GUTTER_SIZE));
       setX(Math.max(newLeft, GUTTER_SIZE));
-    },
-    [x, y, setX, setY, parentEl?.current],
-  );
+    };
 
-  const resizeChart = React.useCallback(
+  const resizeChart = 
     (newHeight: number, newWidth: number) => {
       setH(newHeight);
       setW(newWidth);
-    },
-    [x, y, setH, setW, parentEl?.current],
-  );
+    };
 
   //Drag Handlers
   const handleDrag = React.useCallback(() => {
@@ -139,16 +133,20 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
     })
   }, [updateChartPosition, chartId, id, x, y, h, w]);
 
+  const handleLocked = React.useCallback(() => {
+    return !isLocked;
+  }, [isLocked]);
 
   // Wire the Module to DnD Drag System
   const [{isDragging}, drag, dragPreview] = useDrag(() => ({
     type: 'module',
     item: onDragStart,
     end: onDragStop,
+    canDrag: handleLocked,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }), [id, y, x, h, w]);
+  }), [id, y, x, h, w, isLocked]);
 
   // Custom Resize State
   const handleResize = React.useCallback(() => {
@@ -214,10 +212,11 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
     type: 'resize',
     item: onResizeStart,
     end: onResizeStop,
+    canDrag: handleLocked,
     collect: monitor => ({
       isResizing: !!monitor.isDragging(),
     }),
-  }), [id, y, x, h, w]);
+  }), [id, y, x, h, w, isLocked]);
 
   //Disable Preview
   React.useEffect(() => {

@@ -12,11 +12,13 @@ export const DashboardContext = createContext<IDashboardContext>({
   dashboardId: 0,
   name: "",
   charts: [],
+  isLocked: false,
 
   //Setters
   setDashboardId: () => {},
   setName: () => {},
   setCharts: () => {},
+  toggleLocked: () => {},
 
   //Helpers
   updateChartDetails: (chartId: number, chartDetails: IChartDetails): Promise<void> => Promise.reject(),
@@ -37,6 +39,7 @@ interface IDashboardContextHookProps {
 
 const useDashboardContext = (props: IDashboardContextHookProps): IDashboardContext => {
   //State
+  const [isLocked, setIsLocked] = useState(true);
   const [userId, setUserId] = useState(props.userId);
   const [dashboardId, setDashboardId] = useState<number>(props.dashboardId);
   const [name, setName] = useState<string>(props.dashboardName);
@@ -155,6 +158,10 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     return charts.find((chart) => chart.chartId === chartId);
   }
 
+  const toggleLocked = () => {
+    setIsLocked(prev => !prev);
+  }
+
   const getCharts = () => {
     fetch(`/sdr/dashboards/${dashboardId}/charts`, {
       method: "GET"
@@ -216,11 +223,13 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
     dashboardId,
     name,
     charts,
+    isLocked,
 
     //Setters
     setDashboardId,
     setName,
     setCharts,
+    toggleLocked,
 
     //Helpers
     updateChartDetails,

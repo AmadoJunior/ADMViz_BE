@@ -18,10 +18,11 @@ interface ICollapseFormProps {
   children?: React.ReactNode;
   formName: string,
   inputState: ForwardedState;
+  disabled: boolean,
   submitHandler: (handlerInput: string) => Promise<void>
 }
 
-const CollapseForm = ({formName, inputState, submitHandler}: ICollapseFormProps): JSX.Element => {
+const CollapseForm = ({formName, inputState, disabled, submitHandler}: ICollapseFormProps): JSX.Element => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -51,10 +52,10 @@ const CollapseForm = ({formName, inputState, submitHandler}: ICollapseFormProps)
           <Box sx={{
             display: "flex"
           }}>
-            <Input placeholder="Dashboard Name" disabled={isLoading} sx={{
+            <Input placeholder="Dashboard Name" disabled={isLoading || disabled} sx={{
               width: "250px"
             }} value={inputState.value} onChange={handleInput}></Input>
-            <LoadingButton variant="outlined" size="small" loading={isLoading} sx={{
+            <LoadingButton variant="outlined" size="small" loading={isLoading} disabled={disabled} sx={{
               marginLeft: "15px"
             }} onClick={() => handleSubmit(inputState.value)}>Apply</LoadingButton>
             <Button variant="outlined" size="small" color="error" disabled={isLoading} sx={{
@@ -72,7 +73,7 @@ const CollapseForm = ({formName, inputState, submitHandler}: ICollapseFormProps)
             }
           }}>
             
-          <Button variant="outlined" size="small" sx={{
+          <Button variant="outlined" disabled={disabled} size="small" sx={{
           height: "30.75px" //Fixed Height for Collapse Bug
           }} onClick={() => setIsOpen(prev => !prev)}>{formName}</Button>
         </Box>

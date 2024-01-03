@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 
 //Components
 import CollapseForm from "../../Utility/CollapseForm/CollapseForm";
+import IconButton from "../../Utility/IconButton/IconButton";
 
 //Constants
 import { COLUMN_WIDTH, MIN_HEIGHT, MIN_WIDTH, GUTTER_SIZE } from '../../../constants';
@@ -15,6 +16,10 @@ import { DefaultChartDetails } from "./DefaultChartDetails";
 import { DashboardContext } from "../../../Context/DashboardContext/useDashboardContext";
 import { ChartType } from "../../../Context/DashboardContext/interfaces";
 import { DateTime } from "luxon";
+
+//Icons
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 //Helpers
 import { findFreeSpace } from "../Page/Module/CollisionHelpers";
@@ -73,12 +78,18 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
     >
     <CollapseForm 
       formName="Create Chart"
+      disabled={dashboardContext.isLocked}
       inputState={{
         value: inputTitle,
         setValue: setInputTitle,
       }}
       submitHandler={handleNew}
     />
+    <IconButton title={"Lock"} aria-label="lock" handler={dashboardContext.toggleLocked}>
+      {
+        dashboardContext?.isLocked ? <LockIcon/> : <LockOpenIcon/>
+      }
+    </IconButton>
     </Box>
   );
 }
