@@ -46,7 +46,7 @@ interface IPage {
 }
 const pages: IPage[] = [
   {
-    title: "Dashboards",
+    title: "My Dashboards",
     path: "/",
     icon: QueryStatsIcon,
   },
@@ -54,6 +54,7 @@ const pages: IPage[] = [
     title: "About",
     path: "/about",
     icon: MapIcon,
+    public: true,
   },
   {
     title: "Demo",

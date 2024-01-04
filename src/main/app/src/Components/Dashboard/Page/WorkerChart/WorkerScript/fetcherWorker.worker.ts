@@ -36,7 +36,7 @@ async function fetchDataset(
 
     const json = await res.json();
     for (let point of json) {
-      labels.push(point?._id?.[labelKey]);
+      labels.push(point?.[labelKey] || point?._id?.[labelKey]);
       data.push(point[dataKey]);
     }
   } catch (err: any) {

@@ -43,6 +43,7 @@ export default defineConfig({
     worker: {
         plugins: () => [comlink()],
     },
+    assetsInclude: ["**/*.PNG"],
     server: {    
         // this ensures that the browser opens upon server start
         open: true,

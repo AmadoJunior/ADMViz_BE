@@ -70,7 +70,7 @@ function App() {
                   <Route path="/" element={<Layout />}>
                   <Route path="/demo" element={<Demo/>}/>
                   <Route index element={<ProtectedRoute><DashboardGrid></DashboardGrid></ProtectedRoute>}/>
-                  <Route path="/about" element={<ProtectedRoute><About/></ProtectedRoute>}/>
+                  <Route path="/about" element={<About/>}/>
                   <Route path="/authenticate" element={
                     <Authenticate authProcessing={authProcessing} setAuthProcessing={setAuthProcessing} childrenProps={[
                       {label: "Sign In", index: 0},
