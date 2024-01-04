@@ -53,7 +53,7 @@ export interface IDashboardContext {
   removeChart: (chartId: number) => Promise<void>,
   updateChartDetails: (chartId: number, chartDetails: IChartDetails) => Promise<void>,
   updateChartPosition: (chartId: number, chartPosition: IChartPosition) => Promise<void>,
-  getCharts: () => void,
+  getCharts: (demo: boolean) => void,
   getChartById: (chartId: number) => IChart | undefined ,
   toggleLocked: () => void,
 }

@@ -22,9 +22,10 @@ interface ICustomTabInput {
   tabValue: string,
   curTab: string,
   isLoading: boolean,
+  disabled?: boolean,
   onDelete: (dashboardId: number) => void,
 }
-function CustomTab({ label, dashboardId, tabValue, curTab, isLoading, onDelete }: ICustomTabInput) {
+function CustomTab({ label, dashboardId, tabValue, curTab, isLoading, onDelete, disabled }: ICustomTabInput) {
   return (
     <Box display="flex" alignItems="center">
       <Typography sx={{
@@ -32,10 +33,10 @@ function CustomTab({ label, dashboardId, tabValue, curTab, isLoading, onDelete }
       }}>{label}</Typography>
       {
         curTab === tabValue && 
-        <CustomIconButton title={`Delete Dashboard`} loading={isLoading} handler={() => onDelete(dashboardId)}>
+        <CustomIconButton title={`Delete Dashboard`} disabled={disabled} loading={isLoading} handler={() => onDelete(dashboardId)}>
           
             <DeleteIcon fontSize="small" sx={{
-              color: "white"
+              color: disabled ? "#302f2f" : "white"
             }}/>
           
         </CustomIconButton>
@@ -53,12 +54,13 @@ interface IDashboard {
 interface IDashboardControlProps {
   children?: React.ReactNode;
   dashboards: IDashboard[];
+  disabled?: boolean,
   setDashboards: React.Dispatch<React.SetStateAction<IDashboard[]>>;
   curTab: string,
   setCurTab: React.Dispatch<React.SetStateAction<string>>
 }
 
-const DashboardControl: React.FC<IDashboardControlProps> = ({dashboards, setDashboards, curTab, setCurTab}): JSX.Element => {
+const DashboardControl: React.FC<IDashboardControlProps> = ({dashboards, setDashboards, curTab, setCurTab, disabled}): JSX.Element => {
   //Theme
   const theme = useTheme();
 
@@ -154,6 +156,7 @@ const DashboardControl: React.FC<IDashboardControlProps> = ({dashboards, setDash
           dashboards?.map((dashboard, index) => {
             return (
               <Tab
+                disabled={disabled}
                 key={`TabList:${dashboard.name}${index}`}
                 label={
                   <CustomTab 
@@ -162,6 +165,7 @@ const DashboardControl: React.FC<IDashboardControlProps> = ({dashboards, setDash
                     tabValue={String(index)}
                     curTab={curTab}
                     isLoading={removalLoading}
+                    disabled={disabled}
                     onDelete={() => handleRemove(dashboard.id)} 
                   />
                 }
@@ -172,6 +176,7 @@ const DashboardControl: React.FC<IDashboardControlProps> = ({dashboards, setDash
         }
       </TabList>
         <CollapseForm
+          disabled={disabled}
           formName="Create Dashboard" 
           inputState={{
             value: newChartName,

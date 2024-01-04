@@ -19,11 +19,15 @@ interface IDashboardProps {
   dashboardId: number,
   userId: number,
   children?: React.ReactNode;
+  demo?: boolean;
 }
 
-const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userId}): JSX.Element => {
+const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userId, demo}): JSX.Element => {
   //Context
-  const dashboardContext = useDashboardContext({userId, dashboardId, dashboardName});
+  const dashboardContext = useDashboardContext(demo ? 
+    {userId: 0, dashboardId: 0, dashboardName: "Demo"} : 
+    {userId, dashboardId, dashboardName}
+  );
   
   
   return (
@@ -45,11 +49,11 @@ const Dashboard: React.FC<IDashboardProps> = ({dashboardName, dashboardId, userI
               backgroundColor: "background.paper",
               borderRadius: "5px 5px 0px 0px"
             }}>
-              <ChartFactory></ChartFactory>
+              <ChartFactory disabled={demo}></ChartFactory>
             </Box>
             <DndProvider backend={HTML5Backend}>
               
-                <Page />
+                <Page disabled={demo}/>
               
             </DndProvider>
       </DashboardContext.Provider>

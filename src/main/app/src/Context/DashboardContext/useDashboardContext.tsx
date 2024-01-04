@@ -31,6 +31,21 @@ export const DashboardContext = createContext<IDashboardContext>({
   },
 });
 
+
+//JSON
+import {demoCharts} from "../../Demo/demoCharts";
+
+const loadJson = (
+  fileName: string
+): Promise<IChart[]> => {
+  console.log("Loading JSON")
+  return new Promise<IChart[]>((res) => {
+    import(`./../../Demo/${fileName}`).then((data) => {
+      res(data?.default);
+    });
+  });
+};
+
 interface IDashboardContextHookProps {
   userId: number,
   dashboardId: number,
@@ -214,7 +229,11 @@ const useDashboardContext = (props: IDashboardContextHookProps): IDashboardConte
   }
 
   React.useEffect(() => {
-    if(userId && dashboardId) getCharts();
+    if(userId && dashboardId){
+      getCharts();
+    } else {
+      setCharts(demoCharts);
+    }
   }, [userId, dashboardId])
 
   return {

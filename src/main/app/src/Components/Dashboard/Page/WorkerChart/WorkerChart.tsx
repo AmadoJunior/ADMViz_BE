@@ -30,12 +30,14 @@ interface IWorkerChartProps {
   children?: React.ReactNode;
   chartId: number;
   chartDetails: IChartDetails;
+  disabled?: boolean;
 }
 
 const WorkerChart: React.FC<IWorkerChartProps> = ({
   name,
   chartId,
-  chartDetails
+  chartDetails,
+  disabled
 }): JSX.Element => {
   //Worker Status
   const [workerStatus, setWorkerStatus] = useState(200);
@@ -148,12 +150,15 @@ const WorkerChart: React.FC<IWorkerChartProps> = ({
           }}
         >
           <CustomIconButton
+            disabled={disabled}
             title="Settings"
             handler={() =>
               setSettingsActive(prev => !prev)
             }
           >
-            <SettingsIcon fontSize="small"/>
+            <SettingsIcon fontSize="small" sx={{
+              color: disabled ? "#302f2f" : "white"
+            }}/>
           </CustomIconButton>
         </Box>
         <ChartSettings chartId={chartId} isActive={settingsActive} setIsActive={setSettingsActive}/>

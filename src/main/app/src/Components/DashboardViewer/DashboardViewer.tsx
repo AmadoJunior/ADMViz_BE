@@ -27,9 +27,10 @@ interface IDashboard {
 
 interface IDashboardGridProps {
   children?: React.ReactNode;
+  demo?: boolean;
 }
 
-const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
+const DashboardGrid: React.FC<IDashboardGridProps> = ({demo}): JSX.Element => {
   //Theme
   const [height, setHeight] = React.useState(0);
 
@@ -48,6 +49,12 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
     if(userDetailsContext?.isAuthenticated && userDetailsContext?.userDetails){
       const { id } = userDetailsContext?.userDetails;
       fetchDashboards(id);
+    } else if(demo){
+      setDashboards([{
+        id: 0,
+        name: "Demo"
+      }]);
+      setLoading(false);
     }
   }, [userDetailsContext?.isAuthenticated])
 
@@ -107,9 +114,10 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
             setCurTab={setCurTab}
             dashboards={dashboards}
             setDashboards={setDashboards}
+            disabled={demo}
           />
           {
-            userDetailsContext?.isAuthenticated && dashboards?.map((dashboard, index) => {
+            (userDetailsContext?.isAuthenticated || demo) && dashboards?.map((dashboard, index) => {
               return (
                 <TabPanel 
                   key={`TabPanels:${dashboard.name}${index}`} 
@@ -120,7 +128,9 @@ const DashboardGrid: React.FC<IDashboardGridProps> = (props): JSX.Element => {
                     <Dashboard 
                       userId={userDetailsContext?.userDetails ? userDetailsContext.userDetails.id : 0} 
                       dashboardName={dashboard.name} 
-                      dashboardId={dashboard.id}/>
+                      dashboardId={dashboard.id}
+                      demo={demo}
+                    />
                 </TabPanel>
               )
             })

@@ -25,6 +25,7 @@ type ModuleProps = {
   position: IChartPosition;
   children?: React.ReactNode;
   parentEl: React.MutableRefObject<HTMLInputElement>;
+  disabled?: boolean;
 };
 
 function getPositionStyles(
@@ -40,7 +41,7 @@ function getPositionStyles(
   }
 }
 
-const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) => {
+const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl, disabled}) => {
   //Dash Context
   const {charts, updateChartPosition, removeChart, isLocked} = React.useContext(DashboardContext);
 
@@ -272,7 +273,7 @@ const Module: React.FC<ModuleProps> = ({chartId, position, children, parentEl}) 
             }}
             draggable
           >
-            <LoadingButton variant='contained' color="error" loading={removalLoading}  sx={{
+            <LoadingButton disabled={disabled} variant='contained' color="error" loading={removalLoading}  sx={{
               position: "absolute",
               top: "10px",
               left: "10px",

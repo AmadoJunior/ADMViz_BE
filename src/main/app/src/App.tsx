@@ -14,6 +14,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 //Component
 import Layout from "./Components/Layout/Layout";
+import Demo from "./Components/Demo/Demo";
 
 //Context
 import {useUserDetailsContext, UserDetailsContext} from "./Context/UserDetailsContext/useUserDetailsContext";
@@ -67,6 +68,7 @@ function App() {
               
               <Routes>
                   <Route path="/" element={<Layout />}>
+                  <Route path="/demo" element={<Demo/>}/>
                   <Route index element={<ProtectedRoute><DashboardGrid></DashboardGrid></ProtectedRoute>}/>
                   <Route path="/about" element={<ProtectedRoute><About/></ProtectedRoute>}/>
                   <Route path="/authenticate" element={

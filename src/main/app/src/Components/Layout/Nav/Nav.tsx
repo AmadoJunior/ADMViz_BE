@@ -30,6 +30,7 @@ import { UserDetailsContext } from "../../../Context/UserDetailsContext/useUserD
 import MenuIcon from "@mui/icons-material/Menu";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import MapIcon from "@mui/icons-material/Map";
+import InfoIcon from '@mui/icons-material/Info';
 
 //Props
 interface INavProps {
@@ -41,6 +42,7 @@ interface IPage {
   title: string;
   path: string;
   icon: typeof SvgIcon;
+  public?: boolean,
 }
 const pages: IPage[] = [
   {
@@ -52,6 +54,12 @@ const pages: IPage[] = [
     title: "About",
     path: "/about",
     icon: MapIcon,
+  },
+  {
+    title: "Demo",
+    path: "/demo",
+    icon: InfoIcon,
+    public: true,
   },
 ];
 
@@ -170,7 +178,7 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
                     >
                       <MenuItem
                         onClick={handleCloseNavMenu}
-                        disabled={!userDetailsContext?.isAuthenticated}
+                        disabled={!userDetailsContext?.isAuthenticated && !item.public}
                       >
                         <ListItemIcon>
                           <item.icon/>
@@ -193,7 +201,7 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               return (
                 <Link key={page.path} to={`${page?.path}`}>
                   <Button
-                    disabled={!userDetailsContext?.isAuthenticated}
+                    disabled={!userDetailsContext?.isAuthenticated && !page.public}
                     variant="outlined"
                     key={page?.path}
                     onClick={handleCloseNavMenu}
@@ -211,7 +219,7 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               );
             })}
           </Box>
-            {userDetailsContext.isAuthenticated && <LoadingButton 
+            {userDetailsContext.isAuthenticated ? <LoadingButton 
               loading={logoutLoading}
               onClick={handleLogout} 
               variant="outlined"
@@ -219,7 +227,27 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               size="small"
               >
                 Log Out
-            </LoadingButton>}
+            </LoadingButton> : <Link key={`/authenticate`} to={`/authenticate`}>
+                  <Button
+                    variant="outlined"
+                    key={`/authenticate`}
+                    onClick={handleCloseNavMenu}
+                    size="small"
+                    sx={[
+                      {
+                        mx: 1,
+                        color: "success.main",
+                        borderColor: "success.dark",
+                        backgroundColor: location.pathname === "/authenticate" ? "rgba(0, 0, 0, 0.3)" : "none",
+                        "&:hover": {
+                          borderColor: "success.main",
+                        },
+                      },
+                    ]}
+                  >
+                    <Typography variant="subtitle2">{"Sign In"}</Typography>
+                  </Button>
+                </Link>}
         </Toolbar>
       </Box>
     </AppBar>

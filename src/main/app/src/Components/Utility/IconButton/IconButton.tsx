@@ -23,9 +23,9 @@ const CustomIconButton: React.FC<IIconButtonProps> = ({title, loading, disabled,
         display: "flex"
       }}
     >
-      <Tooltip placement="bottom" arrow title={title}>
+      <Tooltip placement="bottom" arrow disableHoverListener={disabled} title={title}>
         <Box
-          onClick={handler}
+          onClick={disabled ? () => {} : handler}
           sx={[
             {
               display: "flex",
@@ -42,11 +42,11 @@ const CustomIconButton: React.FC<IIconButtonProps> = ({title, loading, disabled,
               boxShadow: 6,
               backgroundColor: "background.paper",
 
-              cursor: "pointer",
+              cursor: disabled ? "default" : "pointer",
             },
             () => ({
               "&:hover": {
-                backgroundColor: "background.default"
+                backgroundColor: disabled ?  "background.paper" : "background.default"
               },
             }),
           ]}

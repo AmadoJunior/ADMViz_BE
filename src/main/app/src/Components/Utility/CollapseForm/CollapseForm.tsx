@@ -18,7 +18,7 @@ interface ICollapseFormProps {
   children?: React.ReactNode;
   formName: string,
   inputState: ForwardedState;
-  disabled: boolean,
+  disabled?: boolean,
   submitHandler: (handlerInput: string) => Promise<void>
 }
 

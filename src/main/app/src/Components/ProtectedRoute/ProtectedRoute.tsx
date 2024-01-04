@@ -20,7 +20,7 @@ const ProtectedRoute: React.FC<IProtectedRouteProps> = ({children}): JSX.Element
         (<Navigate to={`/authenticate`}></Navigate>)  :
         (children)
     }
-  </>);
+    </>);
 }
 
 export default React.memo(ProtectedRoute);

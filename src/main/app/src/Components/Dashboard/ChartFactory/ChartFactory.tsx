@@ -1,8 +1,9 @@
 //Deps
 import React, {useState, useContext} from "react";
+import { useOutletContext } from "react-router-dom";
 
 //MUI
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 
 //Components
 import CollapseForm from "../../Utility/CollapseForm/CollapseForm";
@@ -25,13 +26,16 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { findFreeSpace } from "../Page/Module/CollisionHelpers";
 
 //Props
+type ContextType = { isAuthenticated: boolean | null | undefined };
 interface IChartFactoryProps {
   children?: React.ReactNode;
+  disabled?: boolean;
 }
 
-const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
+const ChartFactory: React.FC<IChartFactoryProps> = ({disabled}): JSX.Element => {
   //Context
   const dashboardContext = useContext(DashboardContext);
+  const {isAuthenticated} = useOutletContext<ContextType>();
 
   //State
   const [inputTitle, setInputTitle] = useState<string>("");
@@ -78,16 +82,18 @@ const ChartFactory: React.FC<IChartFactoryProps> = ({}): JSX.Element => {
     >
     <CollapseForm 
       formName="Create Chart"
-      disabled={dashboardContext.isLocked}
+      disabled={dashboardContext.isLocked || disabled}
       inputState={{
         value: inputTitle,
         setValue: setInputTitle,
       }}
       submitHandler={handleNew}
     />
-    <IconButton title={"Lock"} aria-label="lock" handler={dashboardContext.toggleLocked}>
+    <IconButton title={"Lock"} aria-label="lock" disabled={!isAuthenticated || disabled} handler={dashboardContext.toggleLocked}>
       {
-        dashboardContext?.isLocked ? <LockIcon/> : <LockOpenIcon/>
+        dashboardContext?.isLocked ? <LockIcon sx={{
+          color: !isAuthenticated || disabled ? "#302f2f" : "white"
+        }}/> : <LockOpenIcon/>
       }
     </IconButton>
     </Box>

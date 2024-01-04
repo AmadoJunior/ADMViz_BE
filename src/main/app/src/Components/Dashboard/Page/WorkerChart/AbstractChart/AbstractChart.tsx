@@ -47,7 +47,7 @@ export const options = {
         },
         ticks: {
           color: "white",
-        },
+        }
     },
     y: {
       grid: {
@@ -57,7 +57,7 @@ export const options = {
         color: "white",
       },
     },
-  }
+  },
 };
 
 //Props

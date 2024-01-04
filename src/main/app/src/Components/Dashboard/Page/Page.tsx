@@ -21,10 +21,10 @@ import { getCollidingModule, snapToGrid } from "./Module/CollisionHelpers";
 
 //Props
 interface IPageProps {
-
+  disabled?: boolean;
 }
 
-const Page: React.FC<IPageProps> = ({}) => {
+const Page: React.FC<IPageProps> = ({disabled}) => {
   //Theme
   const theme = useTheme();
 
@@ -103,8 +103,8 @@ const Page: React.FC<IPageProps> = ({}) => {
     >
       <CustomDragLayer parentEl={containerRef}/>
       {charts?.length ? charts?.map((chart) => (
-        <Module key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position} parentEl={containerRef}>
-          <WorkerChart chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
+        <Module disabled={disabled} key={`Module${chart?.chartId}`} chartId={chart?.chartId} position={chart?.position} parentEl={containerRef}>
+          <WorkerChart disabled={disabled} chartId={chart?.chartId} chartDetails={chart?.details} name={chart?.details?.name}></WorkerChart> 
         </Module>
       )) : null}
     </Box>
