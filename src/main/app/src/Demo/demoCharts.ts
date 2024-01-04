@@ -23,7 +23,7 @@ export const demoCharts = [
     }
   },
   {
-    "chartId": 0,
+    "chartId": 1,
     "details": {
       "name": "Requests Per Day",
       "srcUrl": "https://admbuilt.com/api/analytics/getRequestsPerDay",
@@ -44,7 +44,7 @@ export const demoCharts = [
     }
   },
   {
-    "chartId": 0,
+    "chartId": 2,
     "details": {
       "name": "Requests Per Hour",
       "srcUrl": "https://admbuilt.com/api/analytics/getRequestsPerHour",
@@ -65,7 +65,7 @@ export const demoCharts = [
     }
   },
   {
-    "chartId": 0,
+    "chartId": 3,
     "details": {
       "name": "Response Time Per IP",
       "srcUrl": "https://admbuilt.com/api/analytics/getStatsPerIP",
@@ -86,7 +86,7 @@ export const demoCharts = [
     }
   },
   {
-    "chartId": 0,
+    "chartId": 4,
     "details": {
       "name": "Response Time Per Route",
       "srcUrl": "https://admbuilt.com/api/analytics/getStatsPerRoute",
@@ -107,7 +107,7 @@ export const demoCharts = [
     }
   },
   {
-    "chartId": 0,
+    "chartId": 5,
     "details": {
       "name": "Response Time Per Status",
       "srcUrl": "https://admbuilt.com/api/analytics/getStatsPerStatus",

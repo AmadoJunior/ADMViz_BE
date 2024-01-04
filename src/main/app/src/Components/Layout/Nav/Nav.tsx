@@ -129,7 +129,7 @@ const Nav: React.FC<INavProps> = (): JSX.Element => {
               },
             }}
           >
-            <Typography variant="h6" color="primary">OpenViz</Typography>
+            <Typography variant="h6" color="primary">ADMViz</Typography>
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
