@@ -74,10 +74,6 @@ public class SecurityConfig {
         //Routes
         http.authorizeHttpRequests(configure ->
                 configure
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/index*", "/static/**", "/*.js", "/*.json", "/*.ico", "/*.png", "/*.webmanifest", "robots.txt")
-                        .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/perform_login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/perform_register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/perform_verify").permitAll()
