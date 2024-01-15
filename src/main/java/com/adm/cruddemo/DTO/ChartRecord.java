@@ -7,7 +7,10 @@ public record ChartRecord(
         String labelKey,
         String chartType,
         String method,
-        String apiKey,
+        String select,
+        String where,
+        String group,
+        String limit,
         Long fromDate,
         Long toDate,
         ChartPositionRecord position

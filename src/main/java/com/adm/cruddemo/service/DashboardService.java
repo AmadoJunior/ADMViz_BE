@@ -118,7 +118,10 @@ public class DashboardService {
         newChart.setLabelKey(chartRecord.labelKey());
         newChart.setChartType(chartRecord.chartType());
         newChart.setMethod(chartRecord.method());
-        newChart.setApiKey(chartRecord.apiKey());
+        newChart.setSelect(chartRecord.select());
+        newChart.setWhere(chartRecord.where());
+        newChart.setGroup(chartRecord.group());
+        newChart.setLimit(chartRecord.limit());
         newChart.setFromDate(chartRecord.fromDate());
         newChart.setToDate(chartRecord.toDate());
 
@@ -166,7 +169,10 @@ public class DashboardService {
         chartToUpdate.setLabelKey(updatedChartRecord.labelKey());
         chartToUpdate.setChartType(updatedChartRecord.chartType());
         chartToUpdate.setMethod(updatedChartRecord.method());
-        chartToUpdate.setApiKey(updatedChartRecord.apiKey());
+        chartToUpdate.setSelect(updatedChartRecord.select());
+        chartToUpdate.setWhere(updatedChartRecord.where());
+        chartToUpdate.setGroup(updatedChartRecord.group());
+        chartToUpdate.setLimit(updatedChartRecord.limit());
         chartToUpdate.setFromDate(updatedChartRecord.fromDate());
         chartToUpdate.setToDate(updatedChartRecord.toDate());
 

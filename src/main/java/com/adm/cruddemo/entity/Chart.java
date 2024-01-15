@@ -25,8 +25,14 @@ public class Chart {
     private String chartType;
     @Column(name="method")
     private String method;
-    @Column(name="api_key")
-    private String apiKey;
+    @Column(name="select")
+    private String select;
+    @Column(name="where")
+    private String where;
+    @Column(name="group")
+    private String group;
+    @Column(name="limit")
+    private String limit;
     @Column(name="from_date")
     private Long fromDate;
     @Column(name="to_date")
@@ -54,14 +60,17 @@ public class Chart {
     //Constructors
     public Chart() {
     }
-    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String apiKey, long fromDate, long toDate, ChartPosition position, Dashboard dashboard, User user) {
+    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String select, String where, String group, String limit, long fromDate, long toDate, ChartPosition position, Dashboard dashboard, User user) {
         this.name = name;
         this.srcUrl = srcUrl;
         this.dataKey = dataKey;
         this.labelKey = labelKey;
         this.chartType = chartType;
         this.method = method;
-        this.apiKey = apiKey;
+        this.select = select;
+        this.where = where;
+        this.group = group;
+        this.limit = limit;
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.position = position;
@@ -112,12 +121,39 @@ public class Chart {
     public void setMethod(String method) {
         this.method = method;
     }
-    public String getApiKey() {
-        return apiKey;
+
+    public String getSelect() {
+        return select;
     }
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
+
+    public void setSelect(String select) {
+        this.select = select;
     }
+
+    public String getWhere() {
+        return where;
+    }
+
+    public void setWhere(String where) {
+        this.where = where;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getLimit() {
+        return limit;
+    }
+
+    public void setLimit(String limit) {
+        this.limit = limit;
+    }
+
     public Long getFromDate() {
         return fromDate;
     }
