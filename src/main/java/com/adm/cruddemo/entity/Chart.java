@@ -25,13 +25,13 @@ public class Chart {
     private String chartType;
     @Column(name="method")
     private String method;
-    @Column(name="select")
+    @Column(name="select_value")
     private String select;
-    @Column(name="where")
+    @Column(name="where_value")
     private String where;
-    @Column(name="group")
+    @Column(name="group_value")
     private String group;
-    @Column(name="limit")
+    @Column(name="limit_value")
     private String limit;
     @Column(name="from_date")
     private Long fromDate;
