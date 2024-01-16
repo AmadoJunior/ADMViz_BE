@@ -110,7 +110,7 @@ public class SecurityConfig {
                 logout
                         .logoutUrl("/api/perform_logout")
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/")
+                        .permitAll()
         );
 
         //CSRF OFF
