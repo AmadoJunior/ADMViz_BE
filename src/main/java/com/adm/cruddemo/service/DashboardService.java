@@ -121,6 +121,7 @@ public class DashboardService {
         newChart.setSelect(chartRecord.select());
         newChart.setWhere(chartRecord.where());
         newChart.setGroup(chartRecord.group());
+        newChart.setGroup(chartRecord.order());
         newChart.setLimit(chartRecord.limit());
         newChart.setFromDate(chartRecord.fromDate());
         newChart.setToDate(chartRecord.toDate());
@@ -172,6 +173,7 @@ public class DashboardService {
         chartToUpdate.setSelect(updatedChartRecord.select());
         chartToUpdate.setWhere(updatedChartRecord.where());
         chartToUpdate.setGroup(updatedChartRecord.group());
+        chartToUpdate.setOrder(updatedChartRecord.order());
         chartToUpdate.setLimit(updatedChartRecord.limit());
         chartToUpdate.setFromDate(updatedChartRecord.fromDate());
         chartToUpdate.setToDate(updatedChartRecord.toDate());

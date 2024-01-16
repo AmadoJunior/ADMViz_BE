@@ -33,6 +33,8 @@ public class Chart {
     private String group;
     @Column(name="limit_value")
     private String limit;
+    @Column(name="order_value")
+    private String order;
     @Column(name="from_date")
     private Long fromDate;
     @Column(name="to_date")
@@ -152,6 +154,14 @@ public class Chart {
 
     public void setLimit(String limit) {
         this.limit = limit;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
     }
 
     public Long getFromDate() {

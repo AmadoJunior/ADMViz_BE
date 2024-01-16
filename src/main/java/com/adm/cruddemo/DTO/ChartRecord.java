@@ -11,6 +11,7 @@ public record ChartRecord(
         String where,
         String group,
         String limit,
+        String order,
         Long fromDate,
         Long toDate,
         ChartPositionRecord position
