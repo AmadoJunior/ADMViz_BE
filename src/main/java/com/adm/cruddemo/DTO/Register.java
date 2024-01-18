@@ -6,16 +6,18 @@ public class Register {
     private String userName;
     private String email;
     private String password;
+    private String token;
 
     public Register() {
     }
 
-    public Register(String firstName, String lastName, String userName, String email, String password) {
+    public Register(String firstName, String lastName, String userName, String email, String password, String token) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.token = token;
     }
 
     public String getFirstName() {
@@ -56,6 +58,14 @@ public class Register {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

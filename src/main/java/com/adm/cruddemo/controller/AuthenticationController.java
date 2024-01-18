@@ -4,6 +4,7 @@ import com.adm.cruddemo.DTO.Register;
 import com.adm.cruddemo.entity.Role;
 import com.adm.cruddemo.entity.User;
 import com.adm.cruddemo.service.AuthenticationService;
+import com.adm.cruddemo.service.CaptchaService;
 import com.adm.cruddemo.service.CustomUserDetails;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.Cacheable;
@@ -27,6 +28,8 @@ import java.util.UUID;
 public class AuthenticationController {
     @Autowired
     AuthenticationService authenticationService;
+    @Autowired
+    private CaptchaService captchaService;
     private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @GetMapping("/self")
@@ -43,6 +46,14 @@ public class AuthenticationController {
     @Transactional
     @PostMapping("/perform_register")
     public ResponseEntity<?> registerUser(@RequestBody Register registerDTO) throws UnsupportedEncodingException, MessagingException {
+        try {
+            captchaService.processToken(registerDTO.getToken());
+            logger.debug(registerDTO.getToken());
+        } catch (RuntimeException e) {
+            logger.debug("Invalid Token");
+            return new ResponseEntity<>(HttpStatus.CONFLICT.getReasonPhrase(), HttpStatus.CONFLICT);
+        }
+
         if(authenticationService.isDuplicateUser(registerDTO.getUserName(), registerDTO.getEmail())){
             logger.debug("Duplicate User Found");
             return new ResponseEntity<>(HttpStatus.CONFLICT.getReasonPhrase(), HttpStatus.CONFLICT);
