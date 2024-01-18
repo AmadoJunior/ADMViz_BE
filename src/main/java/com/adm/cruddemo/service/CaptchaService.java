@@ -4,12 +4,13 @@ import com.adm.cruddemo.DTO.GoogleResponse;
 import com.adm.cruddemo.captcha.CaptchaSettings;
 import com.adm.cruddemo.exception.InvalidReCaptchaException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
 
 import java.net.URI;
 import java.util.regex.Pattern;
-
+@Service
 public class CaptchaService {
     @Autowired
     private CaptchaSettings captchaSettings;
