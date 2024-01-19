@@ -26,12 +26,12 @@ public class SpringDataRestCustomization implements RepositoryRestConfigurer {
         config.setDefaultMediaType(MediaTypes.HAL_JSON);
         config.useHalAsDefaultJsonMediaType(true);
 
-        cors.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
-                .exposedHeaders("WWW-Authenticate")
-                .allowCredentials(true)
-                .maxAge(TimeUnit.DAYS.toSeconds(1));
+//        cors.addMapping("/**")
+//                .allowedOrigins("http://localhost:3000")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE")
+//                .allowedHeaders("*")
+//                .exposedHeaders("WWW-Authenticate")
+//                .allowCredentials(true)
+//                .maxAge(TimeUnit.DAYS.toSeconds(1));
     }
 }
