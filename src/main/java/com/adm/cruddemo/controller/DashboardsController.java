@@ -2,6 +2,7 @@ package com.adm.cruddemo.controller;
 
 import com.adm.cruddemo.DTO.*;
 import com.adm.cruddemo.entity.Dashboard;
+import com.adm.cruddemo.exception.TooManyResourcesException;
 import com.adm.cruddemo.service.CustomUserDetails;
 import com.adm.cruddemo.service.DashboardService;
 import jakarta.transaction.Transactional;
@@ -40,6 +41,9 @@ public class DashboardsController {
             Dashboard savedDashboard = dashboardService.createDashboard(userDetails.getId(), newDashboard);
             logger.debug("Created Dashboard");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
+        } catch (TooManyResourcesException e) {
+            logger.debug("Too Many Dashboards");
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), HttpStatus.NOT_ACCEPTABLE);
         } catch(Exception e) {
             logger.debug("Failed To Create Dashboard");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
@@ -89,6 +93,9 @@ public class DashboardsController {
             Dashboard savedDashboard = dashboardService.insertChart(userDetails.getId(), dashboardId, newChart);
             logger.debug("Chart Inserted");
             return new ResponseEntity<>(RepresentationModel.of(savedDashboard), HttpStatus.OK);
+        } catch (TooManyResourcesException e) {
+            logger.debug("Too Many Charts");
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), HttpStatus.NOT_ACCEPTABLE);
         } catch(Exception e) {
             logger.debug("Failed To Insert Chart");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
