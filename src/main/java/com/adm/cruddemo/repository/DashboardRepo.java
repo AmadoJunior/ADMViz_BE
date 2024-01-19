@@ -1,8 +1,11 @@
 package com.adm.cruddemo.repository;
 
 import com.adm.cruddemo.entity.Dashboard;
+import com.adm.cruddemo.entity.User;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -12,6 +15,9 @@ import java.util.Optional;
 
 @RepositoryRestResource(path="dashboards")
 public interface DashboardRepo extends CrudRepository<Dashboard, Long> {
+    @RestResource(exported = false)
+    @Query("SELECT COUNT(d) FROM Dashboard d WHERE d.user.id = :userId")
+    long countByUserId(@Param("userId") Long userId);
     @PostAuthorize("hasRole('ROLE_ADMIN') || returnObject.get().user.getId() == authentication.principal.getId()")
     @Override
     Optional<Dashboard> findById(Long dashboardId);

@@ -17,6 +17,9 @@ import java.util.Optional;
 
 @RepositoryRestResource(path="charts")
 public interface ChartRepo extends CrudRepository<Chart, Long> {
+    @RestResource(exported = false)
+    @Query("SELECT COUNT(c) FROM Chart c WHERE c.dashboard.id = :dashboardId")
+    long countByDashboardId(@Param("dashboardId") Long dashboardId);
     @PostAuthorize("hasRole('ROLE_ADMIN') || returnObject.get().user.getId() == authentication.principal.getId()")
     @Override
     Optional<Chart> findById(Long chartId);

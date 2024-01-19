@@ -9,11 +9,13 @@ import com.adm.cruddemo.entity.Dashboard;
 import com.adm.cruddemo.entity.User;
 import com.adm.cruddemo.exception.AccessDeniedException;
 import com.adm.cruddemo.exception.ResourceNotFoundException;
+import com.adm.cruddemo.exception.TooManyResourcesException;
 import com.adm.cruddemo.repository.ChartPositionRepo;
 import com.adm.cruddemo.repository.ChartRepo;
 import com.adm.cruddemo.repository.DashboardRepo;
 import com.adm.cruddemo.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,10 @@ import java.util.Optional;
 
 @Service
 public class DashboardService {
+    @Value("${app.limits.dashboardCount}")
+    private Long dashboardLimit;
+    @Value("${app.limits.chartCount}")
+    private Long chartLimit;
     @Autowired
     private UserRepo userRepository;
     @Autowired
@@ -51,8 +57,13 @@ public class DashboardService {
 
     public Dashboard createDashboard(long userId, DashboardRecord dashboardRecord) throws RuntimeException {
         Optional<User> foundUser = userRepository.findById(userId);
+
         if(foundUser.isEmpty()){
             throw new ResourceNotFoundException("User Not Found");
+        }
+
+        if(dashboardRepo.countByUserId(userId) > dashboardLimit) {
+            throw new TooManyResourcesException("Too Many Dashboards");
         }
 
         Dashboard newDashboard = new Dashboard();
@@ -108,6 +119,10 @@ public class DashboardService {
         }
 
         handleAuthorization(userId, foundDashboard.get());
+
+        if(chartRepo.countByDashboardId(foundDashboard.get().getId()) > chartLimit) {
+            throw new TooManyResourcesException("Too Many Charts");
+        }
 
         Chart newChart = new Chart();
         newChart.setUser(foundUser.get());
