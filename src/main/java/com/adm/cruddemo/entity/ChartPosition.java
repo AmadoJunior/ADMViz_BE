@@ -33,6 +33,14 @@ public class ChartPosition {
         this.h = h;
     }
 
+    public ChartPosition(Long id, int x, int y, int w, int h) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
+
     //Getters & Setters
 
     public Long getId() {

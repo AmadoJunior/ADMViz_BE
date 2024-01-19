@@ -72,6 +72,19 @@ public class User {
         this.dashboards = dashboards;
     }
 
+    public User(Long id, String firstName, String lastName, String userName, String email, String password, String verificationCode, boolean enabled, Set<Role> roles, List<Dashboard> dashboards) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.verificationCode = verificationCode;
+        this.enabled = enabled;
+        this.roles = roles;
+        this.dashboards = dashboards;
+    }
+
     //Getters & Setters
     public Long getId() {
         return id;

@@ -82,6 +82,26 @@ public class Chart {
         this.user = user;
     }
 
+    public Chart(Long id, String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String select, String where, String group, String limit, String order, Long fromDate, Long toDate, Dashboard dashboard, User user, ChartPosition position) {
+        this.id = id;
+        this.name = name;
+        this.srcUrl = srcUrl;
+        this.dataKey = dataKey;
+        this.labelKey = labelKey;
+        this.chartType = chartType;
+        this.method = method;
+        this.select = select;
+        this.where = where;
+        this.group = group;
+        this.limit = limit;
+        this.order = order;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.dashboard = dashboard;
+        this.user = user;
+        this.position = position;
+    }
+
     //Getters & Setters
     public Long getId() {
         return id;

@@ -46,6 +46,13 @@ public class Dashboard {
         this.user = user;
     }
 
+    public Dashboard(Long id, String name, List<Chart> charts, User user) {
+        this.id = id;
+        this.name = name;
+        this.charts = charts;
+        this.user = user;
+    }
+
     //Getters & Setters
     public Long getId() {
         return id;
