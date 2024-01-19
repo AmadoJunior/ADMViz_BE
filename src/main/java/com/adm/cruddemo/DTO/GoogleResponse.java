@@ -2,6 +2,7 @@ package com.adm.cruddemo.DTO;
 
 import com.fasterxml.jackson.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import java.util.Map;
         "hostname",
         "error-codes"
 })
+
 public class GoogleResponse {
 
     @JsonProperty("success")
@@ -92,5 +94,15 @@ public class GoogleResponse {
 
     public void setErrorCodes(ErrorCode[] errorCodes) {
         this.errorCodes = errorCodes;
+    }
+
+    @Override
+    public String toString() {
+        return "GoogleResponse{" +
+                "success=" + success +
+                ", challengeTs='" + challengeTs + '\'' +
+                ", hostname='" + hostname + '\'' +
+                ", errorCodes=" + Arrays.toString(errorCodes) +
+                '}';
     }
 }
