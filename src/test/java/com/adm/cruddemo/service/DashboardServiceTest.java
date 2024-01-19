@@ -130,6 +130,7 @@ public class DashboardServiceTest {
 
     @Test
     void deleteDashboard_Success() {
+        //Arrange
         long mockUserId = 3L;
         long mockDashboardId = 2L;
 
@@ -144,13 +145,15 @@ public class DashboardServiceTest {
                 .user(mockUser)
                 .build();
 
+        //Mock
         Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.of(mockDashboard));
 
-        //Assert
+        //Assert + Action
         assertDoesNotThrow(() -> dashboardService.deleteDashboard(mockUserId, mockDashboardId));
     }
     @Test
     void deleteDashboard_DashboardNotFound() {
+        //Arrange
         long mockUserId = 3L;
         long mockDashboardId = 2L;
 
@@ -165,7 +168,10 @@ public class DashboardServiceTest {
                 .user(mockUser)
                 .build();
 
+        //Mock
         Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        //Assert + Action
         ResourceNotFoundException thrown = assertThrows(
                 ResourceNotFoundException.class,
                 () -> dashboardService.deleteDashboard(mockUserId, mockDashboardId));
@@ -174,6 +180,7 @@ public class DashboardServiceTest {
 
     @Test
     void deleteDashboard_Unauthorized() {
+        //Arrange
         long mockUser1Id = 4L;
         long mockUser2Id = 3L;
         long mockDashboardId = 2L;
@@ -192,8 +199,10 @@ public class DashboardServiceTest {
                 .user(mockUser1)
                 .build();
 
+        //Mock
         Mockito.when(dashboardRepo.findById(mockDashboard.getId())).thenReturn(Optional.of(mockDashboard));
 
+        //Action + Assert
         AccessDeniedException thrown = assertThrows(
                 AccessDeniedException.class,
                 () -> dashboardService.deleteDashboard(mockUser2.getId(), mockDashboardId));
@@ -202,6 +211,7 @@ public class DashboardServiceTest {
 
     @Test
     void updateDashboard_DashboardNotFound() {
+        //Arrange
         long mockUserId = 3L;
         long mockDashboardId = 2L;
 
@@ -216,9 +226,10 @@ public class DashboardServiceTest {
                 .user(mockUser)
                 .build();
 
+        //Mock
         Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        //Assert
+        //Assert + Action
         ResourceNotFoundException thrown = assertThrows(
                 ResourceNotFoundException.class,
                 () -> dashboardService.updateDashboard(mockUserId, mockDashboardId, new DashboardRecord("test")));
@@ -227,6 +238,7 @@ public class DashboardServiceTest {
 
     @Test
     void updateDashboard_Unauthorized() {
+        //Arrange
         long mockUser1Id = 4L;
         long mockUser2Id = 3L;
         long mockDashboardId = 2L;
@@ -245,8 +257,10 @@ public class DashboardServiceTest {
                 .user(mockUser1)
                 .build();
 
+        //Mock
         Mockito.when(dashboardRepo.findById(mockDashboard.getId())).thenReturn(Optional.of(mockDashboard));
 
+        //Assert + Action
         AccessDeniedException thrown = assertThrows(
                 AccessDeniedException.class,
                 () -> dashboardService.updateDashboard(mockUser2.getId(), mockDashboardId, new DashboardRecord("test")));
@@ -254,6 +268,7 @@ public class DashboardServiceTest {
     }
     @Test
     void updateDashboard_Success() {
+        //Arrange
         long mockUserId = 3L;
         long mockDashboardId = 2L;
 
@@ -269,10 +284,11 @@ public class DashboardServiceTest {
                 .build();
         DashboardRecord updatedRecord = new DashboardRecord("Updated");
 
+        //Mock
         Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.of(mockDashboard));
         Mockito.when(dashboardRepo.save(any(Dashboard.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        //Assert
+        //Assert + Action
         assertDoesNotThrow(() -> dashboardService.updateDashboard(mockUserId, mockDashboardId, updatedRecord));
 
         Dashboard updatedDashboard = dashboardService.updateDashboard(mockUserId, mockDashboardId, updatedRecord);
