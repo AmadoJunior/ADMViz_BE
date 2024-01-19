@@ -113,7 +113,7 @@ public class AuthenticationController {
 
         if(verifiedUser.isPresent()){
             logger.debug("User Successfully Identified: " + verifiedUser.get().getEmail());
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(ENV.equals("production") ? "https://" : "http://" + domainURL)).build();
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create((ENV.equals("production") ? "https://" : "http://") + domainURL)).build();
         }
 
         logger.debug("User Failed Email Identification: " + code);
