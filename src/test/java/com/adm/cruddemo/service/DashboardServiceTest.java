@@ -3,6 +3,7 @@ package com.adm.cruddemo.service;
 import com.adm.cruddemo.DTO.DashboardRecord;
 import com.adm.cruddemo.entity.Dashboard;
 import com.adm.cruddemo.entity.User;
+import com.adm.cruddemo.exception.AccessDeniedException;
 import com.adm.cruddemo.exception.ResourceNotFoundException;
 import com.adm.cruddemo.exception.TooManyResourcesException;
 import com.adm.cruddemo.repository.ChartPositionRepo;
@@ -128,13 +129,154 @@ public class DashboardServiceTest {
     }
 
     @Test
-    void deleteDashboard() {
+    void deleteDashboard_Success() {
+        long mockUserId = 3L;
+        long mockDashboardId = 2L;
 
+        User mockUser = User.builder()
+                .id(mockUserId)
+                .build();
+
+        String mockDashboardName = "TestDashboard";
+        Dashboard mockDashboard = Dashboard.builder()
+                .id(mockDashboardId)
+                .name(mockDashboardName)
+                .user(mockUser)
+                .build();
+
+        Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.of(mockDashboard));
+
+        //Assert
+        assertDoesNotThrow(() -> dashboardService.deleteDashboard(mockUserId, mockDashboardId));
+    }
+    @Test
+    void deleteDashboard_DashboardNotFound() {
+        long mockUserId = 3L;
+        long mockDashboardId = 2L;
+
+        User mockUser = User.builder()
+                .id(mockUserId)
+                .build();
+
+        String mockDashboardName = "TestDashboard";
+        Dashboard mockDashboard = Dashboard.builder()
+                .id(mockDashboardId)
+                .name(mockDashboardName)
+                .user(mockUser)
+                .build();
+
+        Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.empty());
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> dashboardService.deleteDashboard(mockUserId, mockDashboardId));
+        assertTrue(thrown.getMessage().contains("Dashboard Not Found"));
     }
 
     @Test
-    void updateDashboard() {
+    void deleteDashboard_Unauthorized() {
+        long mockUser1Id = 4L;
+        long mockUser2Id = 3L;
+        long mockDashboardId = 2L;
 
+        User mockUser1 = User.builder()
+                .id(mockUser1Id)
+                .build();
+        User mockUser2 = User.builder()
+                .id(mockUser2Id)
+                .build();
+
+        String mockDashboardName = "TestDashboard";
+        Dashboard mockDashboard = Dashboard.builder()
+                .id(mockDashboardId)
+                .name(mockDashboardName)
+                .user(mockUser1)
+                .build();
+
+        Mockito.when(dashboardRepo.findById(mockDashboard.getId())).thenReturn(Optional.of(mockDashboard));
+
+        AccessDeniedException thrown = assertThrows(
+                AccessDeniedException.class,
+                () -> dashboardService.deleteDashboard(mockUser2.getId(), mockDashboardId));
+        assertTrue(thrown.getMessage().contains("Forbidden"));
+    }
+
+    @Test
+    void updateDashboard_DashboardNotFound() {
+        long mockUserId = 3L;
+        long mockDashboardId = 2L;
+
+        User mockUser = User.builder()
+                .id(mockUserId)
+                .build();
+
+        String mockDashboardName = "TestDashboard";
+        Dashboard mockDashboard = Dashboard.builder()
+                .id(mockDashboardId)
+                .name(mockDashboardName)
+                .user(mockUser)
+                .build();
+
+        Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        //Assert
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> dashboardService.updateDashboard(mockUserId, mockDashboardId, new DashboardRecord("test")));
+        assertTrue(thrown.getMessage().contains("Dashboard Not Found"));
+    }
+
+    @Test
+    void updateDashboard_Unauthorized() {
+        long mockUser1Id = 4L;
+        long mockUser2Id = 3L;
+        long mockDashboardId = 2L;
+
+        User mockUser1 = User.builder()
+                .id(mockUser1Id)
+                .build();
+        User mockUser2 = User.builder()
+                .id(mockUser2Id)
+                .build();
+
+        String mockDashboardName = "TestDashboard";
+        Dashboard mockDashboard = Dashboard.builder()
+                .id(mockDashboardId)
+                .name(mockDashboardName)
+                .user(mockUser1)
+                .build();
+
+        Mockito.when(dashboardRepo.findById(mockDashboard.getId())).thenReturn(Optional.of(mockDashboard));
+
+        AccessDeniedException thrown = assertThrows(
+                AccessDeniedException.class,
+                () -> dashboardService.updateDashboard(mockUser2.getId(), mockDashboardId, new DashboardRecord("test")));
+        assertTrue(thrown.getMessage().contains("Forbidden"));
+    }
+    @Test
+    void updateDashboard_Success() {
+        long mockUserId = 3L;
+        long mockDashboardId = 2L;
+
+        User mockUser = User.builder()
+                .id(mockUserId)
+                .build();
+
+        String mockDashboardName = "TestDashboard";
+        Dashboard mockDashboard = Dashboard.builder()
+                .id(mockDashboardId)
+                .name(mockDashboardName)
+                .user(mockUser)
+                .build();
+        DashboardRecord updatedRecord = new DashboardRecord("Updated");
+
+        Mockito.when(dashboardRepo.findById(any(Long.class))).thenReturn(Optional.of(mockDashboard));
+        Mockito.when(dashboardRepo.save(any(Dashboard.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        //Assert
+        assertDoesNotThrow(() -> dashboardService.updateDashboard(mockUserId, mockDashboardId, updatedRecord));
+
+        Dashboard updatedDashboard = dashboardService.updateDashboard(mockUserId, mockDashboardId, updatedRecord);
+        assertEquals(updatedDashboard.getName(), updatedRecord.name());
     }
 
     @Test
