@@ -51,7 +51,7 @@ public class AuthenticationController {
             logger.debug(registerDTO.getToken());
         } catch (RuntimeException e) {
             logger.debug("Invalid Token");
-            return new ResponseEntity<>(HttpStatus.CONFLICT.getReasonPhrase(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(), HttpStatus.SERVICE_UNAVAILABLE);
         }
 
         if(authenticationService.isDuplicateUser(registerDTO.getUserName(), registerDTO.getEmail())){
