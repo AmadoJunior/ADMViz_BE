@@ -1,5 +1,8 @@
 package com.adm.cruddemo.DTO;
 
+import lombok.Data;
+
+@Data
 public class Login {
     private String userName;
     private String password;
