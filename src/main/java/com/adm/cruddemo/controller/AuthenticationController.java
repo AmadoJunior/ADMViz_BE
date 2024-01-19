@@ -29,6 +29,8 @@ import java.util.UUID;
 public class AuthenticationController {
     @Value("${app.domain.url}")
     private String domainURL;
+    @Value("${app.domain.env}")
+    private String ENV;
     @Autowired
     AuthenticationService authenticationService;
     @Autowired
@@ -98,7 +100,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
 
-        authenticationService.sendVerificationEmail(savedUser, domainURL);
+        authenticationService.sendVerificationEmail(savedUser, ENV.equals("production") ? "https://" : "http://" + domainURL);
 
         logger.debug("User Successfully Created: " + savedUser.getId());
         return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(), HttpStatus.CREATED);
@@ -111,7 +113,7 @@ public class AuthenticationController {
 
         if(verifiedUser.isPresent()){
             logger.debug("User Successfully Identified: " + verifiedUser.get().getEmail());
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(domainURL)).build();
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(ENV.equals("production") ? "https://" : "http://" + domainURL)).build();
         }
 
         logger.debug("User Failed Email Identification: " + code);
