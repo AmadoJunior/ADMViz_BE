@@ -29,7 +29,7 @@ public class AuthenticationController {
     @Autowired
     AuthenticationService authenticationService;
     @Autowired
-    private CaptchaService captchaService;
+    CaptchaService captchaService;
     private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @GetMapping("/self")
