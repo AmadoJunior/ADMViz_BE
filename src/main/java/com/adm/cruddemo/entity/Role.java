@@ -1,10 +1,12 @@
 package com.adm.cruddemo.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.util.Collection;
 
 @Entity
+@Builder
 @Table(name="roles")
 public class Role {
     @Id

@@ -3,10 +3,12 @@ package com.adm.cruddemo.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.util.*;
 
 @Entity
+@Builder
 @Table(name="users")
 public class User {
     @Id
