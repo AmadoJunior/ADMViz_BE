@@ -96,7 +96,7 @@ public class AuthenticationService {
         helper.setSubject(subject);
 
         content = content.replace("[[name]]", user.getUserName());
-        String verifyURL = siteURL + "api/perform_verify?code=" + user.getVerificationCode();
+        String verifyURL = siteURL + "/api/perform_verify?code=" + user.getVerificationCode();
 
         content = content.replace("[[URL]]", verifyURL);
 
