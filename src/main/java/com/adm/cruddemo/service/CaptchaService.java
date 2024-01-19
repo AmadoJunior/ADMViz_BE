@@ -16,8 +16,6 @@ public class CaptchaService {
     private CaptchaSettings captchaSettings;
     @Autowired
     private RestOperations restTemplate;
-    private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
-
     public void processToken(String captchaToken) throws InvalidReCaptchaException {
         if(!responseSanityCheck(captchaToken)) {
             throw new InvalidReCaptchaException("Response contains invalid characters");
@@ -35,6 +33,6 @@ public class CaptchaService {
     }
 
     private boolean responseSanityCheck(String response) {
-        return StringUtils.hasLength(response) && RESPONSE_PATTERN.matcher(response).matches();
+        return StringUtils.hasLength(response);
     }
 }
