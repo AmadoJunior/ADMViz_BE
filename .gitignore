@@ -29,3 +29,4 @@ src/main/app/.env
 
 ### Static ###
 src/main/resources/static
+src/main/resources/application.properties
