@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface DashboardRepo extends CrudRepository<Dashboard, Long> {
     @RestResource(exported = false)
     @Query("SELECT COUNT(d) FROM Dashboard d WHERE d.user.id = :userId")
-    long countByUserId(@Param("userId") Long userId);
+    Long countByUserId(@Param("userId") Long userId);
     @PostAuthorize("hasRole('ROLE_ADMIN') || returnObject.get().user.getId() == authentication.principal.getId()")
     @Override
     Optional<Dashboard> findById(Long dashboardId);

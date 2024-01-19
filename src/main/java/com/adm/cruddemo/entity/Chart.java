@@ -1,14 +1,17 @@
 package com.adm.cruddemo.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 
-@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
+@Entity
 @Table(name = "charts")
 public class Chart {
     @Id
@@ -61,9 +64,7 @@ public class Chart {
         this.position = null;
     }
 
-    //Constructors
-    public Chart() {
-    }
+    //Constructor
     public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String select, String where, String group, String limit, long fromDate, long toDate, ChartPosition position, Dashboard dashboard, User user) {
         this.name = name;
         this.srcUrl = srcUrl;
@@ -79,141 +80,6 @@ public class Chart {
         this.toDate = toDate;
         this.position = position;
         this.dashboard = dashboard;
-        this.user = user;
-    }
-
-    public Chart(Long id, String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String select, String where, String group, String limit, String order, Long fromDate, Long toDate, Dashboard dashboard, User user, ChartPosition position) {
-        this.id = id;
-        this.name = name;
-        this.srcUrl = srcUrl;
-        this.dataKey = dataKey;
-        this.labelKey = labelKey;
-        this.chartType = chartType;
-        this.method = method;
-        this.select = select;
-        this.where = where;
-        this.group = group;
-        this.limit = limit;
-        this.order = order;
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        this.dashboard = dashboard;
-        this.user = user;
-        this.position = position;
-    }
-
-    //Getters & Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getSrcUrl() {
-        return srcUrl;
-    }
-    public void setSrcUrl(String srcUrl) {
-        this.srcUrl = srcUrl;
-    }
-    public String getDataKey() {
-        return dataKey;
-    }
-    public void setDataKey(String dataKey) {
-        this.dataKey = dataKey;
-    }
-    public String getLabelKey() {
-        return labelKey;
-    }
-    public void setLabelKey(String labelKey) {
-        this.labelKey = labelKey;
-    }
-    public String getChartType() {
-        return chartType;
-    }
-    public void setChartType(String chartType) {
-        this.chartType = chartType;
-    }
-    public String getMethod() {
-        return method;
-    }
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public String getSelect() {
-        return select;
-    }
-
-    public void setSelect(String select) {
-        this.select = select;
-    }
-
-    public String getWhere() {
-        return where;
-    }
-
-    public void setWhere(String where) {
-        this.where = where;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public String getLimit() {
-        return limit;
-    }
-
-    public void setLimit(String limit) {
-        this.limit = limit;
-    }
-
-    public String getOrder() {
-        return order;
-    }
-
-    public void setOrder(String order) {
-        this.order = order;
-    }
-
-    public Long getFromDate() {
-        return fromDate;
-    }
-    public void setFromDate(Long fromDate) {
-        this.fromDate = fromDate;
-    }
-    public Long getToDate() {
-        return toDate;
-    }
-    public void setToDate(Long toDate) {
-        this.toDate = toDate;
-    }
-    public ChartPosition getPosition() {
-        return position;
-    }
-    public void setPosition(ChartPosition position) {
-        this.position = position;
-    }
-    public Dashboard getDashboard() {
-        return dashboard;
-    }
-    public void setDashboard(Dashboard dashboard) {
-        this.dashboard = dashboard;
-    }
-    public User getUser() {
-        return user;
-    }
-    public void setUser(User user) {
         this.user = user;
     }
 }

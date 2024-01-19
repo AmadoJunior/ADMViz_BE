@@ -1,10 +1,8 @@
 package com.adm.cruddemo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.*;
 
 @Data
