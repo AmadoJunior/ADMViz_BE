@@ -65,7 +65,7 @@ public class AuthenticationService {
     }
 
     public Optional<User> verifyUser(String verificationCode) {
-        Optional<User> foundUser = userRepository.findByVerificaitonCode(verificationCode);
+        Optional<User> foundUser = userRepository.findByVerificationCode(verificationCode);
 
         if(foundUser.isEmpty()){
             return foundUser;
