@@ -51,6 +51,7 @@ public class AuthenticationController {
             logger.debug(registerDTO.getToken());
         } catch (RuntimeException e) {
             logger.debug("Invalid Token");
+            logger.debug(e.toString());
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(), HttpStatus.SERVICE_UNAVAILABLE);
         }
 
