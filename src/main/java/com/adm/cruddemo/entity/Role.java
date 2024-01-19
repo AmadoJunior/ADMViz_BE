@@ -1,12 +1,15 @@
 package com.adm.cruddemo.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 
-import java.util.Collection;
-
-@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
+@Entity
 @Table(name="roles")
 public class Role {
     @Id
@@ -17,28 +20,7 @@ public class Role {
     private String name;
 
     //Constructors
-    public Role() {
-    }
     public Role(String name) {
-        this.name = name;
-    }
-
-    public Role(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    //Setters & Getters
-    public long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
         this.name = name;
     }
 }
