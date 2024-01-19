@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +27,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class AuthenticationController {
+    @Value("${app.domain.url}")
+    private String domainURL;
     @Autowired
     AuthenticationService authenticationService;
     @Autowired
@@ -95,7 +98,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
 
-        authenticationService.sendVerificationEmail(savedUser, "http://localhost:8080/");
+        authenticationService.sendVerificationEmail(savedUser, domainURL);
 
         logger.debug("User Successfully Created: " + savedUser.getId());
         return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(), HttpStatus.CREATED);
@@ -108,7 +111,7 @@ public class AuthenticationController {
 
         if(verifiedUser.isPresent()){
             logger.debug("User Successfully Identified: " + verifiedUser.get().getEmail());
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:3000")).build();
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(domainURL)).build();
         }
 
         logger.debug("User Failed Email Identification: " + code);
