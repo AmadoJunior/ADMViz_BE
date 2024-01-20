@@ -100,7 +100,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
 
-        authenticationService.sendVerificationEmail(savedUser, ENV.equals("production") ? "https://" : "http://" + domainURL);
+        authenticationService.sendVerificationEmail(savedUser, (ENV.equals("production") ? "https://" : "http://") + domainURL);
 
         logger.debug("User Successfully Created: " + savedUser.getId());
         return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(), HttpStatus.CREATED);
