@@ -18,11 +18,26 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: restapi
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        ports:
+          - 3306:3306
 
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
       uses: actions/setup-java@v3
+      env:
+          MYSQL_HOST: mysql
+          MYSQL_DATABASE: restapi
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
       with:
         java-version: '17'
         distribution: 'temurin'
