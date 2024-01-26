@@ -6,6 +6,12 @@ import com.adm.cruddemo.entity.User;
 import com.adm.cruddemo.service.AuthenticationService;
 import com.adm.cruddemo.service.CaptchaService;
 import com.adm.cruddemo.service.CustomUserDetails;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.models.media.MediaType;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.Cacheable;
 import jakarta.transaction.Transactional;
@@ -37,6 +43,25 @@ public class AuthenticationController {
     CaptchaService captchaService;
     private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
+    @Operation(
+            description = "Gets user details for authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Missing/Invalid Session",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+            }
+    )
     @GetMapping("/self")
     public ResponseEntity<?> getUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         if(userDetails == null){
@@ -48,6 +73,46 @@ public class AuthenticationController {
                 userDetails, HttpStatus.OK
         );
     }
+    @Operation(
+            description = "Validates and creates new user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Created",
+                            responseCode = "201",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Missing/Invalid Captcha Token",
+                            responseCode = "503",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Duplicate User",
+                            responseCode = "409",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Missing/Invalid Email Address",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Missing/Invalid Password",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+            }
+    )
     @Transactional
     @PostMapping("/perform_register")
     public ResponseEntity<?> registerUser(@RequestBody Register registerDTO) throws UnsupportedEncodingException, MessagingException {
@@ -106,6 +171,25 @@ public class AuthenticationController {
         return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(), HttpStatus.CREATED);
     }
 
+    @Operation(
+            description = "Verifies created user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "302",
+                            content = @Content(
+                                    mediaType = "text/html"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed Email Identification",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+            }
+    )
     @Transactional
     @GetMapping("/perform_verify")
     public ResponseEntity<?> verifyUser(@RequestParam String code){
