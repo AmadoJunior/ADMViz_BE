@@ -83,6 +83,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/perform_register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/perform_verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/self").permitAll()
+                        .requestMatchers(
+                                "/v2/api-docs/",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-resources",
+                                "/swagger-resources/**",
+                                "/configuration/ui",
+                                "/configuration/security",
+                                "/swagger-ui/**",
+                                "/webjars/**",
+                                "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
         );
 
