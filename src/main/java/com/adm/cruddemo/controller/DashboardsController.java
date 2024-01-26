@@ -5,6 +5,9 @@ import com.adm.cruddemo.entity.Dashboard;
 import com.adm.cruddemo.exception.TooManyResourcesException;
 import com.adm.cruddemo.service.CustomUserDetails;
 import com.adm.cruddemo.service.DashboardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,32 @@ public class DashboardsController {
         this.dashboardService = dashboardService;
     }
 
+    @Operation(
+            description = "Creates a new dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Dashboard Created Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Too Many Dashboards",
+                            responseCode = "406",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Create Dashboard",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.POST, path = "/dashboards")
     public ResponseEntity<?> createDashboard(
@@ -49,6 +78,25 @@ public class DashboardsController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST);
         }
     }
+    @Operation(
+            description = "Updates an existing dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Dashboard Updated Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Update Dashboard",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.PUT, path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> updateDashboard(
@@ -66,6 +114,25 @@ public class DashboardsController {
         }
     }
 
+    @Operation(
+            description = "Deletes a specified dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Dashboard Deleted Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Delete Dashboard",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.DELETE, path = "/dashboards/{dashboardId}")
     public ResponseEntity<?> deleteDashboard(
@@ -82,6 +149,32 @@ public class DashboardsController {
         }
     }
 
+    @Operation(
+            description = "Inserts a new chart into a specified dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Chart Inserted Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Too Many Charts",
+                            responseCode = "406",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Insert Chart",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.POST, path = "/dashboards/{dashboardId}/charts")
     public ResponseEntity<?> insertChart(
@@ -102,6 +195,25 @@ public class DashboardsController {
         }
     }
 
+    @Operation(
+            description = "Updates a specific chart in a specified dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Chart Updated Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Update Chart",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.PUT, path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> updateChartInDashboard(
@@ -120,6 +232,25 @@ public class DashboardsController {
         }
     }
 
+    @Operation(
+            description = "Deletes a specific chart from a specified dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Chart Deleted Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Delete Chart",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.DELETE, path = "/dashboards/{dashboardId}/charts/{chartId}")
     public ResponseEntity<?> deleteChart(
@@ -137,6 +268,25 @@ public class DashboardsController {
         }
     }
 
+    @Operation(
+            description = "Updates the position of a specific chart in a specified dashboard for the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            description = "Chart Position Updated Successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Failed To Update Chart Position",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "text/plain"
+                            )
+                    )
+            }
+    )
     @Transactional
     @RequestMapping(method=RequestMethod.PUT, path = "/dashboards/{dashboardId}/charts/{chartId}/position")
     public ResponseEntity<?> updateChartPosition(
