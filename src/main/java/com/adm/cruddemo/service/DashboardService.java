@@ -138,6 +138,7 @@ public class DashboardService {
         newChart.setGroup(chartRecord.group());
         newChart.setGroup(chartRecord.order());
         newChart.setLimit(chartRecord.limit());
+        newChart.setDateColumnKey(chartRecord.dateColumnKey());
         newChart.setFromDate(chartRecord.fromDate());
         newChart.setToDate(chartRecord.toDate());
 
@@ -190,6 +191,7 @@ public class DashboardService {
         chartToUpdate.setGroup(updatedChartRecord.group());
         chartToUpdate.setOrder(updatedChartRecord.order());
         chartToUpdate.setLimit(updatedChartRecord.limit());
+        chartToUpdate.setDateColumnKey(updatedChartRecord.dateColumnKey());
         chartToUpdate.setFromDate(updatedChartRecord.fromDate());
         chartToUpdate.setToDate(updatedChartRecord.toDate());
 

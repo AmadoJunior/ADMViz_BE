@@ -75,7 +75,7 @@ public class DashboardServiceTest {
 
         dashboardRecord = new DashboardRecord("TestDashboard");
         chartPositionRecord = new ChartPositionRecord(0, 0, 50, 565);
-        chartRecord = new ChartRecord("chartRecord","","","","","","","","","","",0L,0L, chartPositionRecord);
+        chartRecord = new ChartRecord("chartRecord","","","","","","","","","","","",0L,0L, chartPositionRecord);
     }
 
     @AfterEach

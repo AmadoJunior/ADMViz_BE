@@ -12,6 +12,7 @@ public record ChartRecord(
         String group,
         String limit,
         String order,
+        String dateColumnKey,
         Long fromDate,
         Long toDate,
         ChartPositionRecord position

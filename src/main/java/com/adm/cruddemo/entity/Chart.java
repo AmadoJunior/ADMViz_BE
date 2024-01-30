@@ -40,6 +40,8 @@ public class Chart {
     private String limit;
     @Column(name="order_value")
     private String order;
+    @Column(name="date_column_key")
+    private String dateColumnKey;
     @Column(name="from_date")
     private Long fromDate;
     @Column(name="to_date")
@@ -65,7 +67,7 @@ public class Chart {
     }
 
     //Constructor
-    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String select, String where, String group, String limit, long fromDate, long toDate, ChartPosition position, Dashboard dashboard, User user) {
+    public Chart(String name, String srcUrl, String dataKey, String labelKey, String chartType, String method, String select, String where, String group, String limit, String columnKey, long fromDate, long toDate, ChartPosition position, Dashboard dashboard, User user) {
         this.name = name;
         this.srcUrl = srcUrl;
         this.dataKey = dataKey;
@@ -76,6 +78,7 @@ public class Chart {
         this.where = where;
         this.group = group;
         this.limit = limit;
+        this.dateColumnKey = columnKey;
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.position = position;
